@@ -1,6 +1,6 @@
 // components/PrimaryButton.tsx
 import { Pressable, Text } from "react-native";
-export function PrimaryButton({ label, onPress }: { label: string; onPress?: () => void }) {
+function PrimaryButton({ label, onPress }: { label: string; onPress?: () => void }) {
   return (
     <Pressable
       onPress={onPress}
@@ -10,3 +10,4 @@ export function PrimaryButton({ label, onPress }: { label: string; onPress?: () 
     </Pressable>
   );
 }
+export default PrimaryButton;

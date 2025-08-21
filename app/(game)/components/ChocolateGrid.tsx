@@ -13,7 +13,7 @@ const chocolates = Array.from({ length: 13 }, (_, i) => ({
   image: require('../../../assets/images/splash-icon.png'), // Replace with actual chocolate images
 }));
 
-export function ChocolateGrid({ mode, consumedChocolates, onSelectChocolate }: ChocolateGridProps) {
+function ChocolateGrid({ mode, consumedChocolates, onSelectChocolate }: ChocolateGridProps) {
   const { colors } = useTheme();
 
   return (
@@ -37,6 +37,7 @@ export function ChocolateGrid({ mode, consumedChocolates, onSelectChocolate }: C
     </View>
   );
 }
+export default ChocolateGrid;
 
 const styles = StyleSheet.create({
   grid: {

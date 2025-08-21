@@ -9,6 +9,8 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/ThemedText';
+import { Image } from 'expo-image';
+import Images from '@/constants/Images';
 
 export function HelloWave() {
   const rotationAnimation = useSharedValue(0);
@@ -26,6 +28,7 @@ export function HelloWave() {
 
   return (
     <Animated.View style={animatedStyle}>
+      <Image source={Images.IMAGES.image1} />
       <ThemedText style={styles.text}>👋</ThemedText>
     </Animated.View>
   );

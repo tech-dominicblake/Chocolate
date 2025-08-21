@@ -6,7 +6,6 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { QueryProvider } from '../providers/QueryProvider';
-import { ThemeProvider } from '../providers/ThemeProvider';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -21,7 +20,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider>
+      {/* <ThemeProvider> */}
         <QueryProvider>
           <Stack screenOptions={{ headerShown: false }}>
             {/* Auth Group */}
@@ -44,7 +43,7 @@ export default function RootLayout() {
           </Stack>
           <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
         </QueryProvider>
-      </ThemeProvider>
+      {/* </ThemeProvider> */}
     </SafeAreaProvider>
   );
 }

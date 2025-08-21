@@ -7,7 +7,7 @@ interface PlayerHeaderProps {
   level: number;
 }
 
-export function PlayerHeader({ playerName, round, level }: PlayerHeaderProps) {
+function PlayerHeader({ playerName, round, level }: PlayerHeaderProps) {
   const { colors } = useTheme();
 
   return (
@@ -29,3 +29,4 @@ export function PlayerHeader({ playerName, round, level }: PlayerHeaderProps) {
     </View>
   );
 }
+export default PlayerHeader;

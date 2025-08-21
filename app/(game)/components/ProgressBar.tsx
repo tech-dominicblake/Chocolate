@@ -7,7 +7,7 @@ interface ProgressBarProps {
   height?: number;
 }
 
-export function ProgressBar({ progress, width = 200, height = 8 }: ProgressBarProps) {
+function ProgressBar({ progress, width = 200, height = 8 }: ProgressBarProps) {
   const { colors } = useTheme();
 
   return (
@@ -31,3 +31,4 @@ export function ProgressBar({ progress, width = 200, height = 8 }: ProgressBarPr
     </View>
   );
 }
+export default ProgressBar;

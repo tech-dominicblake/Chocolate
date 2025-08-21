@@ -6,7 +6,7 @@ interface ChatBubbleProps {
   type?: 'sent' | 'received';
 }
 
-export function ChatBubble({ message, type = 'received' }: ChatBubbleProps) {
+function ChatBubble({ message, type = 'received' }: ChatBubbleProps) {
   const { colors } = useTheme();
 
   return (
@@ -31,3 +31,4 @@ export function ChatBubble({ message, type = 'received' }: ChatBubbleProps) {
     </View>
   );
 }
+export default ChatBubble;
