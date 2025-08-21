@@ -10,7 +10,7 @@ import { QueryProvider } from '../providers/QueryProvider';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  
+
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -26,20 +26,20 @@ export default function RootLayout() {
           <Stack screenOptions={{ headerShown: false }}>
             {/* Auth Group */}
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            
+
             {/* Game Group */}
             <Stack.Screen name="(game)" options={{ headerShown: false }} />
-            
+
             {/* Tabs Group */}
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            
+
             {/* Modal Group */}
-            <Stack.Screen 
-              name="(modals)" 
-              options={{ 
+            <Stack.Screen
+              name="(modals)"
+              options={{
                 presentation: 'modal',
                 animation: 'slide_from_bottom',
-              }} 
+              }}
             />
           </Stack>
           <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />

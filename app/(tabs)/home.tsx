@@ -1,5 +1,6 @@
+import BasicInput from '@/components/ui/BasicInput';
 import { useTheme } from '@react-navigation/native';
-import { Text, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
@@ -14,6 +15,8 @@ export default function HomeScreen() {
         <Text style={{ color: colors.text, fontSize: 16, textAlign: 'center', marginTop: 10 }}>
           Welcome to HUSHH
         </Text>
+        <BasicInput value='I am a Basic Input Component.' onChange={() => { }} />
+        <TextInput value='fdfdfd' />
       </View>
     </SafeAreaView>
   );
