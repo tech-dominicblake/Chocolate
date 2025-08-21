@@ -1,6 +1,6 @@
 // components/SecondaryButton.tsx
 import { Pressable, Text } from "react-native";
-export function SecondaryButton({ label, onPress }: { label: string; onPress?: () => void }) {
+function SecondaryButton({ label, onPress }: { label: string; onPress?: () => void }) {
   return (
     <Pressable
       onPress={onPress}
@@ -10,3 +10,4 @@ export function SecondaryButton({ label, onPress }: { label: string; onPress?: (
     </Pressable>
   );
 }
+export default SecondaryButton;
