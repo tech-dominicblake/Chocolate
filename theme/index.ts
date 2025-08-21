@@ -1,3 +1,4 @@
+import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { tokens } from './tokens';
 
 // Color palette based on Figma design
@@ -24,8 +25,10 @@ const palette = {
 };
 
 export const lightTheme = {
+  ...DefaultTheme,
   dark: false,
   colors: {
+    ...DefaultTheme.colors,
     // Base colors
     background: palette.neutral.gray50,
     text: palette.neutral.gray900,
@@ -45,13 +48,18 @@ export const lightTheme = {
     chocolateBorder: palette.neutral.gray200,
     prompt: palette.neutral.white,
     promptBorder: palette.neutral.gray100,
+
+    // Required by React Navigation
+    notification: palette.status.error,
   },
   tokens,
 };
 
 export const darkTheme = {
+  ...DarkTheme,
   dark: true,
   colors: {
+    ...DarkTheme.colors,
     // Base colors
     background: palette.neutral.gray900,
     text: palette.neutral.white,
@@ -71,6 +79,9 @@ export const darkTheme = {
     chocolateBorder: palette.neutral.gray800,
     prompt: palette.neutral.gray800,
     promptBorder: palette.neutral.gray800,
+
+    // Required by React Navigation
+    notification: palette.status.error,
   },
   tokens,
 };
