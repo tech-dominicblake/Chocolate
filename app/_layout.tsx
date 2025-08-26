@@ -31,18 +31,6 @@ export default function RootLayout() {
 
             {/* Game Group */}
             <Stack.Screen name="(game)" options={{ headerShown: false }} />
-
-            {/* Tabs Group */}
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-
-            {/* Modal Group */}
-            <Stack.Screen
-              name="(modals)"
-              options={{
-                presentation: 'modal',
-                animation: 'slide_from_bottom',
-              }}
-            />
             </Stack>
             <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
           </GameStatusProvider>
