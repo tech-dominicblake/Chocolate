@@ -5,6 +5,7 @@ import { useColorScheme } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { GameStatusProvider } from '@/contexts/GameStatusContext';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { QueryProvider } from '../providers/QueryProvider';
 
@@ -23,7 +24,8 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ThemeProvider>
         <QueryProvider>
-          <Stack screenOptions={{ headerShown: false }}>
+          <GameStatusProvider>
+            <Stack screenOptions={{ headerShown: false }}>
             {/* Auth Group */}
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
 
@@ -41,8 +43,9 @@ export default function RootLayout() {
                 animation: 'slide_from_bottom',
               }}
             />
-          </Stack>
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            </Stack>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          </GameStatusProvider>
         </QueryProvider>
       </ThemeProvider>
     </SafeAreaProvider>

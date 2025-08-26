@@ -1,7 +1,7 @@
-// app/(game)/a/board.tsx
+// app/(game)/b/round/board.tsx
 import { Text, View } from "react-native";
-import { ChocolateGrid } from "../../components/ChocolateGrid";
-export default function BoardA() {
+import ChocolateGrid from "../../components/ChocolateGrid";
+export default function BoardB() {
   return (
     <View style={{ padding: 16 }}>
       <Text>Board: 1 → 13</Text>

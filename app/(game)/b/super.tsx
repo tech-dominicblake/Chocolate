@@ -1,6 +1,6 @@
 // app/(game)/b/super.tsx
 import { Text, View } from "react-native";
-import { ScreenTitle } from "../components/ScreenTitle";
+import ScreenTitle  from "../components/ScreenTitle";
 export default function SuperB() {
   return (
     <View style={{ padding: 16 }}>

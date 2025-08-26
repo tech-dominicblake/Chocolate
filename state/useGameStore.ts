@@ -18,6 +18,7 @@ interface GameState {
   level: number;
   currentTurn: PlayerTurn;
   consumedChocolates: number[];
+  selectedChocoIndex: number;
   
   // Stats
   tasksCompleted: number;
@@ -30,8 +31,10 @@ interface GameState {
   setStage: (stage: RelationshipStage) => void;
   setPlayerNames: (names: { her: string; him: string }) => void;
   setRoundLevel: (round: number, level: number) => void;
+  setCurrentTurn: (level: number) => void;
   switchTurn: () => void;
   consumeChocolate: (id: number) => void;
+  setSelectedChocoIndex: (index: number) => void;
   completeTask: () => void;
   failTask: () => void;
   updateRoundTime: (time: number) => void;
@@ -47,6 +50,7 @@ const initialState = {
   level: 1,
   currentTurn: 'HER' as PlayerTurn,
   consumedChocolates: [],
+  selectedChocoIndex: 0,
   tasksCompleted: 0,
   failsSuffered: 0,
   timePerRound: 0,
@@ -60,7 +64,16 @@ export const useGameStore = create<GameState>((set) => ({
   setStage: (stage) => set({ stage }),
   setPlayerNames: (names) => set({ playerNames: names }),
   
-  setRoundLevel: (round, level) => set({ round, level }),
+  setRoundLevel: (round, level) => {
+    console.log('setRoundLevel called with:', { round, level });
+    set({ round, level });
+  },
+  
+  setCurrentTurn: (level: number) => {
+    const newTurn = level % 2 === 1 ? 'HER' : 'HIM' as PlayerTurn;
+    console.log('setCurrentTurn called with level:', level, 'setting turn to:', newTurn);
+    set({ currentTurn: newTurn });
+  },
   
   switchTurn: () => set((state) => ({
     currentTurn: state.currentTurn === 'HER' ? 'HIM' : 'HER',
@@ -69,6 +82,8 @@ export const useGameStore = create<GameState>((set) => ({
   consumeChocolate: (id) => set((state) => ({
     consumedChocolates: [...state.consumedChocolates, id],
   })),
+  
+  setSelectedChocoIndex: (index) => set({ selectedChocoIndex: index }),
   
   completeTask: () => set((state) => ({
     tasksCompleted: state.tasksCompleted + 1,

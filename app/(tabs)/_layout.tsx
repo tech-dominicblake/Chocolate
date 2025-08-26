@@ -27,15 +27,6 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="play"
-        options={{
-          title: 'Play',
-          tabBarIcon: ({ color, size }) => (
-            <IconSymbol name="gamecontroller.fill" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="menu"
         options={{
           title: 'Menu',

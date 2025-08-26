@@ -1,21 +1,29 @@
 import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { tokens } from './tokens';
 
-// Color palette based on Figma design
+// Color palette based on login screenshot design - enhanced for Figma accuracy
 const palette = {
   primary: {
-    pink: '#FF1493',
-    blue: '#4169E1',
-    red: '#DC143C',
+    purple: '#8B5CF6', // Main purple for SIGN IN button - more vibrant
+    lightPurple: '#E9D5FF', // Light purple for other buttons - softer
+    darkPurple: '#6D28D9', // Dark purple text on light buttons - richer
   },
   neutral: {
     white: '#FFFFFF',
     black: '#000000',
-    gray50: '#F7F7FA',
-    gray100: '#E7E7ED',
-    gray200: '#D1D1DB',
-    gray800: '#1F1F1F',
-    gray900: '#0E0E10',
+    lightGrey: '#F5F5F5', // Exact background from Figma screenshot
+    grey: '#E0E0E0', // Exact border color from Figma screenshot
+    darkGrey: '#6B7280', // Darker grey for some text
+    inputBackground: '#E6E8EB',
+    darkInputBackground: '#33373D',
+    darkCardBackground: '#2D2F33',
+    darkMessageGrey: '#454952'
+  },
+  accent: {
+    yellow: '#FBBF24', // Logo background yellow - more vibrant
+    orange: '#FB923C', // Lips orange - richer
+    pink: '#F472B6', // Tongue pink - more saturated
+    brown: '#92400E', // Chocolate brown - deeper
   },
   status: {
     success: '#4CAF50',
@@ -29,25 +37,36 @@ export const lightTheme = {
   dark: false,
   colors: {
     ...DefaultTheme.colors,
-    // Base colors
-    background: palette.neutral.gray50,
-    text: palette.neutral.gray900,
-    border: palette.neutral.gray100,
-    
+    // Base colors from login screenshot
+    background: palette.neutral.lightGrey,
+    text: palette.neutral.black,
+    border: palette.neutral.grey,
+
     // UI Elements
-    primary: palette.primary.pink,
-    secondary: palette.primary.blue,
-    danger: palette.primary.red,
-    
+    primary: palette.primary.purple,
+    secondary: palette.primary.lightPurple,
+    primaryText: '#191919', // White text on purple buttons
+    secondaryText: palette.primary.darkPurple, // Dark purple text on light buttons
+
     // Cards & Containers
     card: palette.neutral.white,
-    cardBorder: palette.neutral.gray100,
-    
-    // Game specific
-    chocolateBox: palette.neutral.white,
-    chocolateBorder: palette.neutral.gray200,
-    prompt: palette.neutral.white,
-    promptBorder: palette.neutral.gray100,
+    cardBorder: palette.neutral.grey,
+    messageGrey: palette.neutral.white,
+
+    // Login specific colors
+    inputBackground: palette.neutral.inputBackground,
+    inputBorder: palette.neutral.grey,
+    inputText: '#191919', // Exact dark color from Figma selection colors
+    placeholderText: palette.neutral.grey,
+    linkText: palette.primary.purple,
+    grey: palette.neutral.grey,
+    cardBackground: palette.neutral.white,
+    // Logo colors
+    logoBackground: palette.accent.yellow,
+    logoLips: palette.accent.orange,
+    logoTongue: palette.accent.pink,
+    logoChocolate: palette.accent.brown,
+    logoBorder: palette.neutral.white,
 
     // Required by React Navigation
     notification: palette.status.error,
@@ -61,24 +80,35 @@ export const darkTheme = {
   colors: {
     ...DarkTheme.colors,
     // Base colors
-    background: palette.neutral.gray900,
+    background: '#27282A', // Updated dark theme background
     text: palette.neutral.white,
-    border: palette.neutral.gray800,
-    
+    border: palette.neutral.darkGrey,
+
     // UI Elements
-    primary: palette.primary.pink,
-    secondary: palette.primary.blue,
-    danger: palette.primary.red,
-    
+    primary: palette.primary.purple,
+    secondary: palette.primary.lightPurple,
+    primaryText: palette.neutral.white,
+    secondaryText: palette.primary.darkPurple,
+
     // Cards & Containers
-    card: palette.neutral.gray800,
-    cardBorder: palette.neutral.gray800,
-    
-    // Game specific
-    chocolateBox: palette.neutral.gray800,
-    chocolateBorder: palette.neutral.gray800,
-    prompt: palette.neutral.gray800,
-    promptBorder: palette.neutral.gray800,
+    card: palette.neutral.darkGrey,
+    cardBorder: palette.neutral.darkGrey,
+    messageGrey: palette.neutral.darkMessageGrey,
+
+    // Login specific colors
+    inputBackground: palette.neutral.darkInputBackground,
+    inputBorder: palette.neutral.darkGrey,
+    inputText: palette.neutral.white, // White text for dark theme
+    placeholderText: '#676F7A', // Custom placeholder color for dark theme
+    linkText: palette.primary.purple,
+    grey: palette.neutral.grey,
+    cardBackground: palette.neutral.darkCardBackground,
+    // Logo colors
+    logoBackground: palette.accent.yellow,
+    logoLips: palette.accent.orange,
+    logoTongue: palette.accent.pink,
+    logoChocolate: palette.accent.brown,
+    logoBorder: palette.neutral.darkGrey,
 
     // Required by React Navigation
     notification: palette.status.error,

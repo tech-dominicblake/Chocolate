@@ -6,9 +6,10 @@ interface ActionButtonProps {
     onPress: () => void;
     variant: 'primary' | 'secondary';
     backgroundImage?: any;
+    color?: string;
 }
 
-export default function ActionButton({ title, onPress, variant, backgroundImage }: ActionButtonProps) {
+export default function ActionButton({ color, title, onPress, variant, backgroundImage }: ActionButtonProps) {
     if (backgroundImage) {
         return (
             <TouchableOpacity
@@ -22,7 +23,7 @@ export default function ActionButton({ title, onPress, variant, backgroundImage 
                     imageStyle={styles.buttonImage}
                     resizeMode="stretch"
                 >
-                    <Text style={styles.buttonText}>{title}</Text>
+                    <Text style={[styles.buttonText, {color: `${color}`}]}>{title}</Text>
                 </ImageBackground>
             </TouchableOpacity>
         );
@@ -91,7 +92,6 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     buttonText: {
-        color: '#8B2756',
         fontSize: 18,
         fontWeight: '700',
         letterSpacing: 0.5,

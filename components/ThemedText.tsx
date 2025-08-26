@@ -32,7 +32,6 @@ export function ThemedText({
     />
   );
 }
-
 const styles = StyleSheet.create({
   default: {
     fontSize: 16,
@@ -58,3 +57,4 @@ const styles = StyleSheet.create({
     color: '#0a7ea4',
   },
 });
+
