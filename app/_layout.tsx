@@ -26,6 +26,9 @@ export default function RootLayout() {
         <QueryProvider>
           <GameStatusProvider>
             <Stack screenOptions={{ headerShown: false }}>
+            {/* Default redirect to sign-in */}
+            <Stack.Screen name="index" redirect />
+            
             {/* Auth Group */}
             <Stack.Screen name="(auth)" options={{ headerShown: false }} />
 
