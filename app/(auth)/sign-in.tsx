@@ -29,7 +29,6 @@ export default function SignInScreen() {
 
   const handleForgotPassword = () => {
     // Handle forgot password logic
-    console.log('Forgot password');
   };
 
   const handleCreateAccount = () => {
@@ -38,24 +37,20 @@ export default function SignInScreen() {
 
   const handleAccountBenefits = () => {
     // Handle account benefits logic
-    console.log('Account benefits');
   };
 
   const handleSignIn = () => {
     // Handle sign in logic and navigate to relationship page
-    console.log('Sign in:', { email, password });
-    router.push('/startPage');
+    router.push('/ageGate');
   };
 
   const handleGoogleSignIn = () => {
     // Handle Google sign in logic and navigate to relationship page
-    console.log('Google sign in');
     router.push('/userInfo');
   };
 
   const handleGuestPlay = () => {
     // Handle guest play logic and navigate to relationship page
-    console.log('Guest play');
     router.push('/ageGate');
   };
 

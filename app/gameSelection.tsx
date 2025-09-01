@@ -1,21 +1,26 @@
 import ActionButton from "@/components/prompts/ActionButton";
 import { IMAGES } from "@/constants";
+import { Mode } from "@/constants/Types";
 import { useAppThemeColor } from "@/hooks/useAppTheme";
 import { useThemeContext } from "@/providers/ThemeProvider";
+import { useGameStore } from "@/state/useGameStore";
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function GameSelectionPage() {
     const { isDark } = useThemeContext();
-    const [selectedGame, setSelectedGame] = useState<'experience' | 'mayhem'>('experience');
+    const [selectedGame, setSelectedGame] = useState<Mode>('A');
     const backgroundColor = useAppThemeColor('background');
+    const { setMode } = useGameStore();
 
     const handleUnleashDrama = () => {
         // Navigate to the selected game
-        if (selectedGame === 'experience') {
-            router.push('/(game)/a/prompt1');
+        if (selectedGame === 'A') {
+            setMode('A')
+            router.push('/(game)/a/promptA');
         } else {
+            setMode('B')
             router.push('/(game)/b/chocoStats');
         }
     };
@@ -48,21 +53,21 @@ export default function GameSelectionPage() {
                             <TouchableOpacity
                                 style={[
                                     styles.gameOption,
-                                    selectedGame === 'experience' && styles.selectedGame,
+                                    selectedGame === 'A' && styles.selectedGame,
                                     isDark && { backgroundColor: '#4E4FA6' }
                                 ]}
-                                onPress={() => setSelectedGame('experience')}
+                                onPress={() => setSelectedGame('A')}
                             >
                                 <View style={[
                                     styles.radioButton,
-                                    selectedGame === 'experience' && styles.selectedRadio,
+                                    selectedGame === 'A' && styles.selectedRadio,
                                     isDark && { borderColor: '#8383C6', backgroundColor: '#8383C6' }
                                 ]}>
-                                    {selectedGame === 'experience' && <View style={styles.radioDot} />}
+                                    {selectedGame === 'A' && <View style={styles.radioDot} />}
                                 </View>
                                 <Text style={[
                                     styles.gameText,
-                                    selectedGame === 'experience' && styles.selectedGameText,
+                                    selectedGame === 'A' && styles.selectedGameText,
                                     isDark && { color: '#E8EAF6' }
                                 ]}>
                                     hushh. Experience
@@ -73,21 +78,21 @@ export default function GameSelectionPage() {
                             <TouchableOpacity
                                 style={[
                                     styles.gameOption,
-                                    selectedGame === 'mayhem' && styles.selectedGame,
+                                    selectedGame === 'B' && styles.selectedGame,
                                     isDark && { backgroundColor: '#4E4FA6' }
                                 ]}
-                                onPress={() => setSelectedGame('mayhem')}
+                                onPress={() => setSelectedGame('B')}
                             >
                                 <View style={[
                                     styles.radioButton,
-                                    selectedGame === 'mayhem' && styles.selectedRadio,
+                                    selectedGame === 'B' && styles.selectedRadio,
                                     { borderColor: isDark ? '#8383C6' : '#E8EAF6' }
                                 ]}>
-                                    {selectedGame === 'mayhem' && <View style={styles.radioDot} />}
+                                    {selectedGame === 'B' && <View style={styles.radioDot} />}
                                 </View>
                                 <Text style={[
                                     styles.gameText,
-                                    selectedGame === 'mayhem' && styles.selectedGameText,
+                                    selectedGame === 'B' && styles.selectedGameText,
                                     isDark && { color: '#E8EAF6' }
                                 ]}>
                                     hushh. Mayhem

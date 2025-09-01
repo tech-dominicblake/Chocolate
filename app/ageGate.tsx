@@ -23,8 +23,8 @@ export default function AgeGate() {
 
   const handleProceed = () => {
     if (agreed) {
+      router.push('/startPage');
       // Navigate to the next screen
-      router.push('/(tabs)');
     }
   };
 
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#9C27B0',
   },
   checkmark: {
-    color: '#FFFFFF',
+    color: '#4A5568',
     fontSize: 16,
     fontWeight: 'bold',
   },

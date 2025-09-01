@@ -32,18 +32,15 @@ export default function ContactScreen() {
 
   const handleSendMessage = () => {
     // Handle send message logic
-    console.log('Send message:', { name, email, message });
     router.push('/(game)/play');
   };
 
   const handleWhatsApp = () => {
     // Handle WhatsApp contact
-    console.log('WhatsApp contact');
   };
 
   const handleTelegram = () => {
     // Handle Telegram contact
-    console.log('Telegram contact');
   };
 
   return (

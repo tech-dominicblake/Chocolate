@@ -1,6 +1,7 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
+import { useGameStore } from '@/state/useGameStore';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -8,9 +9,10 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput
 export default function UserInfo() {
     const [player1Name, setPlayer1Name] = useState('Alexa');
     const [player1Age, setPlayer1Age] = useState('25');
-    const [player2Name, setPlayer2Name] = useState('');
-    const [player2Age, setPlayer2Age] = useState('');
+    const [player2Name, setPlayer2Name] = useState('Alex');
+    const [player2Age, setPlayer2Age] = useState('32');
     const { isDark } = useThemeToggle();
+    const { setPlayerNames, setRoundLevel } = useGameStore();
 
     // Focus states for inputs
     const [focusedInput, setFocusedInput] = useState<string | null>(null);
@@ -19,9 +21,10 @@ export default function UserInfo() {
         // Validate inputs
         if (!player1Name.trim() || !player1Age.trim() || !player2Name.trim() || !player2Age.trim()) {
             // Show error or alert
-            console.log('Please fill in all fields');
             return;
         }
+
+        setPlayerNames({ her: player1Name, him: player2Name });
 
         // Navigate to next step
         router.push('/gameSelection');

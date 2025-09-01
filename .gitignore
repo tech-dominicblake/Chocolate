@@ -36,4 +36,8 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# APK files (too large for git)
+*.apk
+chocolate-*.apk
+
 app-example

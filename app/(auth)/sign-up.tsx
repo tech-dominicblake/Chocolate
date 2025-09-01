@@ -33,7 +33,6 @@ export default function SignUpScreen() {
 
   const handleGoogleSignUp = () => {
     // Handle Google sign up logic
-    console.log('Google sign up');
   };
 
   const handleBackToSignIn = () => {

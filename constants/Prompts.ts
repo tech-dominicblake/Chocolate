@@ -10,7 +10,7 @@ export default FailConsequencesPrompts;
 
 export const PostFailPrompts = {
     1: {
-        message1: "Oof. You took the Fail like a champ 😈",
+        message1: "Oof. You took  the Fail like a champ 😈",
         message2: "Now let’s see if your partner’s got more guts than you 💅",
     },
     2: {
@@ -64,3 +64,15 @@ export const GamePrompts = {
     5: "You’re a mess, but we love it. 💅",
     6: "Now let’s see if your partner can handle the heat 🔥",
 }
+
+
+const tempMessage = {
+    message1: "You’re a mess, but we love it. 💅",
+    message2: "Now let’s see if your partner can handle the heat 🔥",
+}
+
+export const TempMessage = {
+    success: TaskCompletePrompts,
+    fail: FailConsequencesPrompts,
+    game: GamePrompts,
+    postFail: PostFailPrompts,}

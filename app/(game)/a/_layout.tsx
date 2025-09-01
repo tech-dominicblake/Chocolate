@@ -1,10 +1,9 @@
 import { IMAGES } from '@/constants';
 import { Ionicons } from '@expo/vector-icons';
 import { router, Stack } from 'expo-router';
-import React from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useThemeToggle } from '../../hooks/useAppTheme';
-import { useGameStore } from '../../state/useGameStore';
+import { useThemeToggle } from '../../../hooks/useAppTheme';
+import { useGameStore } from '../../../state/useGameStore';
 
 
 // Header component for game pages
@@ -12,19 +11,15 @@ const GameHeader = () => {
     const { round, level, currentTurn, playerNames } = useGameStore();
     const { isDark } = useThemeToggle();
 
-    // Log when store values change
-    React.useEffect(() => {
-        console.log('GameHeader store values changed:', { round, level, currentTurn, playerNames });
-    }, [round, level, currentTurn, playerNames]);
+    const isRoundThree = round === 3;
+    const herAvatar = IMAGES.IMAGES.image12;
+    const himAvatar = IMAGES.IMAGES.image7;
+    const userName = playerNames?.[currentTurn] || '';
 
     // Mock user data - you can replace this with actual user data from your auth system
-    const user = {
-        name: playerNames?.her || 'Alexa',
-        avatar: IMAGES.IMAGES.image7, // Using a chocolate image as placeholder
-    };
 
     return (
-        <View style={[styles.header, { 
+        <View style={[styles.header, {
             backgroundColor: isDark ? '#27282A' : '#FFFFFF', // Dark theme: #27282A, Light theme: original white
             borderBottomColor: isDark ? '#4B5563' : '#E5E5E5' // Dark theme: #4B5563, Light theme: original #E5E5E5
         }]}>
@@ -33,16 +28,30 @@ const GameHeader = () => {
                 {/* Game status */}
                 <View style={styles.gameStatus}>
                     <Text style={[styles.roundText, { color: isDark ? '#9CA3AF' : '#9BA1A6' }]}>ROUND{round}</Text>
-                    <Text style={[styles.separator, { color: isDark ? '#9CA3AF' : '#9BA1A6' }]}> • </Text>
-                    <Text style={[styles.levelText, { color: isDark ? '#FF6B9D' : '#FF6B9D' }]}>LVL {level}</Text>
+                    {round < 3 && <Text style={[styles.separator, { color: isDark ? '#9CA3AF' : '#9BA1A6' }]}> • </Text>}
+                    {round < 3 && <Text style={[styles.levelText, { color: isDark ? '#FF6B9D' : '#FF6B9D' }]}>LVL {Math.ceil(level / 2)}</Text>}
 
                 </View>
 
                 {/* User info */}
-                <View style={styles.userInfo}>
-                    <Image source={user.avatar} style={styles.avatar} />
-                    <Text style={[styles.userName, { color: isDark ? '#FFFFFF' : '#000000' }]}>{user.name}</Text>
-                </View>
+                {isRoundThree ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        {/* <View style={styles.dualAvatarWrap}> */}
+                        <Image source={herAvatar} style={[styles.avatar, styles.avatar]} />
+                        <Image source={himAvatar} style={[styles.avatar, styles.avatar]} />
+                        {/* </View> */}
+                        <Text style={[styles.userName, { color: isDark ? '#FFFFFF' : '#000000' }]}>
+                            {(playerNames?.her || 'Her') + ' & ' + (playerNames?.him || 'Him')}
+                        </Text>
+                    </View>
+                ) : (
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Image source={currentTurn === 'her' ? herAvatar : himAvatar} style={styles.avatar} />
+                        <Text style={[styles.userName, { color: isDark ? '#FFFFFF' : '#000000' }]}>
+                            {playerNames?.[currentTurn]}
+                        </Text>
+                    </View>
+                )}
             </View>
 
             {/* Right side - Action icons */}
@@ -66,7 +75,7 @@ const GameHeader = () => {
 // Main layout component
 export default function GameLayout() {
     const { isDark } = useThemeToggle();
-    
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: isDark ? '#27282A' : '#151718' }}>
             <Stack
@@ -76,18 +85,8 @@ export default function GameLayout() {
                     header: () => <GameHeader />
                 }}
             >
-                <Stack.Screen name="prompt1" options={{
+                <Stack.Screen name="promptA" options={{
                     headerShown: true,
-                }} />
-                <Stack.Screen name="play" options={{
-                    headerShown: false,
-                }} />
-                <Stack.Screen name="stats" options={{
-                    headerShown: false,
-                }} />
-                {/* b directory screens - no header */}
-                <Stack.Screen name="b" options={{
-                    headerShown: false,
                 }} />
             </Stack>
         </SafeAreaView>

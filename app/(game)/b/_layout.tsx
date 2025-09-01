@@ -1,7 +1,8 @@
+import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { router, Stack, usePathname } from 'expo-router';
-import React, { useState } from 'react';
+import React from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useGameStore } from '../../../state/useGameStore';
 
@@ -13,28 +14,24 @@ const chocolateQueue = [
     { id: 4, image: require('../../../assets/images/choco4.png'), color: '#00BCD4' },
     { id: 5, image: require('../../../assets/images/choco5.png'), color: '#4CAF50' },
     { id: 6, image: require('../../../assets/images/choco6.png'), color: '#FF9800' },
+    { id: 0, image: '', color: '#FF9800' },
     { id: 7, image: require('../../../assets/images/choco7.png'), color: '#9C27B0' },
     { id: 8, image: require('../../../assets/images/choco8.png'), color: '#2196F3' },
     { id: 9, image: require('../../../assets/images/choco9.png'), color: '#795548' },
     { id: 10, image: require('../../../assets/images/choco10.png'), color: '#607D8B' },
     { id: 11, image: require('../../../assets/images/choco11.png'), color: '#E91E63' },
     { id: 12, image: require('../../../assets/images/choco12.png'), color: '#3F51B5' },
+    { id: 0, image: '', color: '#3F51B5' },
     { id: 13, image: require('../../../assets/images/choco13.png'), color: '#FF5722' },
 ];
 
 export default function BLayout() {
-    const { round, level, currentTurn, playerNames, selectedChocoIndex } = useGameStore();
-    const [selectedChoco, setSelectedChoco] = useState(chocolateQueue[0]);
+    const { round, level, currentTurn, playerNames, selectedChocoIndex, consumedChocolates } = useGameStore();
     const pathname = usePathname();
     const { isDark } = useThemeToggle();
 
     // Don't show header for chocoStats page
     const shouldShowHeader = !pathname.includes('chocoStats');
-
-    const handleChocoSelect = (choco: typeof chocolateQueue[0]) => {
-        setSelectedChoco(choco);
-    };
-
     // Determine player turn text
     const getPlayerTurnText = () => {
         if (level % 2 === 1) {
@@ -54,7 +51,7 @@ export default function BLayout() {
                         <View style={styles.leftSection}>
                             {/* Game status */}
                             <View style={styles.gameStatus}>
-                                <Text style={styles.roundText}>ROUND {round}</Text>
+                                <Text style={styles.roundText}>ROUND {level}</Text>
                                 <Text style={styles.separator}> • </Text>
                                 <Text style={styles.levelText}>{getPlayerTurnText()}</Text>
                                 {/* Pink underline */}
@@ -62,7 +59,9 @@ export default function BLayout() {
 
                             {/* User info */}
                             <View style={styles.userInfo}>
-                                <Text style={styles.avatar}>👧</Text>
+                                {currentTurn === "her" ?
+                                    <Image source={IMAGES.IMAGES.image12} style={styles.avatar} /> : <Image source={IMAGES.IMAGES.image7} style={styles.avatar} />
+                                }
                                 <Text style={styles.userName}>{playerNames?.her || 'Alexa'}</Text>
                             </View>
                         </View>
@@ -82,23 +81,23 @@ export default function BLayout() {
                             </TouchableOpacity>
                         </View>
                     </View>
-
+  
                     {/* Chocolate Queue */}
                     <View style={[styles.chocolateQueue, { backgroundColor: isDark ? '#2D2F33' : '#FFFFFF' }]}>
                         {/* Full-width selection line divided into segments */}
                         <View style={styles.selectionLineContainer}>
-                                                    {chocolateQueue.map((choco, index) => (
-                            <React.Fragment key={choco.id}>
-                                <View
-                                    style={[
-                                        styles.selectionLineSegment,
-                                        index === selectedChocoIndex && styles.selectedSegment
-                                    ]}
-                                >
-                                    <View style={ index === selectedChocoIndex && styles.bubbleTail} />
-                                </View>
-                            </React.Fragment>
-                        ))}
+                            {chocolateQueue.map((choco, index) => (
+                                <React.Fragment key={index}>
+                                    <View
+                                        style={[
+                                            styles.selectionLineSegment,
+                                            choco.id === selectedChocoIndex && styles.selectedSegment
+                                        ]}
+                                    >
+                                        <View style={choco.id === selectedChocoIndex && styles.bubbleTail} />
+                                    </View>
+                                </React.Fragment>
+                            ))}
                         </View>
 
                         <ScrollView
@@ -107,20 +106,26 @@ export default function BLayout() {
                             contentContainerStyle={styles.queueContainer}
                         >
                             {chocolateQueue.map((choco, index) => (
-                                <View key={choco.id} style={styles.chocoItemContainer}>
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.chocoItem,
-                                        ]}
-                                        onPress={() => handleChocoSelect(choco)}
-                                        activeOpacity={0.7}
+                                <View key={index} style={styles.chocoItemContainer}>
+                                    <View
+                                        style={styles.chocoItem}
                                     >
-                                        <Image
-                                            source={choco.image}
-                                            style={styles.chocoImage}
-                                            resizeMode="contain"
-                                        />
-                                    </TouchableOpacity>
+                                        {(choco.id !== 0 )&&(!consumedChocolates.includes(choco.id)) ? (
+                                            <Image
+                                                source={choco.image}
+                                                style={styles.chocoImage}
+                                                resizeMode="contain"
+                                            />
+                                        ) : choco.id !== 0 && consumedChocolates.includes(choco.id) ? (
+                                            <Image
+                                                source={IMAGES.IMAGES.image14}
+                                                style={styles.consumedChocoImage}
+                                                resizeMode="contain"
+                                            />
+                                        ) : (
+                                            <Text style={styles.separator}> • </Text>
+                                        )}
+                                    </View>
                                 </View>
                             ))}
                         </ScrollView>
@@ -140,10 +145,6 @@ export default function BLayout() {
                         headerShown: false,
                     }} />
                     <Stack.Screen name="promptB" />
-                    <Stack.Screen name="round/index" />
-                    <Stack.Screen name="round/board" />
-                    <Stack.Screen name="stats" />
-                    <Stack.Screen name="super" />
                 </Stack>
             </View>
         </SafeAreaView>
@@ -274,6 +275,12 @@ const styles = StyleSheet.create({
         borderRightColor: 'transparent',
         position: 'absolute',
         top: 0,
-        transform: [{ translateX: '50%' }, { translateY: '0%' }],
+        // transform: [{ translateX: '50%' }, { translateY: '0%' }],
+        left: '50%',
+        marginLeft: -8,
+    },
+    consumedChocoImage: {
+        width: 24,
+        height: 24,
     }
 });

@@ -1,10 +1,9 @@
 import { IMAGES } from '@/constants';
+import { useAppThemeColor } from '@/hooks/useAppTheme';
 import { router } from 'expo-router';
-import React from 'react';
+import { ChevronLeft } from 'lucide-react-native';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useGameStore } from '../../../state/useGameStore';
-import { useAppThemeColor } from '@/hooks/useAppTheme';
-
 interface ChocoStatsProps {
     route?: {
         params?: {
@@ -15,7 +14,7 @@ interface ChocoStatsProps {
 
 export default function ChocoStats({ route }: ChocoStatsProps) {
     const currentLevel = route?.params?.currentLevel || 1;
-    const { setSelectedChocoIndex } = useGameStore();
+    const { setSelectedChocoIndex, consumedChocolates, currentTurn, level, round } = useGameStore();
 
     const challenges = [
         {
@@ -51,19 +50,31 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
     ];
 
     const handleChocolatePress = (challengeNumber: number) => {
-        console.log(`Chocolate challenge ${challengeNumber} pressed, navigating to promptB`);
-        
+
         // Save the selected chocolate index to global state
         // Note: challengeNumber is 1-13, but array index is 0-12, so subtract 1
-        const chocolateIndex = challengeNumber - 1;
-        setSelectedChocoIndex(chocolateIndex);
-        
+        setSelectedChocoIndex(challengeNumber);
+
         // Navigate to promptB
         router.push('/(game)/b/promptB');
     };
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: useAppThemeColor('background') }]}>
+            {/* Back Button */}
+            <View style={styles.backButtonContainer}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => router.back()}
+                    activeOpacity={0.7}
+                >
+                    <View style={styles.backButtonContent}>
+                        <ChevronLeft color={'#4A5568'}/>
+                        <Text style={styles.backButtonText}>BACK</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -100,26 +111,49 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                         style={styles.player1Item}
                                         onPress={() => handleChocolatePress(challenge.number)}
                                         activeOpacity={0.7}
+                                        disabled={consumedChocolates.includes(challenge.number) || currentTurn === 'him'}
                                     >
-                                        <Image
+                                        {consumedChocolates.includes(challenge.number) ? (
+                                            <Image
+                                                source={IMAGES.IMAGES.grid}
+                                                style={styles.chocolateItem}
+                                                resizeMode="contain"
+                                            />
+                                        ) : (
+                                            <Image
+                                                source={challenge.player1Item}
+                                                style={styles.chocolateItem}
+                                                resizeMode="contain"
+                                            />
+                                        )}
+                                        {/* <Image
                                             source={challenge.player1Item}
                                             style={styles.chocolateItem}
                                             resizeMode="contain"
-                                        />
+                                        /> */}
                                     </TouchableOpacity>
                                     <View style={styles.challengeNumber}>
                                         <Text style={styles.challengeNumberText}>N°{challenge.number}</Text>
                                     </View>
                                     <TouchableOpacity
-                                        style={styles.player2Item}
-                                        onPress={() => handleChocolatePress(challenge.number+6)}
+                                        style={styles.player1Item}
+                                        onPress={() => handleChocolatePress(challenge.number + 6)}
                                         activeOpacity={0.7}
+                                        disabled={consumedChocolates.includes(challenge.number+6) || currentTurn === 'her'}
                                     >
-                                        <Image
-                                            source={challenge.player2Item}
-                                            style={styles.chocolateItem}
-                                            resizeMode="contain"
-                                        />
+                                        {consumedChocolates.includes(challenge.number + 6) ? (
+                                            <Image
+                                                source={IMAGES.IMAGES.grid}
+                                                style={styles.chocolateItem}
+                                                resizeMode="contain"
+                                            />
+                                        ) : (
+                                            <Image
+                                                source={challenge.player2Item}
+                                                style={styles.chocolateItem}
+                                                resizeMode="contain"
+                                            />
+                                        )}
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -140,6 +174,7 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                             style={styles.supergameItem}
                             onPress={() => handleChocolatePress(13)}
                             activeOpacity={0.7}
+                            disabled={round < 3}
                         >
                             <Image
                                 source={require('../../../assets/images/choco13.png')} // Red heart with gold speckles
@@ -292,7 +327,7 @@ const styles = StyleSheet.create({
     },
     supergameLineContainer: {
         paddingVertical: 12,
-        paddingHorizontal:33,
+        paddingHorizontal: 33,
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
@@ -302,5 +337,30 @@ const styles = StyleSheet.create({
     supergameChocolate: {
         width: 96,
         height: 96,
+    },
+    backButtonContainer: {
+        paddingTop: 32,
+        zIndex: 10,
+    },
+    backButton: {
+        top: 60,
+        left: 20,
+        zIndex: 10,
+        backgroundColor: 'transparent',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+    },
+    backButtonContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+    backButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#4A5568',
+        fontFamily: 'Inter',
+        padding: 0,
+        margin: 0,
     },
 });

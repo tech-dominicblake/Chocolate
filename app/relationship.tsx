@@ -12,6 +12,7 @@ import {
     Text,
     View
 } from 'react-native';
+import { useGameStore } from '@/state/useGameStore';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -59,6 +60,7 @@ export default function RelationshipPage() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const scrollViewRef = useRef<ScrollView>(null);
     const { isDark } = useThemeToggle()
+    const { setStage } = useGameStore();
 
     const handleScroll = (event: any) => {
         const contentOffset = event.nativeEvent.contentOffset.x;
@@ -68,7 +70,8 @@ export default function RelationshipPage() {
 
     const handleContinue = () => {
         // Navigate to next screen or close
-        router.push('/gameSelection');
+        setStage(relationshipStages[currentIndex].id);
+        router.push('/userInfo');
     };
 
     const renderStageCard = (stage: RelationshipStage) => (

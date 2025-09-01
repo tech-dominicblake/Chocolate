@@ -16,14 +16,12 @@ export default function EndPage() {
 
     const handleBringChocolate = () => {
         // // Handle bring chocolate action
-        // console.log('Bring chocolate pressed');
         // // Navigate to next step or game
         router.push('/congrats');
     };
 
     const handleIBail = () => {
         // // Handle bail action
-        // console.log('I bail pressed');
         // // Navigate back or to menu
         router.push('/congratsChoco');
     };

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ImageBackground, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 interface ActionButtonProps {
@@ -7,15 +6,34 @@ interface ActionButtonProps {
     variant: 'primary' | 'secondary';
     backgroundImage?: any;
     color?: string;
+    loading?: boolean;
+    disabled?: boolean;
 }
 
-export default function ActionButton({ color, title, onPress, variant, backgroundImage }: ActionButtonProps) {
+export default function ActionButton({ 
+    color, 
+    title, 
+    onPress, 
+    variant, 
+    backgroundImage, 
+    loading = false, 
+    disabled = false 
+}: ActionButtonProps) {
+    const handlePress = () => {
+        if (loading || disabled) return;
+        onPress();
+    };
+
     if (backgroundImage) {
         return (
             <TouchableOpacity
-                onPress={onPress}
-                activeOpacity={0.8}
-                style={styles.buttonContainer}
+                onPress={handlePress}
+                activeOpacity={loading || disabled ? 1 : 0.8}
+                style={[
+                    styles.buttonContainer,
+                    (loading || disabled) && styles.disabledButton
+                ]}
+                disabled={loading || disabled}
             >
                 <ImageBackground
                     source={backgroundImage}
@@ -23,7 +41,9 @@ export default function ActionButton({ color, title, onPress, variant, backgroun
                     imageStyle={styles.buttonImage}
                     resizeMode="stretch"
                 >
-                    <Text style={[styles.buttonText, {color: `${color}`}]}>{title}</Text>
+                    <Text style={[styles.buttonText, {color: `${color}`}]}>
+                        {title}
+                    </Text>
                 </ImageBackground>
             </TouchableOpacity>
         );
@@ -31,9 +51,14 @@ export default function ActionButton({ color, title, onPress, variant, backgroun
 
     return (
         <TouchableOpacity
-            style={[styles.button, variant === 'primary' ? styles.primaryButton : styles.secondaryButton]}
-            onPress={onPress}
-            activeOpacity={0.8}
+            style={[
+                styles.button, 
+                variant === 'primary' ? styles.primaryButton : styles.secondaryButton,
+                (loading || disabled) && styles.disabledButton
+            ]}
+            onPress={handlePress}
+            activeOpacity={loading || disabled ? 1 : 0.8}
+            disabled={loading || disabled}
         >
             <Text style={styles.buttonText}>{title}</Text>
         </TouchableOpacity>
@@ -95,5 +120,9 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '700',
         letterSpacing: 0.5,
+    },
+    disabledButton: {
+        opacity: 0.7,
+        pointerEvents: 'none',
     },
 });

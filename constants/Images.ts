@@ -12,6 +12,7 @@ const IMAGES = {
     image11: require('../assets/images/image11.png'),
     image12: require('../assets/images/image12.png'),
     image13: require('../assets/images/image13.png'),
+    image14: require('../assets/images/image14.png'),
     choco1: require('../assets/images/choco1.png'),
     choco2: require('../assets/images/choco2.png'),
     choco3: require('../assets/images/choco3.png'),
@@ -31,6 +32,7 @@ const IMAGES = {
     btnBg1: require('../assets/images/btn-bg1.png'),
     btnBg2: require('../assets/images/btn-bg2.png'),
     btnBg3: require('../assets/images/btn-bg3.png'),
+    grid: require('../assets/images/01.png'),
 }
 
 export default {

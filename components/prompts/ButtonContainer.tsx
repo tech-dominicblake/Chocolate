@@ -1,129 +1,95 @@
-import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { useThemeToggle } from '@/hooks/useAppTheme';
+import { useGameStore } from '@/state/useGameStore';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ActionButton from './ActionButton';
 
 interface ButtonContainerProps {
-    gameStage: number;
     onStageChange: (stage: number) => void;
-    onPlayerChoice?: (choice: string) => void;
-    // New callback for player choices
-    userType?: 'her' | 'him';
-    isDark?: boolean; // New prop for dark theme
+    onPlayerChoice?: (choice: string, buttonType: 'success' | 'fail') => void;
 }
 
-export default function ButtonContainer({   gameStage, onStageChange, onPlayerChoice, userType, isDark }: ButtonContainerProps) {
-    const [currentUserType, setCurrentUserType] = useState(userType);
+export default function ButtonContainer({ onStageChange, onPlayerChoice }: ButtonContainerProps) {
+    const { round, currentTurn, consumeChocolate, consumedChocolates } = useGameStore();
+    const { isDark } = useThemeToggle();
     
-    const handleLetsGetMessy = () => {
-        // Show the button text as a player choice
-        onPlayerChoice?.("LET'S GET MESSY");
+    // Loading states for buttons
+    const [isSuccessLoading, setIsSuccessLoading] = useState(false);
+    const [isFailLoading, setIsFailLoading] = useState(false);
+
+    const handleLetsGetMessy = async () => {
+        if (isSuccessLoading) return; // Prevent multiple clicks
         
-        // Show success message for 2 seconds, then go to stats
-        onStageChange(3); // Show success message
-        
-        // Wait 2 seconds then navigate to stats
-        setTimeout(() => {
-            router.push('/(game)/stats');
-        }, 2000);
+        setIsSuccessLoading(true);
+        try {
+            // Show the button text as a player choice with success type
+            onPlayerChoice?.("LET'S GET MESSY", 'success');
+            // Navigation will be handled by PromptA page after delay
+        } catch (error) {
+            console.error('Error in success action:', error);
+        } finally {
+            // Keep loading state until navigation happens (2 seconds delay)
+            setTimeout(() => setIsSuccessLoading(false), 2000);
+        }
     };
 
-    const handleNahIBail = () => {
-        // Show the button text as a player choice
-        onPlayerChoice?.("NAH, I BAIL");
+    const handleNahIBail = async () => {
+        if (isFailLoading) return; // Prevent multiple clicks
         
-        // Go to stage 2 (warning and new rule)
-        console.log('NAH, I BAIL pressed');
-        onStageChange(2);
-    };
+        setIsFailLoading(true);
+        try {
+            // Show the button text as a player choice with fail type
+            onPlayerChoice?.("NAH, I BAIL", 'fail');
 
-    const handleContinue = () => {
-        // Show the button text as a player choice
-        onPlayerChoice?.("CONTINUE");
-        
-        // Show success message for 2 seconds, then go to stats
-        console.log('CONTINUE pressed');
-        onStageChange(3); // Show success message
-        
-        // Wait 2 seconds then navigate to stats
-        setTimeout(() => {
-            router.push('/(game)/stats');
-        }, 2000);
-    };
-
-    const handleICantHang = () => {
-        // Show the button text as a player choice
-        onPlayerChoice?.("I CAN'T HANG");
-        
-        // Go to final failure state (no buttons)
-        console.log('I CAN\'T HANG pressed');
-        onStageChange(4);
-    };
-
-    const renderButtons = () => {
-        switch (gameStage) {
-            case 1: // Initial stage
-                return (
-                    <>
-                        <ActionButton 
-                            title="LET'S GET MESSY" 
-                            onPress={handleLetsGetMessy}
-                            variant="primary"
-                            backgroundImage={
-                                currentUserType === 'him'  
-                                    ? require('@/assets/images/buttonBg3.png')  // Different background for him
-                                    : require('@/assets/images/btn-bg1.png')  // Default background for her
-                            }
-                        />
-                        <ActionButton 
-                            title="NAH, I BAIL" 
-                            onPress={handleNahIBail}
-                            variant="secondary"
-                            backgroundImage={require('@/assets/images/btn-bg2.png')}
-                        />
-                    </>
-                );
-            
-            case 2: // After "NAH, I BAIL" press
-                return (
-                    <>
-                        <ActionButton 
-                            title="CONTINUE" 
-                            onPress={handleContinue}
-                            variant="primary"
-                            backgroundImage={require('@/assets/images/btn-bg1.png')}
-                        />
-                        <ActionButton 
-                            title="I CAN'T HANG" 
-                            onPress={handleICantHang}
-                            variant="secondary"
-                            backgroundImage={require('@/assets/images/btn-bg2.png')}
-                        />
-                    </>
-                );
-            
-            case 3: // After "CONTINUE" or "LET'S GET MESSY" - no buttons shown
-                return null;
-            
-            case 4: // After "I CAN'T HANG" press - no buttons shown
-                return null;
-            
-            default:
-                return null;
+            // Go to stage 2 (warning and new rule)
+            onStageChange(2);
+        } catch (error) {
+            console.error('Error in fail action:', error);
+        } finally {
+            // Keep loading state for a bit to show feedback
+            setTimeout(() => setIsFailLoading(false), 1500);
         }
     };
 
     return (
         <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : 'transparent' }]}>
-            {renderButtons()}
+            <View style={styles.buttonContainer}>
+                <ActionButton
+                    title="LET'S GET MESSY"
+                    onPress={handleLetsGetMessy}
+                    variant="primary"
+                    color= {round === 3 ? '#FFFFFF' : currentTurn === 'him' ? '#33358F' : '#8B2756'}
+                    backgroundImage={
+                        round === 3 ? require('@/assets/images/buttonBg4.png') :
+                        currentTurn === 'him'
+                            ? require('@/assets/images/buttonBg3.png')  // Different background for him
+                            : require('@/assets/images/btn-bg1.png')  // Default background for her
+                    }
+                    loading={isSuccessLoading}
+                    disabled={isSuccessLoading || isFailLoading}
+                />
+                <ActionButton
+                    title="NAH, I BAIL"
+                    onPress={handleNahIBail}
+                    variant="secondary"
+                    color= '#7A1818'
+                    backgroundImage={require('@/assets/images/btn-bg2.png')}
+                    loading={isFailLoading}
+                    disabled={isSuccessLoading || isFailLoading}
+                />
+            </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        paddingBottom: 20,
         paddingTop: 10,
         paddingHorizontal: 20,
+    },
+    buttonContainer: {
+        marginTop: "auto",
+        gap: 10,
+        paddingBottom: 48,
     },
 });

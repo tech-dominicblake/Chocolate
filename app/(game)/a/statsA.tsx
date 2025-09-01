@@ -1,10 +1,11 @@
+import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
+import { useThemeToggle } from '@/hooks/useAppTheme';
+import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import ActionButton from '../../components/prompts/ActionButton';
-import { useThemeToggle } from '../../hooks/useAppTheme';
-import { useGameStore } from '../../state/useGameStore';
 
 interface GameStats {
     chocolatesConsumed: { player1: string; player2: string };
@@ -14,7 +15,7 @@ interface GameStats {
     avgTimePerRound: { player1: string; player2: string };
 }
 
-interface StatsScreenProps {
+interface StatsScreenProps {                                                                                                                                                            
     route?: {
         params?: {
             gameStats?: GameStats;
@@ -25,7 +26,7 @@ interface StatsScreenProps {
 }
 
 export default function StatsScreen({ route }: StatsScreenProps) {
-    const { setRoundLevel, setCurrentTurn } = useGameStore();
+    const { setRoundLevel, setCurrentTurn, round, currentTurn, tasksCompleted, consumedChocolates, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
     const { isDark } = useThemeToggle();
 
     // Default stats or use passed stats
@@ -39,39 +40,9 @@ export default function StatsScreen({ route }: StatsScreenProps) {
 
     const gameStats = route?.params?.gameStats || defaultStats;
     const gameResult = route?.params?.gameResult || 'success';
-    const currentLevel = route?.params?.currentLevel || 1;
 
     const handleContinue = () => {
-        // Calculate next level and round
-        const nextLevel = currentLevel + 1;
-        let nextRound: number;
-
-        if (nextLevel <= 6) {
-            nextRound = 1;
-        } else if (nextLevel <= 12) {
-            nextRound = 2;
-        } else {
-            nextRound = 3;
-        }
-
-        console.log(`Setting game state for next level: Round ${nextRound}, Level ${nextLevel}`);
-
-        // Update the game store state for the next level
-        setRoundLevel(nextRound, nextLevel);
-
-        // Set the current player turn (odd levels = HER, even levels = HIM)
-        setCurrentTurn(nextLevel);
-
-        console.log('Game state updated, navigating to next prompt...');
-
-        // Navigate to different prompt pages based on level
-
-        // Odd level - navigate to a/prompt2
-        router.push({
-            pathname: '/endPage',
-            params: { level: nextLevel }
-        });
-
+            router.push('/congrats');
     };
 
     return (
@@ -99,27 +70,27 @@ export default function StatsScreen({ route }: StatsScreenProps) {
                         <View style={[styles.statRow, {
                             borderBottomColor: isDark ? '#4B5563' : '#6D788F' // Dark theme: #4B5563, Light theme: original #6D788F
                         }]}>
-                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{gameStats.chocolatesConsumed.player1}</Text>
+                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{`${consumedChocolatesEachCount.him}/12`}</Text>
                             <Text style={[styles.statLabel, { color: isDark ? '#9CA3AF' : '#000000' }]}>CHOCOLATES CONSUMED</Text>
-                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{gameStats.chocolatesConsumed.player2}</Text>
+                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{`${consumedChocolatesEachCount.her}/12`}</Text>
                         </View>
 
                         {/* Row 2: Task Completed */}
                         <View style={[styles.statRow, {
                             borderBottomColor: isDark ? '#4B5563' : '#6D788F' // Dark theme: #4B5563, Light theme: original #6D788F
                         }]}>
-                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{gameStats.taskCompleted.player1}</Text>
+                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{tasksCompleted.him}</Text>
                             <Text style={[styles.statLabel, { color: isDark ? '#9CA3AF' : '#000000' }]}>TASK COMPLETED</Text>
-                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{gameStats.taskCompleted.player2}</Text>
+                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{tasksCompleted.her}</Text>
                         </View>
 
                         {/* Row 3: Fails Suffered */}
                         <View style={[styles.statRow, {
                             borderBottomColor: isDark ? '#4B5563' : '#6D788F' // Dark theme: #4B5563, Light theme: original #6D788F
                         }]}>
-                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{gameStats.failsSuffered.player1}</Text>
+                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{failsSuffered.him}</Text>
                             <Text style={[styles.statLabel, { color: isDark ? '#9CA3AF' : '#000000' }]}>FAILS SUFFERED</Text>
-                            <Text style={[styles.rightValue, { color: isDark ? '#9CA3AF' : '#EC4899' }]}>{gameStats.failsSuffered.player2}</Text>
+                            <Text style={[styles.rightValue, { color: isDark ? '#9CA3AF' : '#EC4899' }]}>{failsSuffered.her}</Text>
                         </View>
 
                         {/* Row 4: Super Game Slayed */}
@@ -148,8 +119,8 @@ export default function StatsScreen({ route }: StatsScreenProps) {
                         title="CONTINUE"
                         onPress={handleContinue}
                         variant="primary"
-                        backgroundImage={require('../../assets/images/btn-bg1.png')}
-                        color='#8B2756'
+                        backgroundImage={currentTurn === 'her' ? require('@/assets/images/btn-bg1.png') : require('@/assets/images/buttonBg3.png')}
+                        color={currentTurn === 'her' ? '#8B2756' : '#33358F'}
                     />
                 </View>
             </ScrollView>
