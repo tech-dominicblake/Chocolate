@@ -4,7 +4,6 @@ import { useThemeToggle } from '@/hooks/useAppTheme';
 import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface GameStats {
@@ -28,6 +27,13 @@ interface StatsScreenProps {
 export default function StatsScreen({ route }: StatsScreenProps) {
     const { setRoundLevel, setCurrentTurn, mode, currentTurn, tasksCompleted, consumedChocolates, level, failsSuffered } = useGameStore();
     const { isDark } = useThemeToggle();
+
+    // Function to calculate total completed tasks separated by sex
+    const getTotalCompletedTasks = (player: 'her' | 'him') => {
+        return tasksCompleted[player]
+            .map(round => round.completedLevel.length)
+            .reduce((sum, count) => sum + count, 0);
+    };
 
     // Default stats or use passed stats
     const defaultStats: GameStats = {
@@ -79,9 +85,9 @@ export default function StatsScreen({ route }: StatsScreenProps) {
                         <View style={[styles.statRow, {
                             borderBottomColor: isDark ? '#4B5563' : '#6D788F' // Dark theme: #4B5563, Light theme: original #6D788F
                         }]}>
-                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{tasksCompleted.him}</Text>
+                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{getTotalCompletedTasks('him')}</Text>
                             <Text style={[styles.statLabel, { color: isDark ? '#9CA3AF' : '#000000' }]}>TASK COMPLETED</Text>
-                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{tasksCompleted.her}</Text>
+                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{getTotalCompletedTasks('her')}</Text>
                         </View>
 
                         {/* Row 3: Fails Suffered */}

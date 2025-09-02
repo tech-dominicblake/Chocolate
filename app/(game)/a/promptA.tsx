@@ -176,7 +176,19 @@ export default function Prompt() {
     // Render messages from the queue using MessageItem component
     const renderMessages = () => {
         return queue.map((message, index) => {
-            // Special handling for prompt messages (show title + body)r
+            // Special handling for separator messages
+            if (message.kind === 'separator') {
+                return (
+                    <MessageItem
+                        key={message.id || index}
+                        text={message.body}
+                        isDark={isDark}
+                        kind="separator"
+                    />
+                );
+            }
+
+            // Special handling for prompt messages (show title + body)
             if (message.kind === 'prompt' && message.title) {
                 return (
                     <View key={message.id || index} style={styles.promptContainer}>

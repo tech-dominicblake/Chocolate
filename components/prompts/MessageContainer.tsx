@@ -15,20 +15,24 @@ export default function MessageContainer({ gameStage, playerChoice, userType, is
             case 1: // Initial stage - show first rule
                 return (
                     <>
-                        <MessageItem text="Round 1" isDark={isDark} />
-                        <MessageItem text="Level 2 - for HER" isDark={isDark} />
-                        <MessageItem text="Too Hot to Handle 🔥💋" isDark={isDark} />
+                        <MessageItem text="Round 1" isDark={isDark} kind="info" />
+                        <MessageItem text="Level 2 - for HER" isDark={isDark} kind="info" />
+                        <MessageItem text="Too Hot to Handle 🔥💋" isDark={isDark} kind="prompt" />
                         <MessageItem 
                             text="Slowly and seductively lick the chocolate piece..."
                             // textStyle="large"
                             style={styles.largeMessage}
                             isDark={isDark}
+                            kind="prompt"
+                            isBody={true}
                         />
                         <MessageItem 
                             text="Whisper your partner's three sexiest features 😍🔥"
                             textStyle="large"
                             style={styles.largeMessage}
                             isDark={isDark}
+                            kind="prompt"
+                            isBody={true}
                         />
                         {/* Show player choice if available */}
                         {playerChoice && (
@@ -43,6 +47,7 @@ export default function MessageContainer({ gameStage, playerChoice, userType, is
                                     }
                                 ]}
                                 isDark={isDark}
+                                kind="userchoice"
                             />
                         )}
                     </>

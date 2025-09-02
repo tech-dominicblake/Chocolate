@@ -21,16 +21,12 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
         if (isSuccessLoading) return; // Prevent multiple clicks
 
         setIsSuccessLoading(true);
-        try {
-            // Show the button text as a player choice with success type
-            onPlayerChoice?.(`${tasksCompleted[currentTurn].includes(level) ? 'Continue' : 'LET\'S GET MESSY'}`, 'success');
-            // Navigation will be handled by PromptA page after delay
-        } catch (error) {
-            console.error('Error in success action:', error);
-        } finally {
-            // Keep loading state until navigation happens (2 seconds delay)
-            setTimeout(() => setIsSuccessLoading(false), 2000);
-        }
+
+        const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
+        const isCompleted = currentRoundData?.completedLevel.includes(level);
+        onPlayerChoice?.(`${isCompleted ? 'Continue' : 'LET\'S GET MESSY'}`, 'success');
+        setTimeout(() => setIsSuccessLoading(false), 2000);
+
     };
 
     const handleNahIBail = async () => {
@@ -55,7 +51,10 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
         <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : 'transparent' }]}>
             <View style={styles.buttonContainer}>
                 <ActionButton
-                    title={`${tasksCompleted[currentTurn].includes(level) ? ' Continue' : 'LET\'S GET MESSY'}`}
+                    title={`${(() => {
+                        const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
+                        return currentRoundData?.completedLevel.includes(level) ? ' Continue' : 'LET\'S GET MESSY';
+                    })()}`}
                     onPress={handleLetsGetMessy}
                     variant="primary"
                     color={round === 3 ? '#FFFFFF' : currentTurn === 'him' ? '#33358F' : '#8B2756'}
@@ -68,7 +67,10 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
                     loading={isSuccessLoading}
                     disabled={isSuccessLoading || isFailLoading}
                 />
-               {!tasksCompleted[currentTurn].includes(level) && <ActionButton
+                {!(() => {
+                    const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
+                    return currentRoundData?.completedLevel.includes(level);
+                })() && <ActionButton
                     title="NAH, I BAIL"
                     onPress={handleNahIBail}
                     variant="secondary"

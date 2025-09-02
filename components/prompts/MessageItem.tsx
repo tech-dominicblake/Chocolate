@@ -5,13 +5,36 @@ interface MessageItemProps {
     style?: any;
     textStyle?: 'normal' | 'large';
     isDark?: boolean; // New prop for dark theme, test
-    kind: 'prompt' | 'dare' | 'truth' | 'super' | 'fail' | 'success' | 'info' | 'warning' | 'userchoice';
+    kind: 'prompt' | 'dare' | 'truth' | 'super' | 'fail' | 'success' | 'info' | 'warning' | 'userchoice' | 'separator';
     isBody?: boolean; // New prop for determining if the message is body content
 }
 
 export default function MessageItem({ text, style, textStyle = 'normal', isDark, kind, isBody }: MessageItemProps) {
     // Determine if this is a user choice message
     const isUserChoice = kind === 'userchoice';
+    const isSeparator = kind === 'separator';
+    
+    // Special handling for separator messages
+    if (isSeparator) {
+        return (
+            <View style={styles.separatorContainer}>
+                <View style={[
+                    styles.separatorLine,
+                    { backgroundColor: isDark ? '#444444' : '#E0E0E0' }
+                ]} />
+                <Text style={[
+                    styles.separatorText,
+                    { color: isDark ? '#777777' : '#828689' }
+                ]}>
+                    {text}
+                </Text>
+                <View style={[
+                    styles.separatorLine,
+                    { backgroundColor: isDark ? '#444444' : '#E0E0E0' }
+                ]} />
+            </View>
+        );
+    }
     
     return (
         <View style={[
@@ -111,6 +134,23 @@ const styles = StyleSheet.create({
         borderTopWidth: 8,
         borderColor: 'transparent',
         borderTopColor: '#FFB6C1', // Light pink background for user choice tail
+    },
+    separatorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 20,
+        // marginHorizontal: 16,
+    },
+    separatorLine: {
+        flex: 1,
+        height: 1,
+        backgroundColor: '#999999',
+    },
+    separatorText: {
+        fontSize: 12,
+        color: '#999999',
+        marginHorizontal: 12,
+        fontWeight: '500',
     },
 });
 

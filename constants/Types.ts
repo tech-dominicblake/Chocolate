@@ -69,7 +69,7 @@ export interface Actions {
   skipSuper(): void;
 }
 
-export type MessageKind = 'success' | 'fail' | 'info' | 'warning' | 'dare' | 'prompt' | 'super' | 'userchoice';
+export type MessageKind = 'success' | 'fail' | 'info' | 'warning' | 'dare' | 'prompt' | 'super' | 'userchoice' | 'separator';
 
 export interface Message {
   id?: string;                // unique, optional since useMessages auto-generates
@@ -78,6 +78,6 @@ export interface Message {
   title?: string;             // optional header
   sticky?: boolean;           // if true, user must dismiss
   durationMs?: number;        // auto-dismiss timing (if not sticky)
-  group?: 'turn'|'level'|'dare'|'system'|'game_info'|'question'|'user_action'|'game_result'; // for optional dedupe
+  group?: 'turn'|'level'|'dare'|'system'|'game_info'|'question'|'user_action'|'game_result'|'separator'; // for optional dedupe
   meta?: Record<string, any>; // anything else (playerName, level, etc.)
 }

@@ -28,6 +28,17 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const { setRoundLevel, setCurrentTurn, round, currentTurn, tasksCompleted, consumedChocolates, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
     const { isDark } = useThemeToggle();
 
+    // Function to calculate total completed tasks separated by sex
+    const getTotalCompletedTasks = (player: 'her' | 'him') => {
+        return tasksCompleted[player]
+            .map(round => round.completedLevel.length)
+            .reduce((sum, count) => sum + count, 0);
+    };
+
+    // Get totals for each sex
+    const herTotalTasks = getTotalCompletedTasks('her');
+    const himTotalTasks = getTotalCompletedTasks('him');
+
     // Default stats or use passed stats
     const defaultStats: GameStats = {
         chocolatesConsumed: { player1: '0/12', player2: '4/12' },
@@ -69,18 +80,18 @@ export default function StatsScreen({ route }: StatsScreenProps) {
                         <View style={[styles.statRow, {
                             borderBottomColor: isDark ? '#4B5563' : '#6D788F' // Dark theme: #4B5563, Light theme: original #6D788F
                         }]}>
-                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{`${tasksCompleted.him.length + failsSuffered.him}/12`}</Text>
+                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{`${himTotalTasks + failsSuffered.him}/12`}</Text>
                             <Text style={[styles.statLabel, { color: isDark ? '#9CA3AF' : '#000000' }]}>CHOCOLATES CONSUMED</Text>
-                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{`${tasksCompleted.her.length + failsSuffered.her}/12`}</Text>
+                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{`${herTotalTasks + failsSuffered.her}/12`}</Text>
                         </View>
 
                         {/* Row 2: Task Completed */}
                         <View style={[styles.statRow, {
                             borderBottomColor: isDark ? '#4B5563' : '#6D788F' // Dark theme: #4B5563, Light theme: original #6D788F
                         }]}>
-                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{tasksCompleted.him.length}</Text>
+                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{himTotalTasks}</Text>
                             <Text style={[styles.statLabel, { color: isDark ? '#9CA3AF' : '#000000' }]}>TASK COMPLETED</Text>
-                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{tasksCompleted.her.length}</Text>
+                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{herTotalTasks}</Text>
                         </View>
 
                         {/* Row 3: Fails Suffered */}
