@@ -1,4 +1,5 @@
 import Images from '@/constants/Images';
+import { useGameStore, useMessages } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -13,7 +14,14 @@ import {
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function FinalPage() {
+const { clear } = useMessages();
+const { resetGame } = useGameStore();
+
     useEffect(() => {
+        // Reset all game states to initial values
+        resetGame();
+        clear(); // Clear message queue as well
+        
         const timer = setTimeout(() => {
             router.push('/startPage');
         }, 2000);

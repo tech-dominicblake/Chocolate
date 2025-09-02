@@ -17,7 +17,7 @@ export default function CongratsPage() {
     useEffect(() => {
         // Navigate to congratsChoco page after 2 seconds
         const timer = setTimeout(() => {
-            router.push('/final');
+            router.push('/(game)/b/chocoStats');
         }, 2000);
 
         // Cleanup timer on component unmount

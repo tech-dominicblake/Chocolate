@@ -10,20 +10,20 @@ interface ButtonContainerProps {
 }
 
 export default function ButtonContainer({ onStageChange, onPlayerChoice }: ButtonContainerProps) {
-    const { round, currentTurn, consumeChocolate, consumedChocolates } = useGameStore();
+    const { round, currentTurn, consumeChocolate, consumedChocolates, selectedMessy, tasksCompleted, level } = useGameStore();
     const { isDark } = useThemeToggle();
-    
+
     // Loading states for buttons
     const [isSuccessLoading, setIsSuccessLoading] = useState(false);
     const [isFailLoading, setIsFailLoading] = useState(false);
 
     const handleLetsGetMessy = async () => {
         if (isSuccessLoading) return; // Prevent multiple clicks
-        
+
         setIsSuccessLoading(true);
         try {
             // Show the button text as a player choice with success type
-            onPlayerChoice?.("LET'S GET MESSY", 'success');
+            onPlayerChoice?.(`${tasksCompleted[currentTurn].includes(level) ? 'Continue' : 'LET\'S GET MESSY'}`, 'success');
             // Navigation will be handled by PromptA page after delay
         } catch (error) {
             console.error('Error in success action:', error);
@@ -35,7 +35,7 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
 
     const handleNahIBail = async () => {
         if (isFailLoading) return; // Prevent multiple clicks
-        
+
         setIsFailLoading(true);
         try {
             // Show the button text as a player choice with fail type
@@ -55,28 +55,28 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
         <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : 'transparent' }]}>
             <View style={styles.buttonContainer}>
                 <ActionButton
-                    title="LET'S GET MESSY"
+                    title={`${tasksCompleted[currentTurn].includes(level) ? ' Continue' : 'LET\'S GET MESSY'}`}
                     onPress={handleLetsGetMessy}
                     variant="primary"
-                    color= {round === 3 ? '#FFFFFF' : currentTurn === 'him' ? '#33358F' : '#8B2756'}
+                    color={round === 3 ? '#FFFFFF' : currentTurn === 'him' ? '#33358F' : '#8B2756'}
                     backgroundImage={
                         round === 3 ? require('@/assets/images/buttonBg4.png') :
-                        currentTurn === 'him'
-                            ? require('@/assets/images/buttonBg3.png')  // Different background for him
-                            : require('@/assets/images/btn-bg1.png')  // Default background for her
+                            currentTurn === 'him'
+                                ? require('@/assets/images/buttonBg3.png')  // Different background for him
+                                : require('@/assets/images/btn-bg1.png')  // Default background for her
                     }
                     loading={isSuccessLoading}
                     disabled={isSuccessLoading || isFailLoading}
                 />
-                <ActionButton
+               {!tasksCompleted[currentTurn].includes(level) && <ActionButton
                     title="NAH, I BAIL"
                     onPress={handleNahIBail}
                     variant="secondary"
-                    color= '#7A1818'
+                    color='#7A1818'
                     backgroundImage={require('@/assets/images/btn-bg2.png')}
                     loading={isFailLoading}
                     disabled={isSuccessLoading || isFailLoading}
-                />
+                />}
             </View>
         </View>
     );

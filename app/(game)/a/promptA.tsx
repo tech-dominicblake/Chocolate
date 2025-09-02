@@ -28,16 +28,17 @@ export default function Prompt() {
         setConsumedChocolatesEachCount,
         setSheFailedTwice,
         setCurrentTurn,
-        sheFailedTwice
+        sheFailedTwice,
+        setSelectedMessy
     } = useGameStore();
 
     const { queue, enqueue, clear } = useMessages();
     const scrollViewRef = useRef<ScrollView>(null);
+    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
     // Enqueue game info messages when component mounts
     useEffect(() => {
         // Clear the queue first, then add new preset messages
-        clear();
         enqueueGameInfoMessages();
         // Reset fail state when page opens
         setHasFailedOnce(false);
@@ -45,24 +46,33 @@ export default function Prompt() {
 
     // Auto-scroll to bottom when new messages are added
     useEffect(() => {
-        if (queue.length > 0) {
+        if (queue.length > 0 && shouldAutoScroll) {
             // Small delay to ensure the message is rendered
             setTimeout(() => {
                 scrollViewRef.current?.scrollToEnd({ animated: true });
             }, 100);
         }
-    }, [queue]);
+    }, [queue, shouldAutoScroll]);
+
+    // Handle scroll events to determine if auto-scroll should be enabled
+    const handleScroll = (event: any) => {
+        const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+        const isAtBottom = contentOffset.y + layoutMeasurement.height >= contentSize.height - 20;
+        setShouldAutoScroll(isAtBottom);
+    };
 
     const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
         setPlayerChoice(choice);
 
         // Enqueue the user's choice as a message with button type
-        enqueue({
-            kind: 'userchoice' as const,
-            body: choice,
-            group: 'user_action' as const,
-            meta: { buttonType } // Store the button type in meta for future use
-        });
+        {
+            choice !== "Continue" && enqueue({
+                kind: 'userchoice' as const,
+                body: choice,
+                group: 'user_action' as const,
+                meta: { buttonType } // Store the button type in meta for future use
+            });
+        }
 
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
@@ -86,7 +96,7 @@ export default function Prompt() {
                     setSheFailedTwice(true);
                 } else if (useGameStore.getState().currentTurn === 'him' &&
                     sheFailedTwice.state &&
-                    sheFailedTwice.level === useGameStore.getState().level-1) {
+                    sheFailedTwice.level === useGameStore.getState().level - 1) {
                     enqueue(getMockMessageByKind('fail'));
                     setTimeout(() => {
                         router.push('/(game)/a/statsA');
@@ -102,51 +112,61 @@ export default function Prompt() {
 
                 setTimeout(() => {
                     if (round === 3) {
-                        clear();
                         router.push('/(game)/a/statsA');
                         return;
                     }
                     setRoundLevel(level);
                     const updatedLevel = useGameStore.getState().level; // Get fresh level from store
-                    clear();
-                    setCurrentTurn(updatedLevel); // Use updated level instead of old level
+                    setCurrentTurn(updatedLevel);
                     enqueueGameInfoMessages();
                 }, 2000);
             }
         }
 
         if (buttonType === 'success') {
+            if (choice === "LET'S GET MESSY" && !hasFailedOnce) {
+                setTaskCompleted(currentTurn);
+                setConsumedChocolatesEachCount();
+                
+                const successMessage = getMockMessageByKind('success');
+                if (successMessage) {
+                    enqueue(successMessage);
+                }
+            }
+            
+            if (choice === "Continue") {
+                setTimeout(() => {
+                    if (round === 3) {
+                        router.push('/(game)/a/statsA');
+                        return;
+                    } else {
+                        router.push('/congrats');
+                    }
+                    setRoundLevel(level);
+                    const updatedLevel = useGameStore.getState().level;
+                    setCurrentTurn(updatedLevel);
+                    enqueueGameInfoMessages();
+                    setHasFailedOnce(false);
+                }, 2000);
+            }
 
-            // If player failed once before succeeding, increment their fail count
             if (hasFailedOnce) {
                 incrementPlayerFailCount(currentTurn);
+                setTimeout(() => {
+                    if (round === 3) {
+                        router.push('/(game)/a/statsA');
+                        return;
+                    }
+                    setRoundLevel(level);
+                    const updatedLevel = useGameStore.getState().level;
+                    setCurrentTurn(updatedLevel);
+                    setHasFailedOnce(false);
+                    enqueueGameInfoMessages();
+                }, 2000);
             }
-
-            // Get success message from mock data in GameStore
-            const successMessage = getMockMessageByKind('success');
-            if (successMessage) {
-                enqueue(successMessage);
-            }
-
-            
-            // Navigate to stats after 2 seconds
-            setTimeout(() => {
-                if (round === 3) {
-                    router.push('/(game)/a/statsA');
-                    return;
-                }
-                setRoundLevel(level);
-                const updatedLevel = useGameStore.getState().level;
-                setCurrentTurn(updatedLevel);
-                clear();
-                enqueueGameInfoMessages();
-            }, 2000);
         }
 
-        // if (choice === "LET'S GET MESSY") {
-        //     setTaskCompleted(currentTurn);
-        //     setConsumedChocolatesEachCount();
-        // }
+
     };
 
     const handleStageChange = (newStage: number) => {
@@ -221,6 +241,8 @@ export default function Prompt() {
                 scrollIndicatorInsets={{ bottom: 40 }}
                 indicatorStyle="black"
                 persistentScrollbar={true}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
             >
                 {renderMessages()}
             </ScrollView>

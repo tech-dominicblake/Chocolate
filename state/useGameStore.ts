@@ -18,12 +18,13 @@ interface GameState {
   selectedChocoIndex: number;
 
   // Stats
-  tasksCompleted: { her: number; him: number };
+  tasksCompleted: { her: number[]; him: number[] };
   failsSuffered: { her: number; him: number }; // Individual fail counts for each player
   timePerRound: number;
   superGamePlayed: boolean;
   hasFailedOnce: boolean; // Track if user has failed once already
   sheFailedTwice: { level: number; state: boolean }; // Track if user has failed twice already
+  selectedMessy: boolean; // Track if user has selected messy
 
   // Actions
   setMode: (mode: Mode) => void;
@@ -46,6 +47,7 @@ interface GameState {
   setHasFailedOnce: (value: boolean) => void;
   setConsumedChocolatesEachCount: () => void;
   setSheFailedTwice: (value: boolean) => void;
+  setSelectedMessy: (value: boolean) => void;
 }
 
 const initialState = {
@@ -57,13 +59,14 @@ const initialState = {
   currentTurn: 'her' as PlayerId,
   consumedChocolates: [],
   selectedChocoIndex: 0,
-  tasksCompleted: { her: 0, him: 0 },
+  tasksCompleted: { her: [], him: [] },
   failsSuffered: { her: 0, him: 0 }, // Initialize individual fail counts
   timePerRound: 0,
   superGamePlayed: false,
   hasFailedOnce: false,
   consumedChocolatesEachCount: { her: 0, him: 0 },
   sheFailedTwice: { level: 0, state: false },
+  selectedMessy: false,
 };
 
 // Mock messages data structure
@@ -163,7 +166,7 @@ export const useGameStore = create<GameState>((set) => ({
   resetGame: () => set(initialState),
 
   setTaskCompleted: (player) => set((state) => ({
-    tasksCompleted: { ...state.tasksCompleted, [player]: state.tasksCompleted[player] + 1 },
+    tasksCompleted: { ...state.tasksCompleted, [player]: [...state.tasksCompleted[player], state.level] },
   })),
 
   setRound: () => set((state) => {
@@ -244,6 +247,8 @@ export const useGameStore = create<GameState>((set) => ({
   })),
 
   setSheFailedTwice: (value: boolean) => set((state) => ({ sheFailedTwice: { level: state.level, state: value } })),
+
+  setSelectedMessy: (value: boolean) => set({ selectedMessy: value }),
 
 }));
 

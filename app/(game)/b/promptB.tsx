@@ -33,6 +33,7 @@ export default function PromptB() {
         setSheFailedTwice,
         sheFailedTwice,
         setCurrentTurn,
+        setConsumedChocolatesEachCount
     } = useGameStore();
     
     const { queue, clear } = useMessages();
@@ -69,12 +70,14 @@ export default function PromptB() {
         
         // Enqueue the user's choice as a message with button type
         const { enqueue } = useMessages.getState();
-        enqueue({
-            kind: 'userchoice' as const,
-            body: choice,
-            group: 'user_action' as const,
-            meta: { buttonType } // Store the button type in meta for future use
-        });
+        {
+            choice !== "Continue" && enqueue({
+                kind: 'userchoice' as const,
+                body: choice,
+                group: 'user_action' as const,
+                meta: { buttonType } // Store the button type in meta for future use
+            });
+        }
         
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
@@ -90,7 +93,7 @@ export default function PromptB() {
                     // Add a small delay before showing the new prompt
                     setTimeout(() => {
                         enqueue(newPromptMessage);
-                    }, 1000); // 1 second delay between dare message and new prompt
+                    }, 2000); // 1 second delay between dare message and new prompt
                 }
             } else {
                 setHasFailedOnce(false);
@@ -101,7 +104,7 @@ export default function PromptB() {
                     sheFailedTwice.level === useGameStore.getState().level-1) {
                     enqueue(getMockMessageByKind('fail'));
                     setTimeout(() => {
-                        router.push('/(game)/b/statsB');
+                        router.push('/final');
                     }, 2000);
                     return;
                 }
@@ -127,31 +130,55 @@ export default function PromptB() {
         }
         
         if (buttonType === 'success') {
+            if (choice === "LET'S GET MESSY" && !hasFailedOnce) {
+                setTaskCompleted(currentTurn);
+                setConsumedChocolatesEachCount();
+                
+                const successMessage = getMockMessageByKind('success');
+                if (successMessage) {
+                    enqueue(successMessage);
+                }
+            }
+            if (choice === "Continue") {
+                setTimeout(() => {
+                    if (round === 3) {
+                        router.push('/(game)/b/chocoStats');
+                        return;
+                    } else {
+                        router.push('/congratsChoco');
+                    }
+                    consumeChocolate(selectedChocoIndex);
+                    setRoundLevel(level);
+                    const updatedLevel = useGameStore.getState().level;
+                    setCurrentTurn(updatedLevel);
+                    enqueueGameInfoMessages();
+                    setHasFailedOnce(false);
+                }, 2000);
+            }
             // If player failed once before succeeding, increment their fail count
             if (hasFailedOnce) {
                 incrementPlayerFailCount(currentTurn);
-            } else {
+                setTimeout(() => {
+                    if (round === 3) {
+                        router.push('/final');
+                        return;
+                    }
+                    consumeChocolate(selectedChocoIndex);
+                    setRoundLevel(level);
+                    const updatedLevel = useGameStore.getState().level;
+                    setCurrentTurn(updatedLevel);
+                    setHasFailedOnce(false);
+                    router.push('/congratsChoco');
+                }, 2000);
             }
             
             // Get success message from mock data in GameStore
-            const successMessage = getMockMessageByKind('success');
-            if (successMessage) {
-                enqueue(successMessage);
-            }
+            // const successMessage = getMockMessageByKind('success');
+            // if (successMessage) {
+            //     enqueue(successMessage);
+            // }
             
             // Navigate to stats after 2 seconds
-            setTimeout(() => {
-                if (round === 3) {
-                    router.push('/(game)/b/statsB');
-                    return;
-                }
-                consumeChocolate(selectedChocoIndex);
-                setRoundLevel(level);
-                const updatedLevel = useGameStore.getState().level;
-                setCurrentTurn(updatedLevel);
-                clear();
-                router.push('/(game)/b/chocoStats');
-            }, 2000);
         }
     };
 
