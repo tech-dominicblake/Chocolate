@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import ActionButton from "@/components/prompts/ActionButton";
 import { IMAGES } from "@/constants";
 import { Mode } from "@/constants/Types";
@@ -15,13 +16,26 @@ export default function GameSelectionPage() {
     const { setMode } = useGameStore();
 
     const handleUnleashDrama = () => {
-        // Navigate to the selected game
-        if (selectedGame === 'A') {
-            setMode('A')
-            router.push('/(game)/a/promptA');
-        } else {
-            setMode('B')
-            router.push('/(game)/b/chocoStats');
+        try {
+            console.log('Game selection: Starting navigation to', selectedGame);
+            
+            // Navigate to the selected game
+            if (selectedGame === 'A') {
+                console.log('Setting mode to A');
+                setMode('A');
+                console.log('Navigating to promptA');
+                router.push('/(game)/a/promptA');
+            } else {
+                console.log('Setting mode to B');
+                setMode('B');
+                console.log('Navigating to chocoStats');
+                router.push('/(game)/b/chocoStats');
+            }
+            console.log('Navigation completed successfully');
+        } catch (error) {
+            console.error('Navigation error:', error);
+            // Fallback navigation
+            router.push('/userInfo');
         }
     };
 
@@ -31,16 +45,17 @@ export default function GameSelectionPage() {
     };
 
     return (
-        <View style={[
-            styles.container,
-            isDark && { backgroundColor: backgroundColor }
-        ]}>
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-            >
+        <ErrorBoundary>
+            <View style={[
+                styles.container,
+                isDark && { backgroundColor: backgroundColor }
+            ]}>
+                <ScrollView
+                    style={styles.scrollView}
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                >
                 <View style={styles.contentContainer}>
                     <View style={{ flex: 1, justifyContent: 'center', }}>
                         <Text style={[
@@ -131,6 +146,7 @@ export default function GameSelectionPage() {
                 </View>
             </ScrollView>
         </View>
+        </ErrorBoundary>
     );
 }
 

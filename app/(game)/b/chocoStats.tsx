@@ -13,39 +13,49 @@ interface ChocoStatsProps {
 }
 
 export default function ChocoStats({ route }: ChocoStatsProps) {
+    console.log('ChocoStats: Component mounting');
+    
     const currentLevel = route?.params?.currentLevel || 1;
     const { setSelectedChocoIndex, consumedChocolates, currentTurn, level, round } = useGameStore();
 
+    console.log('ChocoStats: Game store values:', { consumedChocolates, currentTurn, level, round });
+
+    // Add null checks for production safety
+    if (!consumedChocolates || !currentTurn || !level || !round) {
+        console.log('ChocoStats: Missing required values, returning null');
+        return null;
+    }
+
     const challenges = [
         {
-            player1Item: require('../../../assets/images/choco1.png'), // Orange-yellow spherical
+            player1Item: IMAGES.IMAGES.choco1, // Orange-yellow spherical
             number: 1,
-            player2Item: require('../../../assets/images/choco2.png'), // Red heart-shaped
+            player2Item: IMAGES.IMAGES.choco2, // Red heart-shaped
         },
         {
             number: 2,
-            player1Item: require('../../../assets/images/choco3.png'), // Red heart-shaped
-            player2Item: require('../../../assets/images/choco4.png'), // Cream heart-shaped
+            player1Item: IMAGES.IMAGES.choco3, // Red heart-shaped
+            player2Item: IMAGES.IMAGES.choco4, // Cream heart-shaped
         },
         {
             number: 3,
-            player1Item: require('../../../assets/images/choco5.png'), // Dark faceted with white speckles
-            player2Item: require('../../../assets/images/choco6.png'), // Purple spherical with gold speckles
+            player1Item: IMAGES.IMAGES.choco5, // Dark faceted with white speckles
+            player2Item: IMAGES.IMAGES.choco6, // Purple spherical with gold speckles
         },
         {
             number: 4,
-            player1Item: require('../../../assets/images/choco7.png'), // Purple with orange ring
-            player2Item: require('../../../assets/images/choco8.png'), // Blue with white speckles
+            player1Item: IMAGES.IMAGES.choco7, // Purple with orange ring
+            player2Item: IMAGES.IMAGES.choco8, // Blue with white speckles
         },
         {
             number: 5,
-            player1Item: require('../../../assets/images/choco9.png'), // Green faceted with yellow speckles
-            player2Item: require('../../../assets/images/choco10.png'), // Yellow faceted with dark speckles
+            player1Item: IMAGES.IMAGES.choco9, // Green faceted with yellow speckles
+            player2Item: IMAGES.IMAGES.choco10, // Yellow faceted with dark speckles
         },
         {
             number: 6,
-            player1Item: require('../../../assets/images/choco11.png'), // Dark grey with red swirl
-            player2Item: require('../../../assets/images/choco12.png'), // Light grey with orange splash
+            player1Item: IMAGES.IMAGES.choco11, // Dark grey with red swirl
+            player2Item: IMAGES.IMAGES.choco12, // Light grey with orange splash
         },
     ];
 
@@ -177,7 +187,7 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                             disabled={round < 3}
                         >
                             <Image
-                                source={require('../../../assets/images/choco13.png')} // Red heart with gold speckles
+                                source={IMAGES.IMAGES.choco13} // Red heart with gold speckles
                                 style={styles.supergameChocolate}
                                 resizeMode="contain"
                             />
