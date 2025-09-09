@@ -6,7 +6,8 @@ const palette = {
   primary: {
     purple: '#8B5CF6', // Main purple for SIGN IN button - more vibrant
     lightPurple: '#E9D5FF', // Light purple for other buttons - softer
-    darkPurple: '#6D28D9', // Dark purple text on light buttons - richer
+    darkPurple: '#6D28D9',
+    barGrey: '#8994A3', // Dark purple text on light buttons - richer
   },
   neutral: {
     white: '#FFFFFF',
@@ -41,6 +42,7 @@ export const lightTheme = {
     background: palette.neutral.lightGrey,
     text: palette.neutral.black,
     border: palette.neutral.grey,
+    bar: palette.primary.barGrey,
 
     // UI Elements
     primary: palette.primary.purple,
@@ -89,6 +91,7 @@ export const darkTheme = {
     secondary: palette.primary.lightPurple,
     primaryText: palette.neutral.white,
     secondaryText: palette.primary.darkPurple,
+    bar: palette.primary.barGrey,
 
     // Cards & Containers
     card: palette.neutral.darkGrey,

@@ -1,6 +1,8 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
+import { handleHomeBtn } from '@/constants/Functions';
 import { useThemeToggle } from '@/hooks/useAppTheme';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -94,7 +96,7 @@ export default function MenuPage() {
                         ]}
                         onPress={() => handleThemeToggle('light')}
                     >
-                        <Text style={styles.themeIcon}>☀️</Text>
+                        <Image source={IMAGES.IMAGES.sun} style={styles.themeIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[
@@ -103,7 +105,7 @@ export default function MenuPage() {
                         ]}
                         onPress={() => handleThemeToggle('dark')}
                     >
-                        <Text style={styles.themeIcon}>🌙</Text>
+                        <Image source={IMAGES.IMAGES.moon} style={styles.themeIcon} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -111,45 +113,52 @@ export default function MenuPage() {
             {/* Menu Buttons */}
             <View style={styles.menuButtons}>
                 <ActionButton
+                    title='HOME'
+                    onPress={handleHomeBtn}
+                    variant="primary"
+                    backgroundImage={IMAGES.IMAGES.buttonBg1}
+                    color='#33358F'
+                />
+                <ActionButton
                     title='GAME RULES'
                     onPress={handleGameRules}
                     variant="primary"
-                    backgroundImage={IMAGES.IMAGES.buttonBg1}
+                    backgroundImage={IMAGES.IMAGES.buttonBg2}
                     color='#33358F'
                 />
                 <ActionButton
                     title='REVIEW APP'
                     onPress={handleReviewApp}
                     variant="primary"
-                    backgroundImage={IMAGES.IMAGES.buttonBg2}
+                    backgroundImage={IMAGES.IMAGES.buttonBg1}
                     color='#33358F'
                 />
                 <ActionButton
                     title='SHARE YOUR FEEDBACK'
                     onPress={() => {}}
                     variant="primary"
-                    backgroundImage={IMAGES.IMAGES.buttonBg1}
+                    backgroundImage={IMAGES.IMAGES.buttonBg2}
                     color='#33358F'
                 />
                 <ActionButton
                     title='CONTACT SUPPORT'
                     onPress={() => {}}
                     variant="secondary"
-                    backgroundImage={IMAGES.IMAGES.buttonBg2}
+                    backgroundImage={IMAGES.IMAGES.buttonBg1}
                     color='#33358F'
                 />
                 <ActionButton
                     title='BECOME AN AFFILIATE'
                     onPress={() => {}}
                     variant="primary"
-                    backgroundImage={IMAGES.IMAGES.buttonBg3}
+                    backgroundImage={IMAGES.IMAGES.buttonBg2}
                     color= {isDark?'#33358F':'#FFFFFF'}
                 />
                 <ActionButton
                     title='BUY HUSHH CHOCOLATE'
                     onPress={() => {}}
                     variant="primary"
-                    backgroundImage={IMAGES.IMAGES.buttonBg2}
+                    backgroundImage={IMAGES.IMAGES.buttonBg3}
                     color='#33358F'
                 />
             </View>
@@ -167,7 +176,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginTop: 128,
-        marginBottom: 32,
+        marginBottom: 52,
     },
     headerTitle: {
         fontSize: 32,
@@ -197,13 +206,15 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     languageOption: {
-        paddingHorizontal: 20,
-        paddingVertical: 12,
+        width: 80,
+        height: 40,
         borderRadius: 25,
         marginHorizontal: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     selectedLanguage: {
-        backgroundColor: '#F97316', // Bright orange
+        backgroundColor: '#FFBC47', // Bright orange
     },
     languageText: {
         fontSize: 16,
@@ -221,21 +232,24 @@ const styles = StyleSheet.create({
         marginLeft: 10, // Add some space between language selector and theme toggle
     },
     themeOption: {
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-        borderRadius: 25,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
         marginHorizontal: 2,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     selectedTheme: {
         backgroundColor: '#2DE069', // Bright orange
     },
     themeIcon: {
-        fontSize: 24,
+        width: 24,
+        height: 24,
     },
 
     menuButtons: {
         flex: 1,
-        gap: 16,
+        // gap: 12,
     },
     menuButton: {
         paddingVertical: 18,

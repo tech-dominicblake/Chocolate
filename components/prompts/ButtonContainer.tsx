@@ -10,7 +10,7 @@ interface ButtonContainerProps {
 }
 
 export default function ButtonContainer({ onStageChange, onPlayerChoice }: ButtonContainerProps) {
-    const { round, currentTurn, consumeChocolate, consumedChocolates, selectedMessy, tasksCompleted, level } = useGameStore();
+    const { round, currentTurn, consumeChocolate, consumedChocolates, selectedMessy, tasksCompleted, level, hasFailedOnce } = useGameStore();
     const { isDark } = useThemeToggle();
 
     // Loading states for buttons
@@ -53,7 +53,7 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
                 <ActionButton
                     title={`${(() => {
                         const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
-                        return currentRoundData?.completedLevel.includes(level) ? ' Continue' : 'LET\'S GET MESSY';
+                        return (currentRoundData?.completedLevel.includes(level) || hasFailedOnce) ? ' Continue' : 'LET\'S GET MESSY';
                     })()}`}
                     onPress={handleLetsGetMessy}
                     variant="primary"
@@ -71,7 +71,7 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
                     const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
                     return currentRoundData?.completedLevel.includes(level);
                 })() && <ActionButton
-                    title="NAH, I BAIL"
+                    title={hasFailedOnce ? 'I can\'t hang' : 'NAH, I BAIL'}
                     onPress={handleNahIBail}
                     variant="secondary"
                     color='#7A1818'

@@ -1,6 +1,7 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
+import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -13,11 +14,16 @@ export default function EndPage() {
     const secondaryTextColor = useAppThemeColor('placeholderText');
     const borderColor = useAppThemeColor('border');
     const primaryColor = useAppThemeColor('primary');
+    const { mode, currentTurn } = useGameStore();
 
     const handleBringChocolate = () => {
         // // Handle bring chocolate action
         // // Navigate to next step or game
-        router.push('/congrats');
+        if (mode === 'A') {
+            router.push('/(game)/a/promptA');
+        } else {
+            router.push('/(game)/b/chocoStats');
+        }
     };
 
     const handleIBail = () => {
@@ -36,9 +42,9 @@ export default function EndPage() {
             >
                 {/* Top Section - Game Info and Player Profile */}
                 <View style={[styles.topCard, { backgroundColor: useAppThemeColor('cardBackground') }]}>
-                    <Text style={[styles.gameInfo, { color: '#8994A3' }]}>GAME B • ROUND 6</Text>
-                    <View style={[styles.avatar, { backgroundColor: cardBackground, borderColor: primaryColor }]}>
-                        <Image source={IMAGES.IMAGES.image7} style={styles.avatarImage} />
+                    <Text style={[styles.gameInfo, { color: '#8994A3' }]}>{`GAME ${mode} • ROUND 6`}</Text>
+                    <View style={[styles.avatar, { backgroundColor, borderColor: primaryColor }]}>
+                        {currentTurn === 'her' ? <Image source={IMAGES.IMAGES.image12} style={styles.avatarImage} /> : <Image source={IMAGES.IMAGES.image7} style={styles.avatarImage} />}
                     </View>
                     <Text style={[styles.playerName, { color: textColor }]}>Alex</Text>
                 </View>
@@ -125,22 +131,13 @@ const styles = StyleSheet.create({
     },
     messageContainer: {
         alignItems: 'center',
-        paddingHorizontal: 20,
         marginBottom: 32
     },
     speechBubble: {
         borderRadius: 20,
+        borderBottomLeftRadius: 0,
         paddingHorizontal: 16,
         paddingVertical: 16,
-        maxWidth: '80%',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
         position: 'relative',
     },
     questionText: {
@@ -152,14 +149,16 @@ const styles = StyleSheet.create({
     bubbleTail: {
         position: 'absolute',
         bottom: 0,
-        left: '-5%',
+        left: -10,
+        // left: '-8%',
         width: 0,
         height: 0,
-        borderTopWidth: 40,
-        borderRightWidth: 30,
+        borderTopWidth: 20,
+        borderRightWidth: 15,
         borderBottomWidth: 0,
         borderBottomColor: 'transparent',
         borderTopColor: 'transparent',
+        
     },
     actionContainer: {
         marginTop: 'auto',

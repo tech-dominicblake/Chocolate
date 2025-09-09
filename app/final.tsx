@@ -1,4 +1,5 @@
 import Images from '@/constants/Images';
+import { useThemeContext } from '@/providers/ThemeProvider';
 import { useGameStore, useMessages } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -16,12 +17,11 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 export default function FinalPage() {
 const { clear } = useMessages();
 const { resetGame } = useGameStore();
+const { isDark } = useThemeContext();
 
     useEffect(() => {
         // Reset all game states to initial values
         resetGame();
-        clear(); // Clear message queue as well
-        
         const timer = setTimeout(() => {
             router.push('/startPage');
         }, 2000);
@@ -33,7 +33,7 @@ const { resetGame } = useGameStore();
         <View style={styles.container}>
             {/* Gradient Background */}
             <LinearGradient
-                colors={['#C74444', '#DA764C', '#F2B658']}
+                colors={isDark ? ['#B42322', '#D25A28', '#DE9729'] : ['#C74444', '#DA764C', '#F2B658']}
                 style={styles.gradientBackground}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}

@@ -13,6 +13,7 @@ import {
 
 export default function CongratsPage() {
     const { isDark } = useThemeContext();
+    const textColor = useAppThemeColor('text');
 
     useEffect(() => {
         // Navigate to congratsChoco page after 2 seconds
@@ -39,13 +40,13 @@ export default function CongratsPage() {
                     <Image source={Images.IMAGES.choco12} style={styles.partyPopperHeader} />
                     {/* Congratulatory Text */}
                     <View style={styles.textContainer}>
-                        <Text style={[styles.congratsText, { color: useAppThemeColor('text') }]}>Congrats!</Text>
-                        <Text style={[styles.taskCompletedText, { color: useAppThemeColor('text') }]}>Task Completed</Text>
+                        <Text style={[styles.congratsText, { color: textColor }]}>Congrats!</Text>
+                        <Text style={[styles.taskCompletedText, { color: textColor }]}>Task Completed</Text>
 
                         <View style={styles.subTextContainer}>
-                            <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>This is the energy we need.</Text>
-                            <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>One task down. A whole lot</Text>
-                            <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>of tension to go <Text style={styles.emoji}>😈</Text></Text>
+                            <Text style={[styles.subText, { color: textColor }]}>This is the energy we need.</Text>
+                            <Text style={[styles.subText, { color: textColor }]}>One task down. A whole lot</Text>
+                            <Text style={[styles.subText, { color: textColor }]}>of tension to go <Text style={styles.emoji}>😈</Text></Text>
                         </View>
                     </View>
                 </View>

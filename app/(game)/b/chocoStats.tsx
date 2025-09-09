@@ -3,6 +3,7 @@ import { useAppThemeColor } from '@/hooks/useAppTheme';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import ConsumeTick from '../../../components/ConsumeTick';
 import { useGameStore } from '../../../state/useGameStore';
 interface ChocoStatsProps {
     route?: {
@@ -69,7 +70,7 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                     activeOpacity={0.7}
                 >
                     <View style={styles.backButtonContent}>
-                        <ChevronLeft color={'#4A5568'}/>
+                        <ChevronLeft color={'#4A5568'} />
                         <Text style={styles.backButtonText}>BACK</Text>
                     </View>
                 </TouchableOpacity>
@@ -80,7 +81,6 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.centerContainer}>
-                    {/* Challenge Header */}
 
                     {/* Player Comparison */}
                     <View style={styles.playerComparison}>
@@ -113,24 +113,18 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                         activeOpacity={0.7}
                                         disabled={consumedChocolates.includes(challenge.number) || currentTurn === 'him'}
                                     >
-                                        {consumedChocolates.includes(challenge.number) ? (
-                                            <Image
-                                                source={IMAGES.IMAGES.grid}
-                                                style={styles.chocolateItem}
-                                                resizeMode="contain"
-                                            />
-                                        ) : (
-                                            <Image
-                                                source={challenge.player1Item}
-                                                style={styles.chocolateItem}
-                                                resizeMode="contain"
-                                            />
-                                        )}
-                                        {/* <Image
+                                        {consumedChocolates.includes(challenge.number) &&
+                                            <View style={styles.consumeTickContainer}>
+                                                <ConsumeTick gender='her' />
+                                            </View>
+                                        }
+
+                                        <Image
                                             source={challenge.player1Item}
                                             style={styles.chocolateItem}
                                             resizeMode="contain"
-                                        /> */}
+                                        />
+                                     
                                     </TouchableOpacity>
                                     <View style={styles.challengeNumber}>
                                         <Text style={styles.challengeNumberText}>N°{challenge.number}</Text>
@@ -139,21 +133,17 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                         style={styles.player1Item}
                                         onPress={() => handleChocolatePress(challenge.number + 6)}
                                         activeOpacity={0.7}
-                                        disabled={consumedChocolates.includes(challenge.number+6) || currentTurn === 'her'}
+                                        disabled={consumedChocolates.includes(challenge.number + 6) || currentTurn === 'her'}
                                     >
-                                        {consumedChocolates.includes(challenge.number + 6) ? (
-                                            <Image
-                                                source={IMAGES.IMAGES.grid}
-                                                style={styles.chocolateItem}
-                                                resizeMode="contain"
-                                            />
-                                        ) : (
-                                            <Image
-                                                source={challenge.player2Item}
-                                                style={styles.chocolateItem}
-                                                resizeMode="contain"
-                                            />
-                                        )}
+                                        {consumedChocolates.includes(challenge.number + 6) &&
+                                            <View style={styles.consumeTickContainer}>
+                                                <ConsumeTick gender='him' />
+                                            </View>}
+                                        <Image
+                                            source={challenge.player2Item}
+                                            style={styles.chocolateItem}
+                                            resizeMode="contain"
+                                        />
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -248,6 +238,13 @@ const styles = StyleSheet.create({
         height: 2,
         backgroundColor: '#CBD5E0', // Light grey line
         marginHorizontal: 16,
+    },
+    consumeTickContainer: {
+        position: 'absolute',
+        top: -10,
+        left: '50%',
+        marginLeft: -13,
+        zIndex: 10,
     },
     challengesContainer: {
         width: '100%',

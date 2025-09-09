@@ -2,32 +2,71 @@ import { Logo } from "@/components/Logo";
 import ActionButton from "@/components/prompts/ActionButton";
 import { IMAGES } from "@/constants";
 import { useAppThemeColor } from "@/hooks/useAppTheme";
+import { useGameStore, useMessages } from "@/state/useGameStore";
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from "react-native";
 
 
 export default function StartPage() {
+
+    const { queue } = useMessages();
+    const { mode } = useGameStore();
+    const { clear } = useMessages();
+
+    const handleRestartGame = () => {
+        router.push('/userInfo');
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.logoContainer}>
                 <Logo size={186} />
-                <Text style={[styles.title, {color:useAppThemeColor('text')}]}>It's tension you can taste.</Text>
+                <Text style={[styles.title, { color: useAppThemeColor('text') }]}>It's tension you can taste.</Text>
             </View>
             <View style={styles.buttonContainer} >
-                <ActionButton
-                    title="START GAME"
-                    onPress={() => { router.push('/relationship') }}
-                    variant="primary"
-                    backgroundImage={IMAGES.IMAGES.buttonBg3}
-                    color='#33358F'
-                />
-                <ActionButton
-                    title="WHAT IS HUSHH?"
-                    onPress={() => router.push('/gameRules')}
-                    variant="primary"
-                    backgroundImage={IMAGES.IMAGES.buttonBg2}
-                    color='#33358F'
-                />
+                {queue.length !== 0 ?
+                    <>
+                        <ActionButton
+                            title="CONTINUE PLAYING"
+                            onPress={() => { router.push(mode === 'A' ? '/(game)/a/promptA' : '/(game)/b/promptB') }}
+                            variant="primary"
+                            backgroundImage={IMAGES.IMAGES.buttonBg3}
+                            color='#33358F'
+                        />
+                        <ActionButton
+                            title="RESTART GAME"
+                            onPress={() => { handleRestartGame() }}
+                            variant="primary"
+                            backgroundImage={IMAGES.IMAGES.buttonBg2}
+                            color='#33358F'
+
+                        />
+                        <ActionButton
+                            title="WHAT IS HUSHH?"
+                            onPress={() => { router.push('/gameRules') }}
+                            variant="primary"
+                            backgroundImage={IMAGES.IMAGES.buttonBg1}
+                            color='#33358F'
+                        />
+                    </>
+                    :
+                    <>
+                        <ActionButton
+                            title="START GAME"
+                            onPress={() => { router.push('/languageSelection') }}
+                            variant="primary"
+                            backgroundImage={IMAGES.IMAGES.buttonBg3}
+                            color='#33358F'
+                        />
+                        <ActionButton
+                            title="WHAT IS HUSHH?"
+                            onPress={() => router.push('/gameRules')}
+                            variant="primary"
+                            backgroundImage={IMAGES.IMAGES.buttonBg2}
+                            color='#33358F'
+                        />
+                    </>
+                }
             </View>
         </View>
     );

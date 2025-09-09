@@ -9,10 +9,9 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Switch,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 export default function AgeGate() {
@@ -37,7 +36,7 @@ export default function AgeGate() {
     <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#27282A' : '#EDEFF2' }]}>
       <StatusBar barStyle="dark-content" />
 
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -45,66 +44,55 @@ export default function AgeGate() {
       >
         {/* Main Content */}
         <View style={styles.content}>
-        {/* Devil Emoji */}
-        <Image source={IMAGES.IMAGES.image3} style={styles.devilEmoji} />
-        {/* Main Question */}
-        <Text style={[styles.mainQuestion, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-          Are you 18+ and ready for chaos, chocolate, and questionable choices?
-        </Text>
-
-        {/* Divider Line */}
-        <View style={styles.divider} />
-
-        {/* Disclaimer */}
-        <Text style={styles.disclaimer}>
-          This game includes mature themes and emotional content. By proceeding, you agree to play responsibly and take breaks if needed.
-        </Text>
-
-        {/* NSFW Mode Toggle */}
-        <View style={styles.toggleContainer}>
-          <Switch
-            value={nsfwMode}
-            onValueChange={setNsfwMode}
-            trackColor={{ false: '#E0E0E0', true: '#7E80F4' }}
-            thumbColor={nsfwMode ? '#FFFFFF' : '#FFFFFF'}
-          />
-          <Text style={styles.toggleLabel}>NSFW Mode</Text>
-        </View>
-
-        {/* Agreement Checkbox */}
-        <TouchableOpacity
-          style={styles.checkboxContainer}
-          onPress={() => setAgreed(!agreed)}
-          activeOpacity={0.7}
-        >
-          <View style={[styles.checkbox, agreed && styles.checkboxChecked, { borderColor: isDark ? '#33373D' : '#9C27B0', backgroundColor:isDark?'#33373D':'#FFFFFF' }]}>
-            {agreed && <Text style={styles.checkmark}>✓</Text>}
-          </View>
-          <Text style={[styles.checkboxLabel, {color: isDark?'#FFFFFF':'#191919'}]}>
-            I understand and agree to the content warnings and rules of this game
+          {/* Devil Emoji */}
+          <Image source={IMAGES.IMAGES.image3} style={styles.devilEmoji} />
+          {/* Main Question */}
+          <Text style={[styles.mainQuestion, { color: isDark ? '#FFFFFF' : '#000000' }]}>
+            Are you 18+ and ready for chaos, chocolate, and questionable choices?
           </Text>
-        </TouchableOpacity>
 
-        {/* Action Buttons */}
-        <View style={styles.buttonContainer}>
-          <ActionButton
-            title="BORN TO SLAY. LET'S GO 👆❤️"
-            onPress={handleProceed}
-            variant="primary"
-            backgroundImage={IMAGES.IMAGES.buttonBg3}
-            color='#33358F'
-          />
-          <ActionButton
-            title="NAH, I'M BABY FR 👶🍫"
-            onPress={handleDecline}
-            variant="secondary"
-            backgroundImage={IMAGES.IMAGES.btnBg2}
-            color='#7A1818'
-          />
-                  </View>
+          {/* Divider Line */}
+          <View style={styles.divider} />
+
+          {/* Disclaimer */}
+          <Text style={styles.disclaimer}>
+            This game includes mature themes and emotional content. By proceeding, you agree to play responsibly and take breaks if needed.
+          </Text>
+
+          {/* Agreement Checkbox */}
+          <TouchableOpacity
+            style={styles.checkboxContainer}
+            onPress={() => setAgreed(!agreed)}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.checkbox, agreed && styles.checkboxChecked, { borderColor: isDark ? '#33373D' : '#9C27B0', backgroundColor: isDark ? '#33373D' : '#FFFFFF' }]}>
+              {agreed && <Text style={[styles.checkmark, { color: isDark ? '#FFFFFF' : '#4A5568' }]}>✓</Text>}
+            </View>
+            <Text style={[styles.checkboxLabel, { color: isDark ? '#FFFFFF' : '#191919' }]}>
+              I understand and agree to the content warnings and rules of this game
+            </Text>
+          </TouchableOpacity>
+
+          {/* Action Buttons */}
+          <View style={styles.buttonContainer}>
+            <ActionButton
+              title="BORN TO SLAY. LET'S GO 👆❤️"
+              onPress={handleProceed}
+              variant="primary"
+              backgroundImage={IMAGES.IMAGES.buttonBg3}
+              color='#33358F'
+            />
+            <ActionButton
+              title="NAH, I'M BABY FR 👶🍫"
+              onPress={handleDecline}
+              variant="secondary"
+              backgroundImage={IMAGES.IMAGES.btnBg2}
+              color='#7A1818'
+            />
+          </View>
         </View>
-        </ScrollView>
-      </SafeAreaView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -186,7 +174,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#9C27B0',
   },
   checkmark: {
-    color: '#4A5568',
     fontSize: 16,
     fontWeight: 'bold',
   },

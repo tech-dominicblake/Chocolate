@@ -1,10 +1,143 @@
 import ButtonContainer from "@/components/prompts/ButtonContainer";
 import MessageItem from "@/components/prompts/MessageItem";
+import { IMAGES } from '@/constants';
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useGameStore, useMessages } from "@/state/useGameStore";
+import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+// Chocolate queue data
+const chocolateQueue = [
+    { id: 1, image: require('../../../assets/images/choco1.png'), color: '#FF6B35' },
+    { id: 2, image: require('../../../assets/images/choco2.png'), color: '#FF1744' },
+    { id: 3, image: require('../../../assets/images/choco3.png'), color: '#6A1B9A' },
+    { id: 4, image: require('../../../assets/images/choco4.png'), color: '#00BCD4' },
+    { id: 5, image: require('../../../assets/images/choco5.png'), color: '#4CAF50' },
+    { id: 6, image: require('../../../assets/images/choco6.png'), color: '#FF9800' },
+    { id: 0, image: '', color: '#FF9800' },
+    { id: 7, image: require('../../../assets/images/choco7.png'), color: '#9C27B0' },
+    { id: 8, image: require('../../../assets/images/choco8.png'), color: '#2196F3' },
+    { id: 9, image: require('../../../assets/images/choco9.png'), color: '#795548' },
+    { id: 10, image: require('../../../assets/images/choco10.png'), color: '#607D8B' },
+    { id: 11, image: require('../../../assets/images/choco11.png'), color: '#E91E63' },
+    { id: 12, image: require('../../../assets/images/choco12.png'), color: '#3F51B5' },
+    { id: 0, image: '', color: '#3F51B5' },
+    { id: 13, image: require('../../../assets/images/choco13.png'), color: '#FF5722' },
+];
+
+// Header component with chocolate queue
+const GameHeader = () => {
+    const { round, level, currentTurn, playerNames, selectedChocoIndex, consumedChocolates, activeTooltip } = useGameStore();
+    const { isDark } = useThemeToggle();
+
+    // Determine player turn text
+    const getPlayerTurnText = () => {
+        if (level % 2 === 1) {
+            return playerNames?.her || 'FOR HER';
+        } else {
+            return playerNames?.him || 'FOR HIM';
+        }
+    };
+
+    return (
+        <>
+            <View style={[styles.header, { backgroundColor: isDark ? '#2D2F33' : '#FFFFFF', borderColor: isDark ? '#3C434E' : '#E5E5E5' }]}>
+                {/* Left side - Game status and user info */}
+                <View style={styles.leftSection}>
+                    {/* Game status */}
+                    <View style={styles.gameStatus}>
+                        <Text style={styles.roundText}>ROUND {level}</Text>
+                        <Text style={styles.separator}> • </Text>
+                        <Text style={styles.levelText}>{getPlayerTurnText()}</Text>
+                    </View>
+
+                    {/* User info */}
+                    <View style={styles.userInfo}>
+                        {currentTurn === "her" ?
+                            <Image source={IMAGES.IMAGES.image12} style={styles.avatar} /> : <Image source={IMAGES.IMAGES.image7} style={styles.avatar} />
+                        }
+                        <Text style={styles.userName}>{playerNames?.her || 'Alexa'}</Text>
+                    </View>
+                </View>
+
+                {/* Right side - Action icons */}
+                <View style={styles.rightSection}>
+                    <TouchableOpacity style={styles.iconButton}>
+                        <Ionicons name="map-outline" size={24} color="#9BA1A6" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.iconButton}>
+                        <Ionicons name="cube-outline" size={24} color={activeTooltip ? '#7E80F4' : '#9BA1A6'} />
+                        <View style={styles.speechBubbleContainer}>
+                            <View style={styles.speechBubble}>
+                                <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>
+                                <View style={styles.speechBubbleTail} />
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/menu')}>
+                        <Ionicons name="menu-outline" size={24} color="#9BA1A6" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            {/* Chocolate Queue */}
+            <View style={[styles.chocolateQueue, { backgroundColor: isDark ? '#2D2F33' : '#FFFFFF' }]}>
+                {/* Full-width selection line divided into segments */}
+                <View style={styles.selectionLineContainer}>
+                    {chocolateQueue.map((choco, index) => (
+                        <React.Fragment key={index}>
+                            <View
+                                style={[
+                                    styles.selectionLineSegment,
+                                    choco.id === selectedChocoIndex && styles.selectedSegment
+                                ]}
+                            >
+                                <View style={choco.id === selectedChocoIndex && styles.bubbleTail} />
+                            </View>
+                        </React.Fragment>
+                    ))}
+                </View>
+
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.queueContainer}
+                >
+                    {chocolateQueue.map((choco, index) => (
+                        <View key={index} style={styles.chocoItemContainer}>
+                            <View
+                                style={styles.chocoItem}
+                            >
+                                {(choco.id !== 0) && (!consumedChocolates.includes(choco.id)) ? (
+                                    <Image
+                                        source={choco.image}
+                                        style={styles.chocoImage}
+                                        resizeMode="contain"
+                                    />
+                                ) : choco.id !== 0 && consumedChocolates.includes(choco.id) ? (
+                                    <Image
+                                        source={IMAGES.IMAGES.image14}
+                                        style={styles.consumedChocoImage}
+                                        resizeMode="contain"
+                                    />
+                                ) : (
+                                    <Text style={styles.separator}> • </Text>
+                                )}
+                            </View>
+                        </View>
+                    ))}
+                </ScrollView>
+            </View>
+
+            {/* Speech Bubble positioned under cube icon */}
+
+        </>
+    );
+};
 
 export default function PromptB() {
     const params = useLocalSearchParams();
@@ -12,18 +145,18 @@ export default function PromptB() {
     const [currentLevel] = useState(Number(params.level) || 1);
     const [playerChoice, setPlayerChoice] = useState<string | undefined>();
     const [showSuccessDelay, setShowSuccessDelay] = useState(false);
-    
+
     const { isDark } = useThemeToggle();
-    const { 
-        setTaskCompleted, 
-        selectedChocoIndex, 
-        currentTurn, 
-        consumeChocolate, 
+    const {
+        setTaskCompleted,
+        selectedChocoIndex,
+        currentTurn,
+        consumeChocolate,
         consumedChocolates,
-        stage, 
-        setRoundLevel, 
-        round, 
-        mode, 
+        stage,
+        setRoundLevel,
+        round,
+        mode,
         level,
         enqueueGameInfoMessages,
         getMockMessageByKind,
@@ -35,7 +168,7 @@ export default function PromptB() {
         setCurrentTurn,
         setConsumedChocolatesEachCount
     } = useGameStore();
-    
+
     const { queue, clear } = useMessages();
     const scrollViewRef = useRef<ScrollView>(null);
 
@@ -43,9 +176,8 @@ export default function PromptB() {
     useEffect(() => {
         // Clear the queue first, then add new preset messages
         const { clear } = useMessages.getState();
-        clear();
         enqueueGameInfoMessages();
-        
+
         // Reset fail state when page opens
         setHasFailedOnce(false);
     }, []);
@@ -67,7 +199,7 @@ export default function PromptB() {
 
     const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
         setPlayerChoice(choice);
-        
+
         // Enqueue the user's choice as a message with button type
         const { enqueue } = useMessages.getState();
         {
@@ -78,7 +210,7 @@ export default function PromptB() {
                 meta: { buttonType } // Store the button type in meta for future use
             });
         }
-        
+
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
                 setHasFailedOnce(true);
@@ -101,7 +233,7 @@ export default function PromptB() {
                     setSheFailedTwice(true);
                 } else if (useGameStore.getState().currentTurn === 'him' &&
                     sheFailedTwice.state &&
-                    sheFailedTwice.level === useGameStore.getState().level-1) {
+                    sheFailedTwice.level === useGameStore.getState().level - 1) {
                     enqueue(getMockMessageByKind('fail'));
                     setTimeout(() => {
                         router.push('/final');
@@ -113,11 +245,10 @@ export default function PromptB() {
                 if (failMessage) {
                     enqueue(failMessage);
                 }
-                
+
                 // Navigate to stats after fail message has been visible for 2 seconds
                 setTimeout(() => {
                     if (round === 3) {
-                        clear();
                         router.push('/(game)/b/statsB');
                         return;
                     }
@@ -128,12 +259,12 @@ export default function PromptB() {
                 }, 2000);
             }
         }
-        
+
         if (buttonType === 'success') {
             if (choice === "LET'S GET MESSY" && !hasFailedOnce) {
                 setTaskCompleted(currentTurn);
                 setConsumedChocolatesEachCount();
-                
+
                 const successMessage = getMockMessageByKind('success');
                 if (successMessage) {
                     enqueue(successMessage);
@@ -171,14 +302,6 @@ export default function PromptB() {
                     router.push('/congratsChoco');
                 }, 2000);
             }
-            
-            // Get success message from mock data in GameStore
-            // const successMessage = getMockMessageByKind('success');
-            // if (successMessage) {
-            //     enqueue(successMessage);
-            // }
-            
-            // Navigate to stats after 2 seconds
         }
     };
 
@@ -236,30 +359,160 @@ export default function PromptB() {
             );
         });
     };
+
     return (
-        <View style={{
-            flex: 1,
-            backgroundColor: isDark ? '#27282A' : '#EDEFF2',
-            height: "100%"
-        }}>
-            <ScrollView 
-                ref={scrollViewRef}
-                style={styles.container}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            >
-                {renderMessages()}
-            </ScrollView>
-            <ButtonContainer
-                onStageChange={handleStageChange}
-                onPlayerChoice={handlePlayerChoice}
-            />
-        </View>
+        <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#2D2F33' : '#FFFFFF' }]}>
+            <GameHeader />
+            <View style={{
+                flex: 1,
+                backgroundColor: isDark ? '#27282A' : '#EDEFF2',
+                height: "100%"
+            }}>
+                <ScrollView
+                    ref={scrollViewRef}
+                    style={styles.scrollContainer}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContent}
+                >
+                    {renderMessages()}
+                </ScrollView>
+                <ButtonContainer
+                    onStageChange={handleStageChange}
+                    onPlayerChoice={handlePlayerChoice}
+                />
+            </View>
+        </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        backgroundColor: '#EDEFF2',
+    },
+    header: {
+        backgroundColor: '#FFFFFF',
+        paddingHorizontal: 20,
+        paddingVertical: 20,
+        paddingTop: 50,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        borderBottomWidth: 1,
+    },
+    leftSection: {
+        flex: 1,
+    },
+    gameStatus: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 16,
+        position: 'relative',
+    },
+    roundText: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#9BA1A6',
+    },
+    separator: {
+        fontSize: 16,
+        color: '#9BA1A6',
+        marginHorizontal: 4,
+    },
+    levelText: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#FF6B9D', // Pink/magenta color as shown in the image
+    },
+    pinkUnderline: {
+        position: 'absolute',
+        bottom: -8,
+        left: 0,
+        right: 0,
+        height: 2,
+        backgroundColor: '#FF6B9D',
+        borderRadius: 1,
+    },
+    userInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    avatar: {
+        fontSize: 24,
+        marginRight: 8,
+    },
+    userName: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#000000',
+    },
+    rightSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 8,
+    },
+    iconButton: {
+        padding: 8,
+        marginLeft: 8,
+    },
+    chocolateQueue: {
+        backgroundColor: '#FFFFFF', // Light gray background as in screenshot
+        paddingBottom: 20,
+        paddingHorizontal: 20,
+    },
+    queueContainer: {
+        width: '100%',
+        justifyContent: 'space-between',
+    },
+    chocoItem: {
+        alignItems: 'center',
+    },
+    chocoImage: {
+        width: 24,
+        height: 24,
+    },
+    contentContainer: {
+        flex: 1,
+    },
+    chocoItemContainer: {
+        alignItems: 'center',
+    },
+    selectionLineContainer: {
+        flexDirection: 'row',
+        width: '100%',
+        height: 3,
+        marginBottom: 8,
+        borderRadius: 1.5,
+        marginTop: -1
+    },
+    selectionLineSegment: {
+        flex: 1,
+        height: '100%',
+        borderRightColor: '#FFFFFF',
+    },
+    selectedSegment: {
+        backgroundColor: '#EB7AAF',
+        position: 'relative' // Blue color for selected segment
+    },
+    bubbleTail: {
+        width: 0,
+        height: 0,
+        borderTopWidth: 8,
+        borderTopColor: '#EB7AAF',
+        borderLeftWidth: 8,
+        borderLeftColor: 'transparent',
+        borderRightWidth: 8,
+        borderRightColor: 'transparent',
+        position: 'absolute',
+        top: 0,
+        left: '50%',
+        marginLeft: -8,
+    },
+    consumedChocoImage: {
+        width: 24,
+        height: 24,
+    },
+    scrollContainer: {
         flex: 1,
         width: '100%',
         paddingBottom: 40
@@ -269,6 +522,41 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         paddingHorizontal: 16,
         justifyContent: 'flex-end',
+    },
+    speechBubbleContainer: {
+        position: 'absolute',
+        top: 120, // Position below the header
+        right: 20, // Align with the right side where cube icon is
+        zIndex: 10,
+    },
+    speechBubble: {
+        backgroundColor: '#7E80F4',
+        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderWidth: 2,
+        borderColor: '#FFFFFF',
+        position: 'relative',
+        maxWidth: 200,
+    },
+    speechBubbleText: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    speechBubbleTail: {
+        position: 'absolute',
+        top: -6,
+        right: 20, // Position tail to point to cube icon
+        width: 0,
+        height: 0,
+        borderLeftWidth: 6,
+        borderRightWidth: 6,
+        borderBottomWidth: 6,
+        borderLeftColor: 'transparent',
+        borderRightColor: 'transparent',
+        borderBottomColor: '#7E80F4',
     },
     promptContainer: {
         marginBottom: 10,
@@ -280,4 +568,4 @@ const styles = StyleSheet.create({
     regularMessageContainer: {
         marginBottom: 10,
     },
-});   
+});

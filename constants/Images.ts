@@ -33,6 +33,8 @@ const IMAGES = {
     btnBg2: require('../assets/images/btn-bg2.png'),
     btnBg3: require('../assets/images/btn-bg3.png'),
     grid: require('../assets/images/01.png'),
+    moon: require('../assets/images/moon.png'),
+    sun: require('../assets/images/sun.png'),
 }
 
 export default {

@@ -1,4 +1,5 @@
 import Images from '@/constants/Images';
+import { useThemeContext } from '@/providers/ThemeProvider';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
@@ -11,6 +12,7 @@ import {
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function FinalPage() {
+    const { isDark } = useThemeContext();
     // useEffect(() => {
     //     const timer = setTimeout(() => {
     //         router.push('/startPage');
@@ -23,7 +25,7 @@ export default function FinalPage() {
         <View style={styles.container}>
             {/* Gradient Background */}
             <LinearGradient
-                colors={['#C4C4EA', '#DA764C', '#7D7DB8']}
+                colors={ isDark ? ['#7577B3', '#5B5BAA', '#33358F'] : ['#C5C5EA', '#A0A0D0', '#7D7DB7'] }
                 style={styles.gradientBackground}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 0, y: 1 }}
@@ -43,7 +45,7 @@ export default function FinalPage() {
 
             {/* Central Heart Graphic */}
             <View style={styles.heartContainer}>
-               <Image source={Images.IMAGES.choco6} style={styles.heart} />
+               <Image source={Images.IMAGES.choco1} style={styles.heart} />
             </View>
 
             {/* Text Message */}

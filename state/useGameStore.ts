@@ -1,4 +1,4 @@
-import { Mode, PlayerId, RelationshipLevel } from '@/constants/Types';
+import { Language, Mode, PlayerId, RelationshipLevel } from '@/constants/Types';
 import { create } from 'zustand';
 
 import type { Message } from '@/constants/Types';
@@ -7,6 +7,7 @@ interface GameState {
   // Game configuration
   mode: Mode | null;
   stage: RelationshipLevel | null;
+  language: Language;
   playerNames: { her: string; him: string };
 
   // Game progress
@@ -29,47 +30,51 @@ interface GameState {
     }[]
   };
 
-failsSuffered: { her: number; him: number }; // Individual fail counts for each player
-timePerRound: number;
-superGamePlayed: boolean;
-hasFailedOnce: boolean; // Track if user has failed once already
-sheFailedTwice: { level: number; state: boolean }; // Track if user has failed twice already
-selectedMessy: boolean; // Track if user has selected messy
+  failsSuffered: { her: number; him: number }; // Individual fail counts for each player
+  timePerRound: number;
+  superGamePlayed: boolean;
+  hasFailedOnce: boolean; // Track if user has failed once already
+  sheFailedTwice: { level: number; state: boolean }; // Track if user has failed twice already
+  selectedMessy: boolean; // Track if user has selected messy
+  activeTooltip: boolean; // Track if user has selected messy
 
-// Actions
-setMode: (mode: Mode) => void;
-setStage: (stageID: number) => void;
-setPlayerNames: (names: { her: string; him: string }) => void;
-setRoundLevel: (level: number) => void;
-setCurrentTurn: (level: number) => void;
-switchTurn: () => void;
-consumeChocolate: (id: number) => void;
-setSelectedChocoIndex: (index: number) => void;
-failTask: () => void;
-incrementPlayerFailCount: (player: PlayerId) => void; // New action to increment fail count for specific player
-updateRoundTime: (time: number) => void;
-completeSuperGame: () => void;
-resetGame: () => void;
-setTaskCompleted: (player: PlayerId) => void;
-setRound: () => void;
-enqueueGameInfoMessages: () => void;
-getMockMessageByKind: (kind: 'prompt' | 'success' | 'fail' | 'dare') => any;
-setHasFailedOnce: (value: boolean) => void;
-setConsumedChocolatesEachCount: () => void;
-setSheFailedTwice: (value: boolean) => void;
-setSelectedMessy: (value: boolean) => void;
+  // Actions
+  setMode: (mode: Mode) => void;
+  setStage: (stageID: number) => void;
+  setLanguage: (language: Language) => void;
+  setPlayerNames: (names: { her: string; him: string }) => void;
+  setRoundLevel: (level: number) => void;
+  setCurrentTurn: (level: number) => void;
+  switchTurn: () => void;
+  consumeChocolate: (id: number) => void;
+  setSelectedChocoIndex: (index: number) => void;
+  failTask: () => void;
+  incrementPlayerFailCount: (player: PlayerId) => void; // New action to increment fail count for specific player
+  updateRoundTime: (time: number) => void;
+  completeSuperGame: () => void;
+  resetGame: () => void;
+  setTaskCompleted: (player: PlayerId) => void;
+  setRound: () => void;
+  enqueueGameInfoMessages: () => void;
+  getMockMessageByKind: (kind: 'prompt' | 'success' | 'fail' | 'dare') => any;
+  setHasFailedOnce: (value: boolean) => void;
+  setConsumedChocolatesEachCount: () => void;
+  setSheFailedTwice: (value: boolean) => void;
+  setSelectedMessy: (value: boolean) => void;
+  setActiveTooltip: (value: boolean) => void;
 }
 
 const initialState = {
   mode: null,
   stage: null,
+  language: 'english' as Language,
   playerNames: { her: '', him: '' },
   round: 1,
   level: 1,
   currentTurn: 'her' as PlayerId,
   consumedChocolates: [],
   selectedChocoIndex: 0,
-  tasksCompleted: { her: [{ round: 0, completedLevel: [] }], him: [{ round: 0, completedLevel: [] } ]},
+  tasksCompleted: { her: [{ round: 0, completedLevel: [] }], him: [{ round: 0, completedLevel: [] }] },
   failsSuffered: { her: 0, him: 0 }, // Initialize individual fail counts
   timePerRound: 0,
   superGamePlayed: false,
@@ -77,7 +82,7 @@ const initialState = {
   consumedChocolatesEachCount: { her: 0, him: 0 },
   sheFailedTwice: { level: 0, state: false },
   selectedMessy: false,
-
+  activeTooltip: true,
 };
 
 // Mock messages data structure
@@ -125,6 +130,7 @@ export const useGameStore = create<GameState>((set) => ({
 
   setMode: (mode) => set({ mode }),
   setStage: (stageID) => set({ stage: stageID === 1 ? 'just_met' : stageID === 2 ? 'comfortably_dating' : 'long_term' }),
+  setLanguage: (language) => set({ language }),
   setPlayerNames: (names) => set({ playerNames: names }),
 
   setCurrentTurn: (level: number) => {
@@ -248,7 +254,7 @@ export const useGameStore = create<GameState>((set) => ({
     // Check if queue is not empty to add separator
     const { enqueue, queue } = useMessages.getState();
     let messagesToEnqueue: any[] = [...presetMessages, firstPrompt];
-    
+
     // If queue is not empty, add a separator message at the beginning
     if (queue.length > 0) {
       const separatorMessage = {
@@ -281,6 +287,8 @@ export const useGameStore = create<GameState>((set) => ({
   setSheFailedTwice: (value: boolean) => set((state) => ({ sheFailedTwice: { level: state.level, state: value } })),
 
   setSelectedMessy: (value: boolean) => set({ selectedMessy: value }),
+
+  setActiveTooltip: (value: boolean) => set({ activeTooltip: value }),
 
 }));
 

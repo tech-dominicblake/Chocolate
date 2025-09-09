@@ -68,10 +68,10 @@ export default function RelationshipPage() {
         setCurrentIndex(index);
     };
 
-    const handleContinue = () => {
+    const handleContinue = (): void => {
         // Navigate to next screen or close
         setStage(relationshipStages[currentIndex].id);
-        router.push('/userInfo');
+        router.push('/endPage');
     };
 
     const renderStageCard = (stage: RelationshipStage) => (

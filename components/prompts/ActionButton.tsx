@@ -82,11 +82,11 @@ const styles = StyleSheet.create({
     },
     primaryButton: {
         backgroundColor: '#FF6B9D', // Pink color
-        paddingVertical: 16,
+        // paddingVertical: 16,
         paddingHorizontal: 24,
         borderRadius: 12,
         marginHorizontal: 16,
-        marginVertical: 8,
+        // marginVertical: 8,
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#000',

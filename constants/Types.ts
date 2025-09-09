@@ -15,6 +15,8 @@ export interface Question {
   type: 'truth'|'dare'|'super';
 }
 
+export type Language = 'english' | 'russian' | 'bahasa_indonesia';
+
 export interface Dare {
   id: string;
   text: string;

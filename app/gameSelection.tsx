@@ -1,3 +1,4 @@
+import { SelectOptionButton } from "@/components/SelectOptionButton";
 import ActionButton from "@/components/prompts/ActionButton";
 import { IMAGES } from "@/constants";
 import { Mode } from "@/constants/Types";
@@ -16,14 +17,8 @@ export default function GameSelectionPage() {
 
     const handleUnleashDrama = () => {
         // Navigate to the selected game
-        if (selectedGame === 'A') {
-            setMode('A')
-            router.push('/(game)/a/promptA');
-        } else {
-            setMode('B')
-            router.push('/(game)/b/chocoStats');
-
-        }
+        setMode(selectedGame);
+        router.push('/relationship');
     };
 
     const handlePeekRules = () => {
@@ -50,55 +45,16 @@ export default function GameSelectionPage() {
                         ]}>Game Selection</Text>
                         {/* Game Mode Selection */}
                         <View style={styles.selectionContainer}>
-                            {/* hushh. Experience */}
-                            <TouchableOpacity
-                                style={[
-                                    styles.gameOption,
-                                    selectedGame === 'A' && styles.selectedGame,
-                                    isDark && { backgroundColor: '#4E4FA6' }
-                                ]}
+                            <SelectOptionButton
+                                title="hushh. Experience"
+                                isSelected={selectedGame === 'A'}
                                 onPress={() => setSelectedGame('A')}
-                            >
-                                <View style={[
-                                    styles.radioButton,
-                                    selectedGame === 'A' && styles.selectedRadio,
-                                    isDark && { borderColor: '#8383C6', backgroundColor: '#8383C6' }
-                                ]}>
-                                    {selectedGame === 'A' && <View style={styles.radioDot} />}
-                                </View>
-                                <Text style={[
-                                    styles.gameText,
-                                    selectedGame === 'A' && styles.selectedGameText,
-                                    isDark && { color: '#E8EAF6' }
-                                ]}>
-                                    hushh. Experience
-                                </Text>
-                            </TouchableOpacity>
-
-                            {/* hushh. Mayhem */}
-                            <TouchableOpacity
-                                style={[
-                                    styles.gameOption,
-                                    selectedGame === 'B' && styles.selectedGame,
-                                    isDark && { backgroundColor: '#4E4FA6' }
-                                ]}
+                            />
+                            <SelectOptionButton
+                                title="hushh. Mayhem"
+                                isSelected={selectedGame === 'B'}
                                 onPress={() => setSelectedGame('B')}
-                            >
-                                <View style={[
-                                    styles.radioButton,
-                                    selectedGame === 'B' && styles.selectedRadio,
-                                    { borderColor: isDark ? '#8383C6' : '#E8EAF6' }
-                                ]}>
-                                    {selectedGame === 'B' && <View style={styles.radioDot} />}
-                                </View>
-                                <Text style={[
-                                    styles.gameText,
-                                    selectedGame === 'B' && styles.selectedGameText,
-                                    isDark && { color: '#E8EAF6' }
-                                ]}>
-                                    hushh. Mayhem
-                                </Text>
-                            </TouchableOpacity>
+                            />
                         </View>
                     </View>
                     <View style={styles.actionContainer}>
@@ -169,56 +125,6 @@ const styles = StyleSheet.create({
     },
     selectionContainer: {
         marginBottom: 40,
-    },
-    gameOption: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#E8EAF6',
-        paddingVertical: 20,
-        paddingHorizontal: 24,
-        borderRadius: 16,
-        marginBottom: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    selectedGame: {
-        backgroundColor: '#5C6BC0',
-        outlineColor: '#5C6BC0',
-        outlineWidth: 2,
-        outlineStyle: 'solid',
-        outlineOffset: 3,
-    },
-    radioButton: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        borderWidth: 2,
-        borderColor: '#E8EAF6',
-        marginRight: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-    },
-    selectedRadio: {
-        borderColor: '#5C6BC0',
-        backgroundColor: '#5C6BC0',
-    },
-    radioDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: '#FFF',
-    },
-    gameText: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#5C6BC0',
-    },
-    selectedGameText: {
-        color: '#FFF',
     },
     actionButtonContainer: {
         marginBottom: 32,
