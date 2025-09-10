@@ -259,7 +259,7 @@ export const useGameStore = create<GameState>((set) => ({
     if (queue.length > 0) {
       const separatorMessage = {
         kind: 'separator' as const,
-        body: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        body: '',
         group: 'separator' as const,
       };
       messagesToEnqueue.unshift(separatorMessage);

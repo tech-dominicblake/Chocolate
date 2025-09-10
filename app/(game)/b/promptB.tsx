@@ -4,6 +4,7 @@ import { IMAGES } from '@/constants';
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useGameStore, useMessages } from "@/state/useGameStore";
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -65,23 +66,28 @@ const GameHeader = () => {
                 {/* Right side - Action icons */}
                 <View style={styles.rightSection}>
                     <TouchableOpacity style={styles.iconButton}>
-                        <Ionicons name="map-outline" size={24} color="#9BA1A6" />
+                        <Ionicons name="map-outline" size={32} color="#9BA1A6" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.iconButton}>
-                        <Ionicons name="cube-outline" size={24} color={activeTooltip ? '#7E80F4' : '#9BA1A6'} />
-                        <View style={styles.speechBubbleContainer}>
-                            <View style={styles.speechBubble}>
-                                <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>
-                                <View style={styles.speechBubbleTail} />
-                            </View>
-                        </View>
-                    </TouchableOpacity>
+                    <View >
+                        <TouchableOpacity style={styles.iconButton}>
+                            <Ionicons name="cube-outline" size={32} color={activeTooltip ? '#7E80F4' : '#9BA1A6'} style={styles.icon} />
+                        </TouchableOpacity>
+                        <View style={styles.speechBubbleTail} />
+                    </View>
 
                     <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/menu')}>
-                        <Ionicons name="menu-outline" size={24} color="#9BA1A6" />
+                        <Ionicons name="menu-outline" size={32} color="#9BA1A6" />
                     </TouchableOpacity>
                 </View>
+
+                {/* Speech Bubble */}
+                <View style={styles.speechBubbleContainer}>
+                    <View style={styles.speechBubble}>
+                        <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>
+                    </View>
+                </View>
+
             </View>
 
             {/* Chocolate Queue */}
@@ -368,14 +374,22 @@ export default function PromptB() {
                 backgroundColor: isDark ? '#27282A' : '#EDEFF2',
                 height: "100%"
             }}>
-                <ScrollView
-                    ref={scrollViewRef}
-                    style={styles.scrollContainer}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.scrollContent}
-                >
-                    {renderMessages()}
-                </ScrollView>
+                <View style={styles.scrollWrapper}>
+                    <ScrollView
+                        ref={scrollViewRef}
+                        style={styles.scrollContainer}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.scrollContent}
+                    >
+                        {renderMessages()}
+                    </ScrollView>
+                    {/* Fade effect overlay */}
+                    <LinearGradient
+                        colors={[isDark ? '#27282A' : '#EDEFF2', 'transparent']}
+                        style={styles.fadeOverlay}
+                        pointerEvents="none"
+                    />
+                </View>
                 <ButtonContainer
                     onStageChange={handleStageChange}
                     onPlayerChoice={handlePlayerChoice}
@@ -391,10 +405,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#EDEFF2',
     },
     header: {
+        width: '100%',
         backgroundColor: '#FFFFFF',
-        paddingHorizontal: 20,
-        paddingVertical: 20,
-        paddingTop: 50,
+        paddingHorizontal: 16,
+        paddingVertical: 16,
+        paddingTop: 52,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
@@ -406,7 +421,7 @@ const styles = StyleSheet.create({
     gameStatus: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 4,
         position: 'relative',
     },
     roundText: {
@@ -449,7 +464,9 @@ const styles = StyleSheet.create({
     rightSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 8,
+        justifyContent: 'center',
+        height: '100%',
+        // marginTop: 8,
     },
     iconButton: {
         padding: 8,
@@ -457,8 +474,8 @@ const styles = StyleSheet.create({
     },
     chocolateQueue: {
         backgroundColor: '#FFFFFF', // Light gray background as in screenshot
-        paddingBottom: 20,
-        paddingHorizontal: 20,
+        paddingBottom: 17,
+        paddingHorizontal: 8,
     },
     queueContainer: {
         width: '100%',
@@ -481,7 +498,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '100%',
         height: 3,
-        marginBottom: 8,
+        marginBottom: 15,
         borderRadius: 1.5,
         marginTop: -1
     },
@@ -512,6 +529,10 @@ const styles = StyleSheet.create({
         width: 24,
         height: 24,
     },
+    scrollWrapper: {
+        flex: 1,
+        position: 'relative',
+    },
     scrollContainer: {
         flex: 1,
         width: '100%',
@@ -523,6 +544,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         justifyContent: 'flex-end',
     },
+    fadeOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 85,
+    },
     speechBubbleContainer: {
         position: 'absolute',
         top: 120, // Position below the header
@@ -532,28 +560,27 @@ const styles = StyleSheet.create({
     speechBubble: {
         backgroundColor: '#7E80F4',
         borderRadius: 16,
-        paddingVertical: 12,
+        paddingVertical: 16,
         paddingHorizontal: 16,
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
         position: 'relative',
-        maxWidth: 200,
+        width: '100%',
+        // maxWidth: 200,
     },
     speechBubbleText: {
         color: '#FFFFFF',
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: '600',
         textAlign: 'center',
     },
     speechBubbleTail: {
         position: 'absolute',
-        top: -6,
-        right: 20, // Position tail to point to cube icon
+        bottom: -15,
+        right: 16, // Position tail to point to cube icon
         width: 0,
         height: 0,
-        borderLeftWidth: 6,
-        borderRightWidth: 6,
-        borderBottomWidth: 6,
+        borderLeftWidth: 12,
+        borderRightWidth: 12,
+        borderBottomWidth: 12,
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
         borderBottomColor: '#7E80F4',
@@ -567,5 +594,9 @@ const styles = StyleSheet.create({
     },
     regularMessageContainer: {
         marginBottom: 10,
+    },
+    icon: {
+        fontSize: 38,
+        fontWeight: '900',
     },
 });

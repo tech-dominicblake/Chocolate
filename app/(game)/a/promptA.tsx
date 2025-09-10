@@ -2,6 +2,7 @@ import ButtonContainer from "@/components/prompts/ButtonContainer";
 import MessageItem from "@/components/prompts/MessageItem";
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useGameStore, useMessages } from "@/state/useGameStore";
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -73,7 +74,7 @@ export default function Prompt() {
                 meta: { buttonType } // Store the button type in meta for future use
             });
         }
-
+          
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
                 setHasFailedOnce(true);
@@ -244,20 +245,28 @@ export default function Prompt() {
             backgroundColor: isDark ? '#27282A' : '#EDEFF2',
             height: "100%"
         }}>
-            <ScrollView
-                ref={scrollViewRef}
-                style={styles.container}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={true}
-                showsHorizontalScrollIndicator={false}
-                scrollIndicatorInsets={{ bottom: 40 }}
-                indicatorStyle="black"
-                persistentScrollbar={true}
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-            >
-                {renderMessages()}
-            </ScrollView>
+            <View style={styles.scrollContainer}>
+                <ScrollView
+                    ref={scrollViewRef}
+                    style={styles.container}
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={true}
+                    showsHorizontalScrollIndicator={false}
+                    scrollIndicatorInsets={{ bottom: 40 }}
+                    indicatorStyle="black"
+                    persistentScrollbar={true}
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                >
+                    {renderMessages()}
+                </ScrollView>
+                {/* Fade effect overlay */}
+                <LinearGradient
+                    colors={[isDark ? '#27282A' : '#EDEFF2', 'transparent']}
+                    style={styles.fadeOverlay}
+                    pointerEvents="none"
+                />
+            </View>
             <ButtonContainer
                 onStageChange={handleStageChange}
                 onPlayerChoice={handlePlayerChoice}
@@ -267,6 +276,10 @@ export default function Prompt() {
 }
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flex: 1,
+        position: 'relative',
+    },
     container: {
         flex: 1,
         width: '100%',
@@ -277,6 +290,13 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         paddingHorizontal: 16,
         justifyContent: 'flex-end',
+    },
+    fadeOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 80,
     },
     scrollIndicator: {
         width: 50,
