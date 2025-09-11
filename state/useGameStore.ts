@@ -55,8 +55,8 @@ interface GameState {
   resetGame: () => void;
   setTaskCompleted: (player: PlayerId) => void;
   setRound: () => void;
-  enqueueGameInfoMessages: () => void;
-  getMockMessageByKind: (kind: 'prompt' | 'success' | 'fail' | 'dare') => any;
+  enqueueGameInfoMessages: () => Promise<void>;
+  getMockMessageByKind: (kind: 'prompt' | 'success' | 'fail' | 'dare' | 'superGameCF' | 'superGame') => any;
   setHasFailedOnce: (value: boolean) => void;
   setConsumedChocolatesEachCount: () => void;
   setSheFailedTwice: (value: boolean) => void;
@@ -93,6 +93,7 @@ const mockMessagesData = {
       body: "Sit her on your lap. Confess the following to each other whilst eating the chocolate together",
       kind: 'prompt' as const,
       group: 'question' as const,
+      durationMs: 2000,
     },
     {
       title: "Too Hot to Handle 🔥💋",
@@ -120,6 +121,20 @@ const mockMessagesData = {
       title: "Oof. You took  the Fail like a champ 😈",
       body: "Now let’s see if your partner’s got more guts than you 💅",
       kind: 'fail' as const,
+      group: 'game_result' as const,
+    }
+  ],
+  superGameCF: [
+    {
+      body: "Ready for Super Game?",
+      kind: 'prompt' as const,
+      group: 'game_result' as const,
+    },
+  ],
+  superGame: [
+    {
+      body: " Final round, final piece. We’re ready. Let it ruin us beautifully.",
+      kind: 'prompt' as const,
       group: 'game_result' as const,
     }
   ]
@@ -199,7 +214,7 @@ export const useGameStore = create<GameState>((set) => ({
     return state;
   }),
 
-  enqueueGameInfoMessages: () => {
+  enqueueGameInfoMessages: async () => {
     const state = useGameStore.getState();
 
     // Use default values if mode/stage are null
@@ -235,6 +250,7 @@ export const useGameStore = create<GameState>((set) => ({
         kind: 'info' as const,
         body: gameTypeMap[currentMode],
         group: 'game_info' as const,
+        durationMs: 5000,
       },
       {
         kind: 'info' as const,
@@ -253,7 +269,6 @@ export const useGameStore = create<GameState>((set) => ({
 
     // Check if queue is not empty to add separator
     const { enqueue, queue } = useMessages.getState();
-    let messagesToEnqueue: any[] = [...presetMessages, firstPrompt];
 
     // If queue is not empty, add a separator message at the beginning
     if (queue.length > 0) {
@@ -262,14 +277,19 @@ export const useGameStore = create<GameState>((set) => ({
         body: '',
         group: 'separator' as const,
       };
-      messagesToEnqueue.unshift(separatorMessage);
+      await enqueue(separatorMessage);
     }
 
-    // Enqueue the messages
-    enqueue(messagesToEnqueue);
+    // Enqueue each message individually with await to ensure sequential processing
+    for (const message of presetMessages) {
+      await enqueue(message);
+    }
+
+    // Enqueue the first prompt message
+    await enqueue(firstPrompt);
   },
 
-  getMockMessageByKind: (kind: 'prompt' | 'success' | 'fail' | 'dare') => {
+  getMockMessageByKind: (kind: 'prompt' | 'success' | 'fail' | 'dare' | 'superGameCF' | 'superGame') => {
     if (mockMessagesData[kind as keyof typeof mockMessagesData]) {
       return mockMessagesData[kind as keyof typeof mockMessagesData][0];
     }
@@ -297,25 +317,46 @@ const mkId = () => Math.random().toString(36).slice(2) + Date.now();
 
 interface MessageState {
   queue: Message[];
-  enqueue: (msg: Message | Message[]) => void;
+  isProcessing: boolean; // Add lock to prevent concurrent enqueuing
+  enqueue: (msg: Message) => Promise<void>;
   dequeue: (id?: string) => void;   // if no id, pop head
   clear: () => void;
 }
 
 export const useMessages = create<MessageState>((set, get) => ({
   queue: [],
-  enqueue: (msg) =>
-    set(s => {
-      const list = Array.isArray(msg) ? msg : [msg];
-      const withIds = list.map((m): Message => ({
-        ...m,
-        id: m.id ?? mkId(),
-        durationMs: m.durationMs ?? 2000,
-      }));
-      return { queue: [...s.queue, ...withIds] };
-    }),
+  isProcessing: false,
+  enqueue: async (msg) => {
+    // Check if queue is currently processing a message with duration
+    const state = get();
+    if (state.isProcessing) {
+      console.log('Queue is busy, message will be queued after current processing completes');
+      // Wait for current processing to complete
+      while (state.isProcessing) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const currentState = get();
+        if (!currentState.isProcessing) break;
+      }
+    }
+
+    const withId: Message = {
+      ...msg,
+      id: msg.id ?? mkId(),
+      durationMs: msg.durationMs ?? 0,
+    };
+
+    // Add message to queue immediately
+    set(s => ({ queue: [...s.queue, withId] }));
+
+    // If message has duration, lock the queue and wait
+    if (msg.durationMs && msg.durationMs > 0) {
+      set(s => ({ isProcessing: true }));
+      await new Promise(resolve => setTimeout(resolve, msg.durationMs));
+      set(s => ({ isProcessing: false }));
+    }
+  },
   dequeue: (id) =>
     set(s => id ? ({ queue: s.queue.filter(m => m.id !== id) })
       : ({ queue: s.queue.slice(1) })),
-  clear: () => set({ queue: [] }),
+  clear: () => set({ queue: [], isProcessing: false }),
 }));

@@ -74,7 +74,7 @@ export default function Prompt() {
                 meta: { buttonType } // Store the button type in meta for future use
             });
         }
-          
+
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
                 setHasFailedOnce(true);
@@ -97,13 +97,24 @@ export default function Prompt() {
                     setSheFailedTwice(true);
                 } else if (useGameStore.getState().currentTurn === 'him' &&
                     sheFailedTwice.state &&
+                    
                     sheFailedTwice.level === useGameStore.getState().level - 1) {
                     enqueue(getMockMessageByKind('fail'));
                     setTimeout(() => {
                         router.push('/(game)/a/statsA');
                     }, 2000);
                     return;
+                } else if (useGameStore.getState().currentTurn === 'him' &&
+                    !(sheFailedTwice.state &&
+                    sheFailedTwice.level === 12) && useGameStore.getState().level === 12) {
+             
+                    enqueue(getMockMessageByKind('superGameCF'));
+                    setTimeout(() => {
+                    }, 2000);
+                    return;
                 }
+                    
+
 
                 // Second fail: show fail message and navigate to stats
                 const failMessage = getMockMessageByKind('fail');
@@ -128,13 +139,13 @@ export default function Prompt() {
             if (choice === "LET'S GET MESSY" && !hasFailedOnce) {
                 setTaskCompleted(currentTurn);
                 setConsumedChocolatesEachCount();
-                
+
                 const successMessage = getMockMessageByKind('success');
                 if (successMessage) {
                     enqueue(successMessage);
                 }
             }
-            
+
             if (choice === "Continue") {
                 setTimeout(() => {
                     if (round === 3) {

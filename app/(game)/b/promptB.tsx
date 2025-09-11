@@ -577,7 +577,7 @@ const styles = StyleSheet.create({
         bottom: -15,
         right: 16, // Position tail to point to cube icon
         width: 0,
-        height: 0,
+        height: 0, 
         borderLeftWidth: 12,
         borderRightWidth: 12,
         borderBottomWidth: 12,
