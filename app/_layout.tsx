@@ -24,11 +24,14 @@ export default function RootLayout() {
       <ThemeProvider>
         <QueryProvider>
           <Stack screenOptions={{ headerShown: false }}>
-          {/* Default redirect to sign-in */}
+          {/* Default redirect to avatar selection */}
           <Stack.Screen name="index" redirect />
           
           {/* Auth Group */}
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          
+          {/* Avatar Selection */}
+          <Stack.Screen name="avatarSelection" options={{ headerShown: false }} />
 
           {/* Game Group */}
           <Stack.Screen name="(game)" options={{ headerShown: false }} />

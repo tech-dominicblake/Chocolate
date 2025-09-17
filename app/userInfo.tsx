@@ -27,7 +27,7 @@ export default function UserInfo() {
         setPlayerNames({ her: player1Name, him: player2Name });
 
         // Navigate to next step
-        router.push('/gameSelection');
+        router.push('/girlAvatarSelection');
     };
 
     return (

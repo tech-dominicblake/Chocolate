@@ -35,6 +35,18 @@ const IMAGES = {
     grid: require('../assets/images/01.png'),
     moon: require('../assets/images/moon.png'),
     sun: require('../assets/images/sun.png'),
+    avatarGirl1: require('../assets/images/avatar/avatar_g_1.png'),
+    avatarGirl2: require('../assets/images/avatar/avatar_g_4.png'),
+    avatarGirl3: require('../assets/images/avatar/avatar_g_2.png'),
+    avatarGirl4: require('../assets/images/avatar/avatar_g_5.png'),
+    avatarGirl5: require('../assets/images/avatar/avatar_g_3.png'),
+    avatarGirl6: require('../assets/images/avatar/avatar_g_6.png'),
+    avatarMan1: require('../assets/images/avatar/avatar_m_1.png'),
+    avatarMan2: require('../assets/images/avatar/avatar_m_4.png'),
+    avatarMan3: require('../assets/images/avatar/avatar_m_2.png'),
+    avatarMan4: require('../assets/images/avatar/avatar_m_5.png'),
+    avatarMan5: require('../assets/images/avatar/avatar_m_3.png'),
+    avatarMan6: require('../assets/images/avatar/avatar_m_6.png'),
 }
 
 export default {

@@ -14,6 +14,7 @@ export default function StartPage() {
     const { clear } = useMessages();
 
     const handleRestartGame = () => {
+        clear();
         router.push('/userInfo');
     };
 

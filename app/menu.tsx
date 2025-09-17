@@ -1,6 +1,5 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
-import { handleHomeBtn } from '@/constants/Functions';
 import { useThemeToggle } from '@/hooks/useAppTheme';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -37,6 +36,10 @@ export default function MenuPage() {
 
     const handleReviewApp = () => {
         router.push('/userInfo');
+    };
+
+    const handleHomeBtn = () => {
+        router.push('/startPage');
     };
 
     const menuButtons = [

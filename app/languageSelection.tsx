@@ -37,7 +37,7 @@ export default function LanguageSelectionScreen() {
   const handleConfirmAndContinue = () => {
     setLanguage(selectedLanguage);
     // Navigate to the next screen (you can adjust this based on your app flow)
-    router.push('/gameSelection');
+    router.push('/userInfo');
   };
 
   const handleBack = () => {
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   languageContainer: {
     flex: 1,
     justifyContent: 'center',
-    gap: 16,
+    gap: 4,
   },
   buttonContainer: {
     paddingBottom: 48,

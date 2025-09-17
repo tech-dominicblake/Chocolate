@@ -7,9 +7,10 @@ import ActionButton from './ActionButton';
 interface ButtonContainerProps {
     onStageChange: (stage: number) => void;
     onPlayerChoice?: (choice: string, buttonType: 'success' | 'fail') => void;
+    isGamePaused?: boolean;
 }
 
-export default function ButtonContainer({ onStageChange, onPlayerChoice }: ButtonContainerProps) {
+export default function ButtonContainer({ onStageChange, onPlayerChoice, isGamePaused = false }: ButtonContainerProps) {
     const { round, currentTurn, consumeChocolate, consumedChocolates, selectedMessy, tasksCompleted, level, hasFailedOnce } = useGameStore();
     const { isDark } = useThemeToggle();
 
@@ -22,11 +23,16 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
 
         setIsSuccessLoading(true);
 
-        const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
-        const isCompleted = currentRoundData?.completedLevel.includes(level);
-        onPlayerChoice?.(`${isCompleted ? 'Continue' : 'LET\'S GET MESSY'}`, 'success');
+        // If game is paused, always send "Continue"
+        if (isGamePaused) {
+            onPlayerChoice?.('Continue', 'success');
+        } else {
+            const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
+            const isCompleted = currentRoundData?.completedLevel.includes(level);
+            onPlayerChoice?.(`${isCompleted ? 'Continue' : 'LET\'S GET MESSY'}`, 'success');
+        }
+        
         setTimeout(() => setIsSuccessLoading(false), 2000);
-
     };
 
     const handleNahIBail = async () => {
@@ -51,7 +57,7 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
         <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : 'transparent' }]}>
             <View style={styles.buttonContainer}>
                 <ActionButton
-                    title={`${(() => {
+                    title={isGamePaused ? 'Continue' : `${(() => {
                         const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
                         return (currentRoundData?.completedLevel.includes(level) || hasFailedOnce) ? ' Continue' : 'LET\'S GET MESSY';
                     })()}`}
@@ -67,7 +73,8 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice }: Butto
                     loading={isSuccessLoading}
                     disabled={isSuccessLoading || isFailLoading}
                 />
-                {!(() => {
+                {/* Only show the second button when game is not paused */}
+                {!isGamePaused && !(() => {
                     const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
                     return currentRoundData?.completedLevel.includes(level);
                 })() && <ActionButton

@@ -1,3 +1,5 @@
+import CongratsPage from "@/app/congrats";
+import GameAHeader from "@/components/game/GameHeader";
 import ButtonContainer from "@/components/prompts/ButtonContainer";
 import MessageItem from "@/components/prompts/MessageItem";
 import { useThemeToggle } from "@/hooks/useAppTheme";
@@ -5,12 +7,14 @@ import { useGameStore, useMessages } from "@/state/useGameStore";
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 
 export default function Prompt() {
     const [gameStage, setGameStage] = useState(1);
     const [playerChoice, setPlayerChoice] = useState<string | undefined>();
     const [showSuccessDelay, setShowSuccessDelay] = useState(false);
+    const [showCongrats, setShowCongrats] = useState(false);
+    const [isGamePaused, setIsGamePaused] = useState(false);
     const { isDark } = useThemeToggle();
     const {
         setTaskCompleted,
@@ -21,17 +25,21 @@ export default function Prompt() {
         round,
         mode,
         level,
+
         enqueueGameInfoMessages,
         getMockMessageByKind,
-        hasFailedOnce,
         setHasFailedOnce,
         incrementPlayerFailCount,
         setConsumedChocolatesEachCount,
         setSheFailedTwice,
         setCurrentTurn,
         sheFailedTwice,
-        setSelectedMessy
+        setSelectedMessy,
+        setShowBtns
     } = useGameStore();
+
+    const showBtns = useGameStore.getState().showBtns;
+    const hasFailedOnce = useGameStore.getState().hasFailedOnce;
 
     const { queue, enqueue, clear } = useMessages();
     const scrollViewRef = useRef<ScrollView>(null);
@@ -44,6 +52,22 @@ export default function Prompt() {
         // Reset fail state when page opens
         setHasFailedOnce(false);
     }, []);
+
+    // Check for round transition and show special prompt
+    useEffect(() => {
+        if (round === 2) {
+            // Clear existing messages first
+            // clear();
+            // Pause the game and show special round 2 transition message
+            setIsGamePaused(true);
+            enqueue({
+                kind: 'prompt' as const,
+                body: "You survived the warm-up, ready for round 2?",
+                group: 'game_info' as const,
+                // durationMs: 3000
+            });
+        }
+    }, [round]);
 
     // Auto-scroll to bottom when new messages are added
     useEffect(() => {
@@ -63,6 +87,11 @@ export default function Prompt() {
     };
 
     const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
+        // If game is paused, only allow continue action
+        if (isGamePaused && choice !== "Continue") {
+            return;
+        }
+
         setPlayerChoice(choice);
 
         // Enqueue the user's choice as a message with button type
@@ -71,8 +100,21 @@ export default function Prompt() {
                 kind: 'userchoice' as const,
                 body: choice,
                 group: 'user_action' as const,
-                meta: { buttonType } // Store the button type in meta for future use
+                meta: { buttonType }, // Store the button type in meta for future use
+                durationMs: 1000
             });
+        }
+
+        // If game is paused and choice is Continue, handle it and return early
+        if (isGamePaused && choice === "Continue") {
+            setIsGamePaused(false);
+            enqueueGameInfoMessages();
+            return;
+        }
+
+        if (round === 3 && (buttonType === 'success' || (buttonType === 'fail' && hasFailedOnce))) {
+            enqueue(getMockMessageByKind('superGameCF'));
+
         }
 
         if (buttonType === 'fail') {
@@ -87,17 +129,16 @@ export default function Prompt() {
                 const newPromptMessage = getMockMessageByKind('prompt');
                 if (newPromptMessage) {
                     // Add a small delay before showing the new prompt
-                    setTimeout(() => {
-                        enqueue(newPromptMessage);
-                    }, 2000); //  seconds delay between dare message and new prompt
+                    enqueue(newPromptMessage);
                 }
             } else {
                 setHasFailedOnce(false);
+                setShowBtns(false);
                 if (useGameStore.getState().currentTurn === 'her') {
                     setSheFailedTwice(true);
                 } else if (useGameStore.getState().currentTurn === 'him' &&
                     sheFailedTwice.state &&
-                    
+
                     sheFailedTwice.level === useGameStore.getState().level - 1) {
                     enqueue(getMockMessageByKind('fail'));
                     setTimeout(() => {
@@ -106,14 +147,14 @@ export default function Prompt() {
                     return;
                 } else if (useGameStore.getState().currentTurn === 'him' &&
                     !(sheFailedTwice.state &&
-                    sheFailedTwice.level === 12) && useGameStore.getState().level === 12) {
-             
+                        sheFailedTwice.level === 12) && useGameStore.getState().level === 12) {
+
                     enqueue(getMockMessageByKind('superGameCF'));
                     setTimeout(() => {
                     }, 2000);
                     return;
                 }
-                    
+
 
 
                 // Second fail: show fail message and navigate to stats
@@ -122,20 +163,22 @@ export default function Prompt() {
                     enqueue(failMessage);
                 }
 
-                setTimeout(() => {
-                    if (round === 3) {
-                        router.push('/(game)/a/statsA');
-                        return;
-                    }
-                    setRoundLevel(level);
-                    const updatedLevel = useGameStore.getState().level; // Get fresh level from store
-                    setCurrentTurn(updatedLevel);
-                    enqueueGameInfoMessages();
-                }, 2000);
+                if (round === 3) {
+                    router.push('/(game)/a/statsA');
+                    return;
+                }
+                setRoundLevel(level);
+                const updatedLevel = useGameStore.getState().level; // Get fresh level from store
+                setCurrentTurn(updatedLevel);
+                enqueueGameInfoMessages();
+
             }
+            setShowBtns(true);
         }
 
         if (buttonType === 'success') {
+            setShowBtns(false);
+
             if (choice === "LET'S GET MESSY" && !hasFailedOnce) {
                 setTaskCompleted(currentTurn);
                 setConsumedChocolatesEachCount();
@@ -147,19 +190,29 @@ export default function Prompt() {
             }
 
             if (choice === "Continue") {
-                setTimeout(() => {
-                    if (round === 3) {
-                        router.push('/(game)/a/statsA');
-                        return;
+                if (round === 3) {
+                    router.push('/(game)/a/statsA');
+                    return;
+                } else {
+                    // Check if we're continuing from a paused state (new round)
+                    if (isGamePaused) {
+                        // Just resume the game without showing congrats
+                        setIsGamePaused(false);
+                        enqueueGameInfoMessages();
                     } else {
-                        router.push('/congrats');
+                        // Normal continue flow - show congrats
+                        setShowCongrats(true);
+                        
+                        setTimeout(() => {
+                            setShowCongrats(false);
+                            setRoundLevel(level);
+                            const updatedLevel = useGameStore.getState().level;
+                            setCurrentTurn(updatedLevel);
+                            setHasFailedOnce(false);
+                            isGamePaused === false && enqueueGameInfoMessages();
+                        }, 3000);
                     }
-                    setRoundLevel(level);
-                    const updatedLevel = useGameStore.getState().level;
-                    setCurrentTurn(updatedLevel);
-                    enqueueGameInfoMessages();
-                    setHasFailedOnce(false);
-                }, 2000);
+                }
             }
 
             if (hasFailedOnce) {
@@ -176,6 +229,7 @@ export default function Prompt() {
                     enqueueGameInfoMessages();
                 }, 2000);
             }
+            setShowBtns(true);
         }
 
 
@@ -251,38 +305,50 @@ export default function Prompt() {
     };
 
     return (
-        <View style={{
+        <SafeAreaView style={{
             flex: 1,
-            backgroundColor: isDark ? '#27282A' : '#EDEFF2',
-            height: "100%"
+            backgroundColor: isDark ? '#27282A' : '#151718',
         }}>
-            <View style={styles.scrollContainer}>
-                <ScrollView
-                    ref={scrollViewRef}
-                    style={styles.container}
-                    contentContainerStyle={styles.scrollContent}
-                    showsVerticalScrollIndicator={true}
-                    showsHorizontalScrollIndicator={false}
-                    scrollIndicatorInsets={{ bottom: 40 }}
-                    indicatorStyle="black"
-                    persistentScrollbar={true}
-                    onScroll={handleScroll}
-                    scrollEventThrottle={16}
-                >
-                    {renderMessages()}
-                </ScrollView>
-                {/* Fade effect overlay */}
-                <LinearGradient
-                    colors={[isDark ? '#27282A' : '#EDEFF2', 'transparent']}
-                    style={styles.fadeOverlay}
-                    pointerEvents="none"
-                />
+            <GameAHeader />
+            <View style={{
+                flex: 1,
+                backgroundColor: isDark ? '#27282A' : '#EDEFF2',
+                height: "100%"
+            }}>
+                <View style={styles.scrollContainer}>
+                    <ScrollView
+                        ref={scrollViewRef}
+                        style={[styles.container, showBtns ? { paddingBottom: 80 } : {}]}
+                        contentContainerStyle={styles.scrollContent}
+                        showsVerticalScrollIndicator={true}
+                        showsHorizontalScrollIndicator={false}
+                        scrollIndicatorInsets={{ bottom: 40 }}
+                        indicatorStyle="black"
+                        persistentScrollbar={true}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={16}
+                    >
+                        {renderMessages()}
+                    </ScrollView>
+                    {/* Fade effect overlay */}
+                    <LinearGradient
+                        colors={[isDark ? '#27282A' : '#EDEFF2', 'transparent']}
+                        style={styles.fadeOverlay}
+                        pointerEvents="none"
+                    />
+                </View>
+                {showBtns && <ButtonContainer
+                    onStageChange={handleStageChange}
+                    onPlayerChoice={handlePlayerChoice}
+                    isGamePaused={isGamePaused}
+                />}
             </View>
-            <ButtonContainer
-                onStageChange={handleStageChange}
-                onPlayerChoice={handlePlayerChoice}
-            />
-        </View>
+            {showCongrats && (
+                <View style={styles.congratsOverlay}>
+                    <CongratsPage />
+                </View>
+            )}
+        </SafeAreaView>
     )
 }
 
@@ -323,5 +389,15 @@ const styles = StyleSheet.create({
     },
     regularMessageContainer: {
         marginBottom: 10,
+    },
+    congratsOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 1000,
     },
 });

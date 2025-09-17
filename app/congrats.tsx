@@ -13,43 +13,35 @@ import {
 
 export default function CongratsPage() {
     const { isDark } = useThemeContext();
-    
-    useEffect(() => {
-        // Navigate to congratsChoco page after 2 seconds
-        const timer = setTimeout(() => {
-            router.push('/(game)/a/promptA');
-        }, 2000);
-
-        // Cleanup timer on component unmount
-        return () => clearTimeout(timer);
-    }, []);
 
     if (isDark) {
         return (
-            <LinearGradient 
-                style={styles.container}
-                colors={['#2D2F92', '#4E4FA6', '#8383C6']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-            >
-                <Image source={Images.IMAGES.image9} style={styles.congratsImage} />
-                {/* Main Content */}
-                <View style={styles.contentContainer}>
-                    {/* Party Popper Graphic */}
-                    <Image source={Images.IMAGES.image1} style={styles.partyPopperHeader} />
-                    {/* Congratulatory Text */}
-                    <View style={styles.textContainer}>
-                        <Text style={[styles.congratsText, { color: useAppThemeColor('text') }]}>Congrats!</Text>
-                        <Text style={[styles.taskCompletedText, { color: useAppThemeColor('text') }]}>Task Completed</Text>
+            <View style={styles.topContainer}>
+                <LinearGradient
+                    style={styles.container}
+                    colors={['#2D2F92', '#4E4FA6', '#8383C6']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                >
+                    <Image source={Images.IMAGES.image9} style={styles.congratsImage} />
+                    {/* Main Content */}
+                    <View style={styles.contentContainer}>
+                        {/* Party Popper Graphic */}
+                        <Image source={Images.IMAGES.image1} style={styles.partyPopperHeader} />
+                        {/* Congratulatory Text */}
+                        <View style={styles.textContainer}>
+                            <Text style={[styles.congratsText, { color: useAppThemeColor('text') }]}>Congrats!</Text>
+                            <Text style={[styles.taskCompletedText, { color: useAppThemeColor('text') }]}>Task Completed</Text>
 
-                        <View style={styles.subTextContainer}>
-                            <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>This is the energy we need.</Text>
-                            <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>One task down. A whole lot</Text>
-                            <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>of tension to go <Text style={styles.emoji}>😈</Text></Text>
+                            <View style={styles.subTextContainer}>
+                                <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>This is the energy we need.</Text>
+                                <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>One task down. A whole lot</Text>
+                                <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>of tension to go <Text style={styles.emoji}>😈</Text></Text>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </LinearGradient>
+                </LinearGradient>
+            </View>
         );
     }
 
@@ -77,6 +69,16 @@ export default function CongratsPage() {
 }
 
 const styles = StyleSheet.create({
+    topContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        // backgroundColor: '#E6E6FA', // Light purple background
+    },
     container: {
         position: 'relative',
         flex: 1,

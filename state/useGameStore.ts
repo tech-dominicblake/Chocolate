@@ -14,9 +14,10 @@ interface GameState {
   round: number;
   level: number;
   currentTurn: PlayerId;
-  consumedChocolates: number[];
-  consumedChocolatesEachCount: { her: number; him: number };
+  consumedChocolates: number[]; // for game B
+  consumedChocolatesEachCount: { her: number; him: number }; // for game A
   selectedChocoIndex: number;
+  roundStarted: boolean;
 
   // Stats
   tasksCompleted: {
@@ -37,6 +38,8 @@ interface GameState {
   sheFailedTwice: { level: number; state: boolean }; // Track if user has failed twice already
   selectedMessy: boolean; // Track if user has selected messy
   activeTooltip: boolean; // Track if user has selected messy
+  showBtns: boolean;
+
 
   // Actions
   setMode: (mode: Mode) => void;
@@ -62,6 +65,8 @@ interface GameState {
   setSheFailedTwice: (value: boolean) => void;
   setSelectedMessy: (value: boolean) => void;
   setActiveTooltip: (value: boolean) => void;
+  setRoundStarted: (value: boolean) => void;
+  setShowBtns: (value: boolean) => void;
 }
 
 const initialState = {
@@ -83,6 +88,8 @@ const initialState = {
   sheFailedTwice: { level: 0, state: false },
   selectedMessy: false,
   activeTooltip: true,
+  roundStarted: false,
+  showBtns: true,
 };
 
 // Mock messages data structure
@@ -100,6 +107,7 @@ const mockMessagesData = {
       body: "Slowly and seductively lick the chocolate piece... Whisper your partner's three sexiest features 😍🔥",
       kind: 'prompt' as const,
       group: 'question' as const,
+      durationMs: 1000,
     }
   ],
   success: [
@@ -107,6 +115,7 @@ const mockMessagesData = {
       body: "No flinching. No excuses. Just pure, delicious chaos. You’re built for this 😮‍💨",
       kind: 'success' as const,
       group: 'game_result' as const,
+      durationMs: 1000,
     }
   ],
   dare: [
@@ -114,6 +123,7 @@ const mockMessagesData = {
       body: "You backed out? 😮‍💨 Fine. Here's your punishment 😈",
       kind: 'dare' as const,
       group: 'game_result' as const,
+      durationMs: 1000,
     }
   ],
   fail: [
@@ -122,6 +132,7 @@ const mockMessagesData = {
       body: "Now let’s see if your partner’s got more guts than you 💅",
       kind: 'fail' as const,
       group: 'game_result' as const,
+      durationMs: 1000,
     }
   ],
   superGameCF: [
@@ -129,6 +140,7 @@ const mockMessagesData = {
       body: "Ready for Super Game?",
       kind: 'prompt' as const,
       group: 'game_result' as const,
+      durationMs: 1000,
     },
   ],
   superGame: [
@@ -136,6 +148,7 @@ const mockMessagesData = {
       body: " Final round, final piece. We’re ready. Let it ruin us beautifully.",
       kind: 'prompt' as const,
       group: 'game_result' as const,
+      durationMs: 1000,
     }
   ]
 };
@@ -245,22 +258,25 @@ export const useGameStore = create<GameState>((set) => ({
         kind: 'info' as const,
         body: `Category: ${categoryMap[currentStage]}`,
         group: 'game_info' as const,
+        durationMs: 1000,
       },
       {
         kind: 'info' as const,
         body: gameTypeMap[currentMode],
         group: 'game_info' as const,
-        durationMs: 5000,
+        durationMs: 1000,
       },
       {
         kind: 'info' as const,
         body: `Round ${state.round}`,
         group: 'game_info' as const,
+        durationMs: 1000,
       },
       {
         kind: 'info' as const,
         body: `Level ${Math.ceil(Math.ceil(state.level / 2))} - for ${turnMap[state.currentTurn]}`,
         group: 'game_info' as const,
+        durationMs: 1000,
       }
     ];
 
@@ -277,7 +293,7 @@ export const useGameStore = create<GameState>((set) => ({
         body: '',
         group: 'separator' as const,
       };
-      await enqueue(separatorMessage);
+       enqueue(separatorMessage);
     }
 
     // Enqueue each message individually with await to ensure sequential processing
@@ -286,7 +302,13 @@ export const useGameStore = create<GameState>((set) => ({
     }
 
     // Enqueue the first prompt message
-    await enqueue(firstPrompt);
+    if (firstPrompt.title) {
+      await enqueue({kind: 'prompt', body: firstPrompt.title, group: 'question', durationMs: 1000});
+      await enqueue({kind: 'prompt', body: firstPrompt.body, group: 'question', durationMs: 1000});
+    }
+    if (!firstPrompt.title) {
+      await enqueue(firstPrompt);
+    }
   },
 
   getMockMessageByKind: (kind: 'prompt' | 'success' | 'fail' | 'dare' | 'superGameCF' | 'superGame') => {
@@ -309,6 +331,10 @@ export const useGameStore = create<GameState>((set) => ({
   setSelectedMessy: (value: boolean) => set({ selectedMessy: value }),
 
   setActiveTooltip: (value: boolean) => set({ activeTooltip: value }),
+
+  setRoundStarted: (value: boolean) => set({ roundStarted: value }),
+
+  setShowBtns: (value: boolean) => set({ showBtns: value }),
 
 }));
 
@@ -333,7 +359,7 @@ export const useMessages = create<MessageState>((set, get) => ({
       console.log('Queue is busy, message will be queued after current processing completes');
       // Wait for current processing to complete
       while (state.isProcessing) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         const currentState = get();
         if (!currentState.isProcessing) break;
       }
