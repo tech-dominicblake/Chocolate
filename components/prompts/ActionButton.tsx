@@ -8,6 +8,7 @@ interface ActionButtonProps {
     color?: string;
     loading?: boolean;
     disabled?: boolean;
+    hide?: boolean;
 }
 
 export default function ActionButton({ 
@@ -17,12 +18,17 @@ export default function ActionButton({
     variant, 
     backgroundImage, 
     loading = false, 
-    disabled = false 
+    disabled = false,
+    hide = false
 }: ActionButtonProps) {
     const handlePress = () => {
         if (loading || disabled) return;
         onPress();
     };
+
+    if (hide) {
+        return null;
+    }
 
     if (backgroundImage) {
         return (

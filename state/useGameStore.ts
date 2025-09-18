@@ -40,7 +40,6 @@ interface GameState {
   activeTooltip: boolean; // Track if user has selected messy
   showBtns: boolean;
 
-
   // Actions
   setMode: (mode: Mode) => void;
   setStage: (stageID: number) => void;
@@ -51,7 +50,7 @@ interface GameState {
   switchTurn: () => void;
   consumeChocolate: (id: number) => void;
   setSelectedChocoIndex: (index: number) => void;
-  failTask: () => void;
+  setFailSurvivedTask: (turn: PlayerId) => void;
   incrementPlayerFailCount: (player: PlayerId) => void; // New action to increment fail count for specific player
   updateRoundTime: (time: number) => void;
   completeSuperGame: () => void;
@@ -59,7 +58,7 @@ interface GameState {
   setTaskCompleted: (player: PlayerId) => void;
   setRound: () => void;
   enqueueGameInfoMessages: () => Promise<void>;
-  getMockMessageByKind: (kind: 'prompt' | 'success' | 'fail' | 'dare' | 'superGameCF' | 'superGame') => any;
+  getMockMessageByKind: (kind: 'prompt' | 'success' | 'survive' | 'fail' | 'dare' | 'superGameCF' | 'superGame') => any;
   setHasFailedOnce: (value: boolean) => void;
   setConsumedChocolatesEachCount: () => void;
   setSheFailedTwice: (value: boolean) => void;
@@ -67,6 +66,7 @@ interface GameState {
   setActiveTooltip: (value: boolean) => void;
   setRoundStarted: (value: boolean) => void;
   setShowBtns: (value: boolean) => void;
+  clearState: () => void;
 }
 
 const initialState = {
@@ -112,8 +112,16 @@ const mockMessagesData = {
   ],
   success: [
     {
-      body: "No flinching. No excuses. Just pure, delicious chaos. You’re built for this 😮‍💨",
+      body: "No flinching. No excuses. Just pure, delicious chaos. You're built for this 😮‍💨",
       kind: 'success' as const,
+      group: 'game_result' as const,
+      durationMs: 1000,
+    }
+  ],
+  survive: [
+    {
+      body: "You bounced back! That's the spirit 💪 Ready to keep going?",
+      kind: 'survive' as const,
       group: 'game_result' as const,
       durationMs: 1000,
     }
@@ -185,10 +193,10 @@ export const useGameStore = create<GameState>((set) => ({
   setSelectedChocoIndex: (index) => set({ selectedChocoIndex: index }),
 
 
-  failTask: () => set((state) => ({
+  setFailSurvivedTask: (turn) => set((state) => ({
     failsSuffered: {
-      her: state.failsSuffered.her + 1,
-      him: state.failsSuffered.him + 1
+      ...state.failsSuffered,
+      [turn]: state.failsSuffered[turn] + 1
     },
   })),
 
@@ -293,7 +301,7 @@ export const useGameStore = create<GameState>((set) => ({
         body: '',
         group: 'separator' as const,
       };
-       enqueue(separatorMessage);
+      enqueue(separatorMessage);
     }
 
     // Enqueue each message individually with await to ensure sequential processing
@@ -303,15 +311,15 @@ export const useGameStore = create<GameState>((set) => ({
 
     // Enqueue the first prompt message
     if (firstPrompt.title) {
-      await enqueue({kind: 'prompt', body: firstPrompt.title, group: 'question', durationMs: 1000});
-      await enqueue({kind: 'prompt', body: firstPrompt.body, group: 'question', durationMs: 1000});
+      await enqueue({ kind: 'prompt', body: firstPrompt.title, group: 'question', durationMs: 1000 });
+      await enqueue({ kind: 'prompt', body: firstPrompt.body, group: 'question', durationMs: 1000 });
     }
     if (!firstPrompt.title) {
       await enqueue(firstPrompt);
     }
   },
 
-  getMockMessageByKind: (kind: 'prompt' | 'success' | 'fail' | 'dare' | 'superGameCF' | 'superGame') => {
+  getMockMessageByKind: (kind: 'prompt' | 'success' | 'survive' | 'fail' | 'dare' | 'superGameCF' | 'superGame') => {
     if (mockMessagesData[kind as keyof typeof mockMessagesData]) {
       return mockMessagesData[kind as keyof typeof mockMessagesData][0];
     }
@@ -335,6 +343,10 @@ export const useGameStore = create<GameState>((set) => ({
   setRoundStarted: (value: boolean) => set({ roundStarted: value }),
 
   setShowBtns: (value: boolean) => set({ showBtns: value }),
+  clearState: () => set((state) => ({
+    ...initialState,
+    language: state.language, // Preserve current language
+  })),
 
 }));
 

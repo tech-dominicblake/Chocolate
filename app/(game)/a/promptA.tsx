@@ -2,10 +2,10 @@ import CongratsPage from "@/app/congrats";
 import GameAHeader from "@/components/game/GameHeader";
 import ButtonContainer from "@/components/prompts/ButtonContainer";
 import MessageItem from "@/components/prompts/MessageItem";
+import { ProcessingState } from "@/constants/Types";
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useGameStore, useMessages } from "@/state/useGameStore";
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 
@@ -15,17 +15,20 @@ export default function Prompt() {
     const [showSuccessDelay, setShowSuccessDelay] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false);
     const [isGamePaused, setIsGamePaused] = useState(false);
-    const { isDark } = useThemeToggle();
-    const {
-        setTaskCompleted,
-        currentTurn,
-        consumeChocolate,
-        stage,
-        setRoundLevel,
-        round,
-        mode,
-        level,
+    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
+    const { isDark } = useThemeToggle();
+    const scrollViewRef = useRef<ScrollView>(null);
+
+    const hasFailedOnce = useGameStore.getState().hasFailedOnce;
+    const showBtns = useGameStore.getState().showBtns;
+    const {
+        currentTurn,
+        round,
+        level,
+        sheFailedTwice,
+        setTaskCompleted,
+        setRoundLevel,
         enqueueGameInfoMessages,
         getMockMessageByKind,
         setHasFailedOnce,
@@ -33,41 +36,14 @@ export default function Prompt() {
         setConsumedChocolatesEachCount,
         setSheFailedTwice,
         setCurrentTurn,
-        sheFailedTwice,
-        setSelectedMessy,
-        setShowBtns
+        setShowBtns,
+        setFailSurvivedTask,
     } = useGameStore();
-
-    const showBtns = useGameStore.getState().showBtns;
-    const hasFailedOnce = useGameStore.getState().hasFailedOnce;
-
     const { queue, enqueue, clear } = useMessages();
-    const scrollViewRef = useRef<ScrollView>(null);
-    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
-    // Enqueue game info messages when component mounts
     useEffect(() => {
-        // Clear the queue first, then add new preset messages
         enqueueGameInfoMessages();
-        // Reset fail state when page opens
-        setHasFailedOnce(false);
     }, []);
-
-    // Check for round transition and show special prompt
-    useEffect(() => {
-        if (round === 2) {
-            // Clear existing messages first
-            // clear();
-            // Pause the game and show special round 2 transition message
-            setIsGamePaused(true);
-            enqueue({
-                kind: 'prompt' as const,
-                body: "You survived the warm-up, ready for round 2?",
-                group: 'game_info' as const,
-                // durationMs: 3000
-            });
-        }
-    }, [round]);
 
     // Auto-scroll to bottom when new messages are added
     useEffect(() => {
@@ -87,156 +63,66 @@ export default function Prompt() {
     };
 
     const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
-        // If game is paused, only allow continue action
-        if (isGamePaused && choice !== "Continue") {
-            return;
-        }
-
-        setPlayerChoice(choice);
-
-        // Enqueue the user's choice as a message with button type
-        {
-            choice !== "Continue" && enqueue({
+        if (buttonType === 'success') {
+            enqueue({
                 kind: 'userchoice' as const,
                 body: choice,
                 group: 'user_action' as const,
-                meta: { buttonType }, // Store the button type in meta for future use
-                durationMs: 1000
+                meta: { buttonType } // Store the button type in meta for future use
             });
+            const successMessage = getMockMessageByKind('success');
+            if (successMessage) {
+                enqueue(successMessage);
+            }
         }
-
-        // If game is paused and choice is Continue, handle it and return early
-        if (isGamePaused && choice === "Continue") {
-            setIsGamePaused(false);
-            enqueueGameInfoMessages();
-            return;
-        }
-
-        if (round === 3 && (buttonType === 'success' || (buttonType === 'fail' && hasFailedOnce))) {
-            enqueue(getMockMessageByKind('superGameCF'));
-
-        }
-
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
                 setHasFailedOnce(true);
-                // First fail: show dare message and new prompt
                 const dareMessage = getMockMessageByKind('dare');
                 if (dareMessage) {
                     enqueue(dareMessage);
                 }
-                // Get a new prompt message (second prompt from mock data)
                 const newPromptMessage = getMockMessageByKind('prompt');
                 if (newPromptMessage) {
-                    // Add a small delay before showing the new prompt
                     enqueue(newPromptMessage);
                 }
             } else {
-                setHasFailedOnce(false);
-                setShowBtns(false);
-                if (useGameStore.getState().currentTurn === 'her') {
-                    setSheFailedTwice(true);
-                } else if (useGameStore.getState().currentTurn === 'him' &&
-                    sheFailedTwice.state &&
-
-                    sheFailedTwice.level === useGameStore.getState().level - 1) {
-                    enqueue(getMockMessageByKind('fail'));
-                    setTimeout(() => {
-                        router.push('/(game)/a/statsA');
-                    }, 2000);
-                    return;
-                } else if (useGameStore.getState().currentTurn === 'him' &&
-                    !(sheFailedTwice.state &&
-                        sheFailedTwice.level === 12) && useGameStore.getState().level === 12) {
-
-                    enqueue(getMockMessageByKind('superGameCF'));
-                    setTimeout(() => {
-                    }, 2000);
-                    return;
-                }
-
-
-
-                // Second fail: show fail message and navigate to stats
                 const failMessage = getMockMessageByKind('fail');
                 if (failMessage) {
                     enqueue(failMessage);
                 }
-
-                if (round === 3) {
-                    router.push('/(game)/a/statsA');
-                    return;
+                enqueueGameInfoMessages();
+                if (currentTurn === 'her') {
+                    setSheFailedTwice(true);
                 }
                 setRoundLevel(level);
-                const updatedLevel = useGameStore.getState().level; // Get fresh level from store
-                setCurrentTurn(updatedLevel);
-                enqueueGameInfoMessages();
-
+                setCurrentTurn(level + 1);
+                setHasFailedOnce(false);
             }
-            setShowBtns(true);
+
         }
+    }
 
-        if (buttonType === 'success') {
-            setShowBtns(false);
-
-            if (choice === "LET'S GET MESSY" && !hasFailedOnce) {
+    const handleContinue = (gameState: ProcessingState) => {
+        if (gameState.gameSucceeded) {
+            setShowCongrats(true);
+            setTimeout(() => {
+                setShowCongrats(false);
                 setTaskCompleted(currentTurn);
+                setRoundLevel(level);
+                setCurrentTurn(level + 1);
                 setConsumedChocolatesEachCount();
-
-                const successMessage = getMockMessageByKind('success');
-                if (successMessage) {
-                    enqueue(successMessage);
-                }
-            }
-
-            if (choice === "Continue") {
-                if (round === 3) {
-                    router.push('/(game)/a/statsA');
-                    return;
-                } else {
-                    // Check if we're continuing from a paused state (new round)
-                    if (isGamePaused) {
-                        // Just resume the game without showing congrats
-                        setIsGamePaused(false);
-                        enqueueGameInfoMessages();
-                    } else {
-                        // Normal continue flow - show congrats
-                        setShowCongrats(true);
-                        
-                        setTimeout(() => {
-                            setShowCongrats(false);
-                            setRoundLevel(level);
-                            const updatedLevel = useGameStore.getState().level;
-                            setCurrentTurn(updatedLevel);
-                            setHasFailedOnce(false);
-                            isGamePaused === false && enqueueGameInfoMessages();
-                        }, 3000);
-                    }
-                }
-            }
-
-            if (hasFailedOnce) {
-                incrementPlayerFailCount(currentTurn);
-                setTimeout(() => {
-                    if (round === 3) {
-                        router.push('/(game)/a/statsA');
-                        return;
-                    }
-                    setRoundLevel(level);
-                    const updatedLevel = useGameStore.getState().level;
-                    setCurrentTurn(updatedLevel);
-                    setHasFailedOnce(false);
-                    enqueueGameInfoMessages();
-                }, 2000);
-            }
-            setShowBtns(true);
+                enqueueGameInfoMessages();
+            }, 2000);
+        } else if (gameState.gameSurvived) {
+            setTaskCompleted(currentTurn);
+            setRoundLevel(level);
+            setCurrentTurn(level + 1);
+            setConsumedChocolatesEachCount();
+            setHasFailedOnce(false);
+            enqueueGameInfoMessages();
         }
-
-
-    };
-
-    const handleStageChange = (newStage: number) => {
-        setGameStage(newStage);
+        // enqueue(getMockMessageByKind('prompt'));
     };
 
     // Render messages from the queue using MessageItem component
@@ -338,8 +224,8 @@ export default function Prompt() {
                     />
                 </View>
                 {showBtns && <ButtonContainer
-                    onStageChange={handleStageChange}
                     onPlayerChoice={handlePlayerChoice}
+                    onContinue={handleContinue}
                     isGamePaused={isGamePaused}
                 />}
             </View>

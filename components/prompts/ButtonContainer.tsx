@@ -1,67 +1,104 @@
+import { ProcessingState, UserState } from '@/constants/Types';
 import { useThemeToggle } from '@/hooks/useAppTheme';
-import { useGameStore } from '@/state/useGameStore';
-import { useState } from 'react';
+import { useGameStore, useMessages } from '@/state/useGameStore';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ActionButton from './ActionButton';
 
 interface ButtonContainerProps {
-    onStageChange: (stage: number) => void;
     onPlayerChoice?: (choice: string, buttonType: 'success' | 'fail') => void;
+    onContinue?: (gameState: ProcessingState) => void;
     isGamePaused?: boolean;
 }
 
-export default function ButtonContainer({ onStageChange, onPlayerChoice, isGamePaused = false }: ButtonContainerProps) {
-    const { round, currentTurn, consumeChocolate, consumedChocolates, selectedMessy, tasksCompleted, level, hasFailedOnce } = useGameStore();
+export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaused = false }: ButtonContainerProps) {
+    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice } = useGameStore();
+    const { clear } = useMessages();
     const { isDark } = useThemeToggle();
+    const [userState, setUserState] = useState<UserState>({
+        success: false,
+        firstFail: false,
+        secondFail: false,
+        survived: false
+    });
+    const [gameState, setGameState] = useState<ProcessingState>({
+        gameSucceeded: false,
+        gameFailed: false,
+        gamePaused: false,
+        gameSurvived: false,
+        gameStarted: false,
+        gameEnded: false,
+        gameRestarted: false
+    });
 
     // Loading states for buttons
     const [isSuccessLoading, setIsSuccessLoading] = useState(false);
     const [isFailLoading, setIsFailLoading] = useState(false);
 
     const handleLetsGetMessy = async () => {
-        if (isSuccessLoading) return; // Prevent multiple clicks
-
-        setIsSuccessLoading(true);
-
-        // If game is paused, always send "Continue"
-        if (isGamePaused) {
+        if (userState.firstFail) {
+            setGameState({ ...gameState, gameSurvived: true, gamePaused: true });
+            setUserState({ ...userState, survived: true });
             onPlayerChoice?.('Continue', 'success');
+            console.log('survived', userState);
         } else {
-            const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
-            const isCompleted = currentRoundData?.completedLevel.includes(level);
-            onPlayerChoice?.(`${isCompleted ? 'Continue' : 'LET\'S GET MESSY'}`, 'success');
+            setGameState({ ...gameState, gameSucceeded: true, gamePaused: true });
+            setUserState({ ...userState, success: true });
+            onPlayerChoice?.('LET\'S GET MESSY', 'success');
         }
-        
-        setTimeout(() => setIsSuccessLoading(false), 2000);
+    };
+
+    const handleContinue = async () => {
+        if (gameState.gameSucceeded || gameState.gameSurvived) {
+            onContinue?.(gameState);
+        }
+        setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameRestarted: false });
+        setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
     };
 
     const handleNahIBail = async () => {
-        if (isFailLoading) return; // Prevent multiple clicks
-
-        setIsFailLoading(true);
-        try {
-            // Show the button text as a player choice with fail type
-            onPlayerChoice?.("NAH, I BAIL", 'fail');
-
-            // Go to stage 2 (warning and new rule)
-            onStageChange(2);
-        } catch (error) {
-            console.error('Error in fail action:', error);
-        } finally {
-            // Keep loading state for a bit to show feedback
-            setTimeout(() => setIsFailLoading(false), 1500);
+        if (userState.firstFail) {
+            setGameState({ ...gameState, gameFailed: true, gamePaused: true });
+            setUserState({ ...userState, secondFail: true });
+            currentTurn === 'her' && setSheFailedTwice(true)
+            if (currentTurn === 'him' && sheFailedTwice.state && sheFailedTwice.level === (level-1)) {
+                router.push('/(game)/a/statsA');
+                clear();
+                clearState();
+            }
+            onPlayerChoice?.('I can\'t hang', 'fail');
+            setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameRestarted: false });
+            setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
+        } else {
+            onPlayerChoice?.('NAH, I BAIL', 'fail');
+            setUserState({ ...userState, firstFail: true });
         }
     };
+
+    const handleButtonText = (): string[] => {
+        if (!userState.firstFail && !userState.success && !userState.secondFail && !userState.survived) {
+            return ['Let\'s get messy', 'Nah, I bail'];
+        } else if (userState.firstFail && !userState.secondFail) {
+            return ['Continue', 'I can\'t hang'];
+        } else if (userState.survived || userState.success) {
+            return ['Continue', ''];
+        }
+        return ['Let\'s get messy', 'Nah, I bail']; // Default fallback
+    }
+    const buttonText = handleButtonText();
+
+    useEffect(() => {
+        console.log('current Game State', gameState);
+        console.log('current User State', userState);
+    }, [gameState, userState]);
 
     return (
         <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : 'transparent' }]}>
             <View style={styles.buttonContainer}>
                 <ActionButton
-                    title={isGamePaused ? 'Continue' : `${(() => {
-                        const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
-                        return (currentRoundData?.completedLevel.includes(level) || hasFailedOnce) ? ' Continue' : 'LET\'S GET MESSY';
-                    })()}`}
-                    onPress={handleLetsGetMessy}
+                    title={buttonText[0]}
+                    onPress={!gameState.gamePaused ? handleLetsGetMessy : handleContinue}
                     variant="primary"
                     color={round === 3 ? '#FFFFFF' : currentTurn === 'him' ? '#33358F' : '#8B2756'}
                     backgroundImage={
@@ -74,18 +111,16 @@ export default function ButtonContainer({ onStageChange, onPlayerChoice, isGameP
                     disabled={isSuccessLoading || isFailLoading}
                 />
                 {/* Only show the second button when game is not paused */}
-                {!isGamePaused && !(() => {
-                    const currentRoundData = tasksCompleted[currentTurn].find(r => r.round === round);
-                    return currentRoundData?.completedLevel.includes(level);
-                })() && <ActionButton
-                    title={hasFailedOnce ? 'I can\'t hang' : 'NAH, I BAIL'}
-                    onPress={handleNahIBail}
-                    variant="secondary"
-                    color='#7A1818'
-                    backgroundImage={require('@/assets/images/btn-bg2.png')}
-                    loading={isFailLoading}
-                    disabled={isSuccessLoading || isFailLoading}
-                />}
+                <ActionButton
+                        title={buttonText[1]}
+                        onPress={handleNahIBail}
+                        variant="secondary"
+                        color='#7A1818'
+                        backgroundImage={require('@/assets/images/btn-bg2.png')}
+                        loading={isFailLoading}
+                        disabled={isSuccessLoading || isFailLoading}
+                        hide={gameState.gameSucceeded || gameState.gameSurvived}
+                    />
             </View>
         </View>
     );

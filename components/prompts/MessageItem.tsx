@@ -5,7 +5,7 @@ interface MessageItemProps {
     style?: any;
     textStyle?: 'normal' | 'large';
     isDark?: boolean; // New prop for dark theme, test
-    kind: 'prompt' | 'dare' | 'truth' | 'super' | 'fail' | 'success' | 'info' | 'warning' | 'userchoice' | 'separator';
+    kind: 'prompt' | 'dare' | 'truth' | 'super' | 'fail' | 'success' | 'survive' | 'info' | 'warning' | 'userchoice' | 'separator';
     isBody?: boolean; // New prop for determining if the message is body content
 }
 

@@ -12,9 +12,11 @@ export default function StartPage() {
     const { queue } = useMessages();
     const { mode } = useGameStore();
     const { clear } = useMessages();
+    const { clearState } = useGameStore();
 
     const handleRestartGame = () => {
         clear();
+        clearState();
         router.push('/userInfo');
     };
 

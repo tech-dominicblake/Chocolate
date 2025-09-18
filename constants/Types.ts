@@ -34,14 +34,12 @@ export interface Chocolate {
   consumed: boolean;
   failed?: boolean;
 }
-
 export interface ProgressEntry {
   chocolateIndex: number;
   player: PlayerId;
   outcome: 'truth'|'dare'|'task'|'skipped'|'failed'|'super';
   durationMs?: number;
 }
-
 export interface GameState {
   mode: Mode;                                      // 'none' until started
   relationship: RelationshipLevel | null;          // null until chosen
@@ -56,7 +54,6 @@ export interface GameState {
   progress: ProgressEntry[];
   timerStart?: number;
 }
-
 export interface Actions {
   startGameA(rel: RelationshipLevel, players: Record<PlayerId, Player>): void;
   startGameB(rel: RelationshipLevel, players: Record<PlayerId, Player>): void;
@@ -71,8 +68,7 @@ export interface Actions {
   skipSuper(): void;
 }
 
-export type MessageKind = 'success' | 'fail' | 'info' | 'warning' | 'dare' | 'prompt' | 'super' | 'userchoice' | 'separator';
-
+export type MessageKind = 'success' | 'survive' | 'fail' | 'info' | 'warning' | 'dare' | 'prompt' | 'super' | 'userchoice' | 'separator';
 export interface Message {
   id?: string;                // unique, optional since useMessages auto-generates
   kind: MessageKind;          // controls colors/icons
@@ -82,4 +78,20 @@ export interface Message {
   durationMs?: number;        // auto-dismiss timing (if not sticky)
   group?: 'turn'|'level'|'dare'|'system'|'game_info'|'question'|'user_action'|'game_result'|'separator'; // for optional dedupe
   meta?: Record<string, any>; // anything else (playerName, level, etc.)
+}
+export interface UserState {
+  success: boolean;
+  firstFail: boolean;
+  secondFail: boolean;
+  // gamePaused: boolean;
+  survived: boolean;
+}
+export interface ProcessingState {
+  gameSucceeded: boolean;
+  gameFailed: boolean;
+  gameSurvived: boolean;
+  gamePaused: boolean;
+  gameStarted: boolean;
+  gameEnded: boolean;
+  gameRestarted: boolean;
 }
