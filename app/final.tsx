@@ -20,7 +20,8 @@ const { resetGame } = useGameStore();
 const { isDark } = useThemeContext();
 
     useEffect(() => {
-        // Reset all game states to initial values
+        // Clear message queue and reset all game states to initial values
+        clear();
         resetGame();
         const timer = setTimeout(() => {
             router.push('/startPage');

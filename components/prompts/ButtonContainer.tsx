@@ -173,6 +173,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                 router.push('/(game)/a/statsA');
                 clear();
                 clearState();
+                return;
             }
             onPlayerChoice?.('I can\'t hang', 'fail');
             setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameNewLevelStarted: false });
@@ -233,8 +234,8 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                                 ? require('@/assets/images/buttonBg3.png')  // Different background for him
                                 : require('@/assets/images/btn-bg1.png')  // Default background for her
                     }
-                    loading={buttonLoading || loading}
-                    disabled={buttonLoading || loading}
+                    // loading={buttonLoading || loading}
+                    // disabled={buttonLoading || loading}
                 />
                 {/* Only show the second button when game is not paused */}
                 <ActionButton
@@ -243,8 +244,8 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     variant="secondary"
                     color='#7A1818'
                     backgroundImage={require('@/assets/images/btn-bg2.png')}
-                    loading={buttonLoading || loading}
-                    disabled={buttonLoading || loading}
+                    // loading={buttonLoading || loading}
+                    // disabled={buttonLoading || loading}
                     hide={hideButton()}
                 />
             </View>

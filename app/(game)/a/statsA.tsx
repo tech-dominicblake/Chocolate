@@ -1,7 +1,7 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
-import { useGameStore } from '@/state/useGameStore';
+import { useGameStore, useMessages } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -14,7 +14,7 @@ interface GameStats {
     avgTimePerRound: { player1: string; player2: string };
 }
 
-interface StatsScreenProps {                                                                                                                                                            
+interface StatsScreenProps {
     route?: {
         params?: {
             gameStats?: GameStats;
@@ -25,8 +25,9 @@ interface StatsScreenProps {
 }
 
 export default function StatsScreen({ route }: StatsScreenProps) {
-    const { setRoundLevel, setCurrentTurn, round, currentTurn, tasksCompleted, consumedChocolates, didFinal, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
+    const { setRoundLevel, setCurrentTurn, clearState, resetGame, round, currentTurn, tasksCompleted, consumedChocolates, didFinal, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
     const { isDark } = useThemeToggle();
+    const { clear } = useMessages();
 
     // Function to calculate total completed tasks separated by sex
     const getTotalCompletedTasks = (player: 'her' | 'him') => {
@@ -52,7 +53,10 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const gameResult = route?.params?.gameResult || 'success';
 
     const handleContinue = () => {
-            router.push('/final');
+        clearState();
+        clear();
+        resetGame();
+        router.push('/final');
     };
 
     return (

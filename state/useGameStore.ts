@@ -82,8 +82,8 @@ const initialState = {
   stage: null,
   language: 'english' as Language,
   playerNames: { her: '', him: '' },
-  round: 1,
-  level: 1,
+  round: 2,
+  level: 11,
   currentTurn: 'her' as PlayerId,
   consumedChocolates: [],
   selectedChocoIndex: 0,
@@ -247,86 +247,89 @@ export const useGameStore = create<GameState>((set) => ({
   }),
 
   enqueueGameInfoMessages: async () => {
-    const state = useGameStore.getState();
+    try {
+      const state = useGameStore.getState();
 
-    // Use default values if mode/stage are null
-    const currentMode = state.mode || 'A';
-    const currentStage = state.stage || 'just_met';
+      // Use default values if mode/stage are null
+      const currentMode = state.mode || 'A'; // Default to B for game B
+      const currentStage = state.stage || 'just_met';
 
-    // Convert stage to readable category
-    const categoryMap = {
-      'just_met': 'Recently Met',
-      'comfortably_dating': 'Comfortably Dating',
-      'long_term': 'Long Term'
-    };
-
-    // Convert mode to readable game type
-    const gameTypeMap = {
-      'A': 'Game A',
-      'B': 'Game B'
-    };
-
-    // Convert currentTurn to readable format
-    const turnMap = {
-      'her': 'HER',
-      'him': 'HIM'
-    };
-
-    const presetMessages = [
-      {
-        kind: 'info' as const,
-        body: `Category: ${categoryMap[currentStage]}`,
-        group: 'game_info' as const,
-        durationMs: 1000,
-      },
-      {
-        kind: 'info' as const,
-        body: gameTypeMap[currentMode],
-        group: 'game_info' as const,
-        durationMs: 1000,
-      },
-      {
-        kind: 'info' as const,
-        body: `Round ${state.round}`,
-        group: 'game_info' as const,
-        durationMs: 1000,
-      },
-      {
-        kind: 'info' as const,
-        body: `Level ${Math.ceil(Math.ceil(state.level / 2))} - for ${turnMap[state.currentTurn]}`,
-        group: 'game_info' as const,
-        durationMs: 1000,
-      }
-    ];
-
-    // Get the first prompt message from mock data
-    const firstPrompt = mockMessagesData.prompt[0];
-
-    // Check if queue is not empty to add separator
-    const { enqueue, queue } = useMessages.getState();
-
-    // If queue is not empty, add a separator message at the beginning
-    if (queue.length > 0) {
-      const separatorMessage = {
-        kind: 'separator' as const,
-        body: '',
-        group: 'separator' as const,
+      // Convert stage to readable category
+      const categoryMap = {
+        'just_met': 'Recently Met',
+        'comfortably_dating': 'Comfortably Dating',
+        'long_term': 'Long Term'
       };
-      enqueue(separatorMessage);
-    }
 
-    // Enqueue each message individually with await to ensure sequential processing
-    for (const message of presetMessages) {
-      await enqueue(message);
-    }
+      // Convert mode to readable game type
+      const gameTypeMap = {
+        'A': 'Game A',
+        'B': 'Game B'
+      };
 
-    // Enqueue the first prompt message
-    if (firstPrompt.title) {
-      await enqueue({ kind: 'prompt', body: firstPrompt.title, group: 'question', durationMs: 1000 });
-      await enqueue({ kind: 'prompt', body: firstPrompt.body, group: 'question', durationMs: 1000 });
-    }
-    if (!firstPrompt.title) {
-      await enqueue(firstPrompt);
+      // Convert currentTurn to readable format
+      const turnMap = {
+        'her': 'HER',
+        'him': 'HIM'
+      };
+
+      const presetMessages = [
+        {
+          kind: 'info' as const,
+          body: `Category: ${categoryMap[currentStage]}`,
+          group: 'game_info' as const,
+          durationMs: 1000,
+        },
+        {
+          kind: 'info' as const,
+          body: gameTypeMap[currentMode],
+          group: 'game_info' as const,
+          durationMs: 1000,
+        },
+        {
+          kind: 'info' as const,
+          body: `Round ${state.round}`,
+          group: 'game_info' as const,
+          durationMs: 1000,
+        },
+        {
+          kind: 'info' as const,
+          body: `Level ${Math.ceil(Math.ceil(state.level / 2))} - for ${turnMap[state.currentTurn]}`,
+          group: 'game_info' as const,
+          durationMs: 1000,
+        }
+      ];
+
+      // Get the first prompt message from mock data
+      const firstPrompt = mockMessagesData.prompt[0];
+
+      // Check if queue is not empty to add separator
+      const { enqueue, queue } = useMessages.getState();
+
+      // If queue is not empty, add a separator message at the beginning
+      if (queue.length > 0) {
+        const separatorMessage = {
+          kind: 'separator' as const,
+          body: '',
+          group: 'separator' as const,
+        };
+        await enqueue(separatorMessage);
+      }
+
+      // Enqueue each message individually with await to ensure sequential processing
+      for (const message of presetMessages) {
+        await enqueue(message);
+      }
+
+      // Enqueue the first prompt message
+      if (firstPrompt && firstPrompt.title) {
+        await enqueue({ kind: 'prompt', body: firstPrompt.title, group: 'question', durationMs: 1000 });
+        await enqueue({ kind: 'prompt', body: firstPrompt.body, group: 'question', durationMs: 1000 });
+      } else if (firstPrompt) {
+        await enqueue(firstPrompt);
+      }
+    } catch (error) {
+      console.error('Error in enqueueGameInfoMessages:', error);
     }
   },
 
@@ -388,30 +391,35 @@ export const useMessages = create<MessageState>((set, get) => ({
   queue: [],
   isProcessing: false,
   enqueue: async (msg) => {
-    // Check if queue is currently processing a message with duration
-    const state = get();
-    if (state.isProcessing) {
-      // Wait for current processing to complete
-      while (state.isProcessing) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const currentState = get();
-        if (!currentState.isProcessing) break;
+    try {
+      // Check if queue is currently processing a message with duration
+      const state = get();
+      if (state.isProcessing) {
+        // Wait for current processing to complete
+        while (state.isProcessing) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const currentState = get();
+          if (!currentState.isProcessing) break;
+        }
       }
-    }
 
-    const withId: Message = {
-      ...msg,
-      id: msg.id ?? mkId(),
-      durationMs: msg.durationMs ?? 0,
-    };
+      const withId: Message = {
+        ...msg,
+        id: msg.id ?? mkId(),
+        durationMs: msg.durationMs ?? 0,
+      };
 
-    // Add message to queue immediately
-    set(s => ({ queue: [...s.queue, withId] }));
+      // Add message to queue immediately
+      set(s => ({ queue: [...s.queue, withId] }));
 
-    // If message has duration, lock the queue and wait
-    if (msg.durationMs && msg.durationMs > 0) {
-      set(s => ({ isProcessing: true }));
-      await new Promise(resolve => setTimeout(resolve, msg.durationMs));
+      // If message has duration, lock the queue and wait
+      if (msg.durationMs && msg.durationMs > 0) {
+        set(s => ({ isProcessing: true }));
+        await new Promise(resolve => setTimeout(resolve, msg.durationMs));
+        set(s => ({ isProcessing: false }));
+      }
+    } catch (error) {
+      console.error('Error in message enqueue:', error);
       set(s => ({ isProcessing: false }));
     }
   },

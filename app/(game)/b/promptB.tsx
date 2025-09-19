@@ -31,7 +31,7 @@ const chocolateQueue = [
 
 // Header component with chocolate queue
 const GameHeader = () => {
-    const { round, level, currentTurn, playerNames, selectedChocoIndex, consumedChocolates, activeTooltip } = useGameStore();
+    const { round, level, currentTurn, playerNames, selectedChocoIndex, consumedChocolates, activeTooltip, playerAvatar } = useGameStore();
     const { isDark } = useThemeToggle();
 
     // Determine player turn text
@@ -58,7 +58,7 @@ const GameHeader = () => {
                     {/* User info */}
                     <View style={styles.userInfo}>
                         {currentTurn === "her" ?
-                            <Image source={IMAGES.IMAGES.image12} style={styles.avatar} /> : <Image source={IMAGES.IMAGES.image7} style={styles.avatar} />
+                            <Image source={playerAvatar.her || IMAGES.IMAGES.image12} style={styles.avatar} /> : <Image source={playerAvatar.him || IMAGES.IMAGES.image7} style={styles.avatar} />
                         }
                         <Text style={styles.userName}>{playerNames?.her || 'Alexa'}</Text>
                     </View>
@@ -460,7 +460,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     avatar: {
-        fontSize: 24,
+        width: 24,
+        height: 24,
         marginRight: 8,
     },
     userName: {

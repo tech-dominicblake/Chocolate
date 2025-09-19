@@ -304,6 +304,7 @@ const styles = StyleSheet.create({
     scrollContainer: {
         flex: 1,
         position: 'relative',
+        zIndex: 1, // Lower z-index to ensure it stays below header elements
     },
     container: {
         flex: 1,
@@ -315,6 +316,7 @@ const styles = StyleSheet.create({
         paddingTop: 20,
         paddingHorizontal: 16,
         justifyContent: 'flex-end',
+        zIndex: 1, // Lower z-index to ensure it stays below header elements
     },
     fadeOverlay: {
         position: 'absolute',

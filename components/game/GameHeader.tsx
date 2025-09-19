@@ -87,6 +87,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottomWidth: 1,
+        zIndex: 100, // Ensure header is above body content
+        elevation: 5, // For Android
     },
     leftSection: {
         flex: 1,
@@ -142,7 +144,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 100, // Position below the header
         right: 20, // Align with the right side where cube icon is
-        zIndex: 10,
+        zIndex: 1000, // Higher z-index to ensure it's above body content
+        elevation: 10, // For Android
     },
     speechBubble: {
         backgroundColor: '#7E80F4',
@@ -151,6 +154,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         position: 'relative',
         width: '100%',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 8, // For Android shadow
     },
     speechBubbleText: {
         color: '#FFFFFF',
@@ -170,6 +181,8 @@ const styles = StyleSheet.create({
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
         borderBottomColor: '#7E80F4',
+        zIndex: 1001, // Higher than speech bubble
+        elevation: 11, // For Android
     },
 });
 
