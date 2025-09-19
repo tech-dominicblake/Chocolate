@@ -52,19 +52,19 @@ export default function GirlAvatarSelection() {
 
     const handleBack = () => {
         // Go back to sign-in page
-        router.push('/(auth)/sign-in');
+        router.back();
     };
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#27282A' : '#F5F5F5' }]}>
             <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-            
+
             {/* Header */}
             <View style={[styles.header, { backgroundColor: isDark ? '#27282A' : '#F5F5F5' }]}>
                 <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                     <Ionicons name="chevron-back" size={24} color='#79828F' />
                 </TouchableOpacity>
-                
+
                 <View style={styles.headerCenter}>
                     <Text style={[styles.playerText, { color: isDark ? '#FF6B9D' : '#FF6B9D' }]}>
                         PLAYER 1 • HER
@@ -73,7 +73,7 @@ export default function GirlAvatarSelection() {
                         {playerNames?.her}
                     </Text>
                 </View>
-                
+
                 <TouchableOpacity style={styles.menuButton} onPress={() => router.push('/menu')}>
                     <Ionicons name="menu" size={24} color='#79828F' />
                 </TouchableOpacity>
@@ -88,7 +88,7 @@ export default function GirlAvatarSelection() {
 
             {/* Avatar Grid */}
             <View style={styles.avatarContainer}>
-                <ScrollView 
+                <ScrollView
                     style={styles.scrollView}
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContent}
@@ -100,22 +100,22 @@ export default function GirlAvatarSelection() {
                                     style={[
                                         styles.avatarCard,
                                         {
-                                            backgroundColor: selectedAvatar === avatar.id 
-                                               ? (isDark ? '#363339' : '#FFE4E6')
+                                            backgroundColor: selectedAvatar === avatar.id
+                                                ? (isDark ? '#363339' : '#FFE4E6')
                                                 : isDark ? '#3A3A3A' : '#FFFFFF',
-                                            borderColor: selectedAvatar === avatar.id 
-                                                ? '#FF6B9D' 
+                                            borderColor: selectedAvatar === avatar.id
+                                                ? '#FF6B9D'
                                                 : isDark ? '#4B5563' : '#E5E5E5',
                                         }
                                     ]}
                                     onPress={() => handleAvatarSelect(avatar.id)}
                                     activeOpacity={0.7}
                                 >
-                                   <Image source={avatar.emoji} style={styles.avatarImage} />
-                                   
+                                    <Image source={avatar.emoji} style={styles.avatarImage} />
+
                                     {selectedAvatar === avatar.id && (
-                                        <View style={[styles.checkmarkContainer, { backgroundColor: isDark ? '#FF6B9D' : '#ffffff' }]}>
-                                            <Ionicons name="checkmark" size={16} color={isDark ? '#363339' : '#FF6B9D'} />
+                                        <View style={[styles.checkmarkContainer, { backgroundColor: isDark ? '#FF6B9D' : '#FF6B9D' }]}>
+                                            <Ionicons name="checkmark" size={16} color={isDark ? '#363339' : '#FFFF'} />
                                         </View>
                                     )}
                                 </TouchableOpacity>

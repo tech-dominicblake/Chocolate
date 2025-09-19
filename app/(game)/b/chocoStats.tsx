@@ -1,12 +1,12 @@
 import { IMAGES } from '@/constants';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
+import { useThemeContext } from '@/providers/ThemeProvider';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ConsumeTick from '../../../components/ConsumeTick';
 import { useGameStore } from '../../../state/useGameStore';
-import { Ionicons } from '@expo/vector-icons';
 interface ChocoStatsProps {
     route?: {
         params?: {
@@ -17,9 +17,8 @@ interface ChocoStatsProps {
 
 export default function ChocoStats({ route }: ChocoStatsProps) {
     const currentLevel = route?.params?.currentLevel || 1;
-    const { setSelectedChocoIndex, consumedChocolates, currentTurn, level, round, playerAvatar, playerNames } = useGameStore();
-    const [herchoco, setHerchoco] = useState<number>(0);
-    const [himchoco, setHimchoco] = useState<number>(0);
+    const { setSelectedChocoIndex, setHerChoco, setHimChoco, herChoco, himChoco, selectedChocoIndex, consumedChocolates, currentTurn, level, round, playerAvatar, playerNames } = useGameStore();
+    const { isDark } = useThemeContext();
 
     const challenges = [
         {
@@ -60,9 +59,9 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
         // Note: challengeNumber is 1-13, but array index is 0-12, so subtract 1
         setSelectedChocoIndex(challengeNumber);
         if (currentTurn === 'her') {
-            setHerchoco(challengeNumber);
+            setHerChoco(challengeNumber);
         } else {
-            setHimchoco(challengeNumber);
+            setHimChoco(challengeNumber);
         }
 
         // Navigate to promptB
@@ -117,7 +116,7 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                         </View>
                     </View>
 
-                    {/* Challenges Table */}
+                    {/* Challenges Table - Hide only when both level is 12 AND round is 3 */}
                     <View style={styles.challengesContainer}>
                         {challenges.map((challenge, index) => (
                             <View key={challenge.number} style={styles.challengeRow}>
@@ -127,7 +126,7 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                             style={styles.player1Item}
                                             onPress={() => handleChocolatePress(challenge.number)}
                                             activeOpacity={0.7}
-                                            disabled={consumedChocolates.includes(challenge.number) || currentTurn === 'him'}
+                                            disabled={consumedChocolates.includes(challenge.number) || currentTurn === 'him' || round === 2}
                                         >
                                             {consumedChocolates.includes(challenge.number) &&
                                                 <View style={styles.consumeTickContainer}>
@@ -139,13 +138,14 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                                 style={styles.chocolateItem}
                                                 resizeMode="contain"
                                             />
-                                            {herchoco === challenge.number && <View style={styles.herAvatarContainer}>
-                                                <View style={styles.speechBubble}>
+                                            {(herChoco === challenge.number && (level < 12 && round !== 2)) && <View style={styles.herAvatarContainer}>
+                                                <View style={[styles.speechBubble, { backgroundColor: isDark ? '#3C4047' : '#FFFFFF' }]}>
                                                     <Image
                                                         source={playerAvatar.her || IMAGES.IMAGES.avatarGirl1}
                                                         style={styles.playerAvatar}
                                                         resizeMode="contain"
                                                     />
+                                                    <View style={[styles.leftSpeechBubbleTail, { borderLeftColor: isDark ? '#3C4047' : '#FFFFFF' }]} />
                                                 </View>
                                             </View>}
                                         </TouchableOpacity>
@@ -169,13 +169,14 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                                 style={styles.chocolateItem}
                                                 resizeMode="contain"
                                             />
-                                            {himchoco === challenge.number + 6 && <View style={styles.himAvatarContainer}>
-                                                <View style={styles.speechBubble}>
+                                            {himChoco === challenge.number + 6 && round !== 2 && <View style={styles.himAvatarContainer}>
+                                                <View style={[styles.speechBubble, { backgroundColor: isDark ? '#3C4047' : '#FFFFFF' }]}>
                                                     <Image
                                                         source={playerAvatar.him || IMAGES.IMAGES.avatarMan1}
                                                         style={styles.playerAvatar}
                                                         resizeMode="contain"
                                                     />
+                                                    <View style={[styles.rightSpeechBubbleTail, { borderRightColor: isDark ? '#3C4047' : '#FFFFFF' }]} />
                                                 </View>
                                             </View>}
                                         </TouchableOpacity>
@@ -206,6 +207,30 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                 style={styles.supergameChocolate}
                                 resizeMode="contain"
                             />
+                            {/* Show girl's avatar when level is 12 */}
+                            {(level === 12 || round === 2) && (
+                                <View style={styles.supergameHerAvatarContainer}>
+                                    <View style={styles.speechBubble}>
+                                        <Image
+                                            source={playerAvatar.her || IMAGES.IMAGES.avatarGirl1}
+                                            style={styles.playerAvatar}
+                                            resizeMode="contain"
+                                        />
+                                    </View>
+                                </View>
+                            )}
+                            {/* Show boy's avatar when round is 3 */}
+                            {round === 2 && (
+                                <View style={styles.supergameHimAvatarContainer}>
+                                    <View style={styles.speechBubble}>
+                                        <Image
+                                            source={playerAvatar.him || IMAGES.IMAGES.avatarMan1}
+                                            style={styles.playerAvatar}
+                                            resizeMode="contain"
+                                        />
+                                    </View>
+                                </View>
+                            )}
                         </TouchableOpacity>
                         <Text style={styles.supergameTitle}>N°13 • Supergame</Text>
                     </View>
@@ -258,7 +283,7 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     speechBubble: {
-        backgroundColor: '#F7F8FA',
+        borderColor: '#3C4047',
         borderRadius: 20,
         padding: 8,
         shadowColor: '#000',
@@ -269,11 +294,39 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
+        position: 'relative',
+    },
+    leftSpeechBubbleTail: {
+        // borderColor: '#FFFFFF',
+        position: 'absolute',
+        width: 0,
+        height: 0,
+        borderTopWidth: 8,
+        borderBottomWidth: 8,
+        borderLeftWidth: 12,
+        borderTopColor: 'transparent',
+        borderBottomColor: 'transparent',
+        top: '50%',
+        right: -6,
     },
     playerAvatar: {
-        width: 32,
-        height: 32,
+        width: 24,
+        height: 24,
         borderRadius: 16,
+    },
+    rightSpeechBubbleTail: {
+        position: 'absolute',
+        width: 0,
+        height: 0,
+        borderTopWidth: 8,
+        borderBottomWidth: 8,
+        borderRightWidth: 12,
+        borderTopColor: 'transparent',
+        borderBottomColor: 'transparent',
+        // bottom: -8,
+        top: '50%',
+        left: -6,
+        // marginLeft: -8,
     },
     connectingLine: {
         width: 50,
@@ -397,16 +450,19 @@ const styles = StyleSheet.create({
         height: 96,
     },
     backButtonContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         paddingTop: 32,
         zIndex: 10,
+        paddingHorizontal: 26,
     },
     backButton: {
         top: 60,
-        left: 20,
         zIndex: 10,
         backgroundColor: 'transparent',
-        paddingHorizontal: 16,
         paddingVertical: 8,
+        width: 50
     },
     backButtonContent: {
         flexDirection: 'row',
@@ -423,17 +479,15 @@ const styles = StyleSheet.create({
     },
     herAvatarContainer: {
         position: 'absolute',
-        top: 0,
-        left: 50,
-        right: 0,
+        top: 10,
+        left: -50,
         bottom: 0,
         zIndex: 10,
     },
     himAvatarContainer: {
         position: 'absolute',
-        top: 0,
-        right: 50,
-        left: 0,
+        top: 10,
+        right: -50,
         bottom: 0,
         zIndex: 10,
     },
@@ -447,5 +501,19 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#000000',
         top: 60,
+    },
+    supergameHerAvatarContainer: {
+        position: 'absolute',
+        top: 10,
+        left: -50,
+        bottom: 0,
+        zIndex: 10,
+    },
+    supergameHimAvatarContainer: {
+        position: 'absolute',
+        top: 10,
+        right: -50,
+        bottom: 0,
+        zIndex: 10,
     },
 });

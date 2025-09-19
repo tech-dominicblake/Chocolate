@@ -13,6 +13,7 @@ import {
     View
 } from 'react-native';
 import { useGameStore } from '@/state/useGameStore';
+import { MenuButton } from '@/components/MenuButton';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -74,6 +75,10 @@ export default function RelationshipPage() {
         router.push('/endPage');
     };
 
+    const handleMenu = () => {
+        router.push('/menu');
+    };
+
     const renderStageCard = (stage: RelationshipStage) => (
         <View key={stage.id} style={styles.cardContainer}>
             <View style={styles.card}>
@@ -108,6 +113,9 @@ export default function RelationshipPage() {
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
+                <View style={styles.header}>
+                    <MenuButton onPress={handleMenu} />
+                </View>
                 {/* Header Title */}
                 <Text style={[styles.headerTitle, { color: useAppThemeColor('primaryText') }]}>Relationship stage</Text>
 
@@ -183,7 +191,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 28,
         fontWeight: 'bold',
-        marginTop: 92,
         marginBottom: 32,
         textAlign: 'center',
     },
@@ -314,5 +321,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         textTransform: 'uppercase',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        marginTop: 70,
     },
 });

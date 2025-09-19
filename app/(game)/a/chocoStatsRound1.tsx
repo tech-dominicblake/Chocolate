@@ -404,10 +404,8 @@ const styles = StyleSheet.create({
     },
     backButton: {
         top: 60,
-        // left: 20,
         zIndex: 10,
         backgroundColor: 'transparent',
-        // paddingHorizontal: 16,
         paddingVertical: 8,
         width: 50
     },

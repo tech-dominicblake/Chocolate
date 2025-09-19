@@ -6,6 +6,7 @@ import { ProcessingState } from "@/constants/Types";
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useGameStore, useMessages } from "@/state/useGameStore";
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 
@@ -16,6 +17,7 @@ export default function Prompt() {
     const [showCongrats, setShowCongrats] = useState(false);
     const [isGamePaused, setIsGamePaused] = useState(false);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+    const [buttonLoading, setButtonLoading] = useState(false);
 
     const { isDark } = useThemeToggle();
     const scrollViewRef = useRef<ScrollView>(null);
@@ -37,23 +39,44 @@ export default function Prompt() {
         setCurrentTurn,
         resetConsumedChocolates,
         setActiveTooltip,
+        setDidFinal,
     } = useGameStore();
     const { queue, enqueue, clear } = useMessages();
 
     useEffect(() => {
-        enqueueGameInfoMessages();
-        setActiveTooltip(true);
-        setTimeout(() => {
+        const initializeGame = async () => {
+            console.log('🚀 Starting game initialization - buttons should be disabled');
+            setDidFinal(false)
+            setButtonLoading(true);
+            enqueueGameInfoMessages();
+            setActiveTooltip(true);
+            
+            // Wait for the full duration
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            
+            console.log('✅ Game initialization complete - buttons should be enabled');
             setActiveTooltip(false);
-        }, 5000);
+            setButtonLoading(false);
+        };
+        
+        initializeGame();
     }, []);
 
     useEffect(() => {
-        resetConsumedChocolates();
-        setActiveTooltip(true);
-        setTimeout(() => {
+        const handleRoundChange = async () => {
+            setButtonLoading(true);
+            resetConsumedChocolates();
+            setActiveTooltip(true);
+            
+            // Wait for the full duration
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            
             setActiveTooltip(false);
-        }, 5000);
+            setButtonLoading(false);
+        };
+        
+        handleRoundChange();
+        round === 3 && setDidFinal(true)
     }, [round]);
 
     // Auto-scroll to bottom when new messages are added
@@ -78,6 +101,7 @@ export default function Prompt() {
     }, [level]);
 
     const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
+        setButtonLoading(true);
         if (buttonType === 'success') {
             enqueue({
                 kind: 'userchoice' as const,
@@ -116,9 +140,16 @@ export default function Prompt() {
             }
 
         }
+        setButtonLoading(false);
     }
 
     const handleContinue = (gameState: ProcessingState) => {
+        setButtonLoading(true);
+        if (round === 3) {
+            router.push('/(game)/a/statsA');
+            setButtonLoading(false);
+            return;
+        }
         if (gameState.gameSucceeded) {
             if (gameState.gameNewLevelStarted) {
                 setTaskCompleted(currentTurn);
@@ -126,6 +157,7 @@ export default function Prompt() {
                 setCurrentTurn(level + 1);
                 setConsumedChocolatesEachCount();
                 enqueueGameInfoMessages();
+                setButtonLoading(false);
                 return;
             }
             setShowCongrats(true);
@@ -151,6 +183,7 @@ export default function Prompt() {
             setCurrentTurn(level + 1);
             enqueueGameInfoMessages();
         }
+        setButtonLoading(false);
     };
 
     // Render messages from the queue using MessageItem component
@@ -255,6 +288,7 @@ export default function Prompt() {
                     onPlayerChoice={handlePlayerChoice}
                     onContinue={handleContinue}
                     isGamePaused={isGamePaused}
+                    loading={buttonLoading}
                 />}
             </View>
             {showCongrats && (

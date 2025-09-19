@@ -1,6 +1,7 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
+import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -53,6 +54,19 @@ export default function MenuPage() {
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#1F2937' : '#F8F9FA' }]}>
+             <View style={styles.headerIcon}>
+                <TouchableOpacity 
+                    style={styles.closeButton} 
+                    onPress={handleClose}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons 
+                        name="close" 
+                        size={24} 
+                        color='#8994A3' 
+                    />
+                </TouchableOpacity>
+                </View>
             {/* Header */}
             <View style={styles.header}>
                 <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Menu</Text>
@@ -155,7 +169,7 @@ export default function MenuPage() {
                     onPress={() => {}}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg2}
-                    color= {isDark?'#33358F':'#FFFFFF'}
+                    color= '#33358F'
                 />
                 <ActionButton
                     title='BUY HUSHH CHOCOLATE'
@@ -178,8 +192,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 128,
         marginBottom: 52,
+        position: 'relative',
     },
     headerTitle: {
         fontSize: 32,
@@ -192,10 +206,8 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    closeButtonText: {
-        fontSize: 24,
-        fontWeight: '600',
+        borderRadius: 20,
+        backgroundColor: 'transparent',
     },
     controlsSection: {
         flexDirection: 'row',
@@ -274,5 +286,13 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
+    },
+    headerIcon: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        marginTop: 70,
     },
 });

@@ -50,7 +50,7 @@ const GameHeader = () => {
                 <View style={styles.leftSection}>
                     {/* Game status */}
                     <View style={styles.gameStatus}>
-                        <Text style={styles.roundText}>ROUND {level}</Text>
+                        <Text style={styles.roundText}>ROUND {round}</Text>
                         <Text style={styles.separator}> • </Text>
                         <Text style={styles.levelText}>{getPlayerTurnText()}</Text>
                     </View>
@@ -67,18 +67,18 @@ const GameHeader = () => {
                 {/* Right side - Action icons */}
                 <View style={styles.rightSection}>
                     <TouchableOpacity style={styles.iconButton}>
-                        <Ionicons name="map-outline" size={32} color="#9BA1A6" />
+                        <Ionicons name="map-outline" size={24} color="#9BA1A6" />
                     </TouchableOpacity>
 
                     <View >
-                        <TouchableOpacity style={styles.iconButton}>
-                            <Ionicons name="cube-outline" size={32} color={activeTooltip ? '#7E80F4' : '#9BA1A6'} style={styles.icon} />
+                        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/(game)/b/chocoStats')}>
+                            <Ionicons name="cube-outline" size={24} color={activeTooltip ? '#7E80F4' : '#9BA1A6'} />
                         </TouchableOpacity>
                         {activeTooltip && <View style={styles.speechBubbleTail} />}
                     </View>
 
                     <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/menu')}>
-                        <Ionicons name="menu-outline" size={32} color="#9BA1A6" />
+                        <Ionicons name="menu-outline" size={24} color="#9BA1A6" />
                     </TouchableOpacity>
                 </View>
 
@@ -156,6 +156,7 @@ export default function PromptB() {
     const [isGamePaused, setIsGamePaused] = useState(false);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const scrollViewRef = useRef<ScrollView>(null);
+    const [buttonLoading, setButtonLoading] = useState(false);
     const { isDark } = useThemeToggle();
 
     const {
@@ -185,11 +186,19 @@ export default function PromptB() {
 
     // Enqueue game info messages when component mounts
     useEffect(() => {
-        enqueueGameInfoMessages();
-        setActiveTooltip(true);
-        setTimeout(()=>{
+        const initializeGame = async () => {
+            setButtonLoading(true);
+            enqueueGameInfoMessages();
+            setActiveTooltip(true);
+            
+            // Wait for the full duration
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            
             setActiveTooltip(false);
-        },5000);
+            setButtonLoading(false);
+        };
+        
+        initializeGame();
     }, []);
 
     // Auto-scroll to bottom when new messages are added
@@ -210,6 +219,7 @@ export default function PromptB() {
     };
 
     const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
+        setButtonLoading(true);
         if (buttonType === 'success') {
             enqueue({
                 kind: 'userchoice' as const,
@@ -238,7 +248,7 @@ export default function PromptB() {
                 if (failMessage) {
                     enqueue(failMessage);
                 }
-                enqueueGameInfoMessages();
+                // enqueueGameInfoMessages();
                 if (currentTurn === 'her') {
                     setSheFailedTwice(true);
                 }
@@ -248,18 +258,33 @@ export default function PromptB() {
                 router.push('/(game)/b/chocoStats');
             }
         }
+        setButtonLoading(false);
     }
 
     const handleContinue = (gameState: ProcessingState) => {
+        setButtonLoading(true);
+        if (round === 3) {
+            router.push('/(game)/b/chocoStats');
+            return;
+        }
         if (gameState.gameSucceeded) {
-            setTimeout(() => {
+            if (gameState.gameNewLevelStarted) {
+                setTaskCompleted(currentTurn);
+                setRoundLevel(level);
+                setCurrentTurn(level + 1);
+                setConsumedChocolatesEachCount();
+                consumeChocolate(selectedChocoIndex); // Mark chocolate as consumed
+                router.push('/(game)/b/chocoStats');
+                return;
+            }
+            // setTimeout(() => {
                 setTaskCompleted(currentTurn);
                 setConsumedChocolatesEachCount();
                 consumeChocolate(selectedChocoIndex); // Mark chocolate as consumed
                 setRoundLevel(level);
                 setCurrentTurn(level + 1);
-                enqueueGameInfoMessages();
-            }, 2000);
+            //     // enqueueGameInfoMessages();
+            // }, 2000);
         } else if (gameState.gameSurvived) {
             setTaskCompleted(currentTurn);
             setConsumedChocolatesEachCount();
@@ -267,9 +292,15 @@ export default function PromptB() {
             setRoundLevel(level);
             setCurrentTurn(level + 1);
             setHasFailedOnce(false);
-            enqueueGameInfoMessages();
+            // enqueueGameInfoMessages();
+        }
+        if (gameState.gameFailed) {
+            setRoundLevel(level);
+            setCurrentTurn(level + 1);
+            // enqueueGameInfoMessages();
         }
         router.push('/(game)/b/chocoStats');
+        setButtonLoading(false);
     };
 
     // Render messages from the queue using MessageItem component
@@ -366,6 +397,7 @@ export default function PromptB() {
                     />
                 </View>
                 <ButtonContainer
+                    loading={buttonLoading}
                     onPlayerChoice={handlePlayerChoice}
                     onContinue={handleContinue}
                 />
@@ -528,7 +560,7 @@ const styles = StyleSheet.create({
     },
     speechBubbleContainer: {
         position: 'absolute',
-        top: 120, // Position below the header
+        top: 110, // Position below the header
         right: 20, // Align with the right side where cube icon is
         zIndex: 10,
     },
@@ -550,7 +582,7 @@ const styles = StyleSheet.create({
     speechBubbleTail: {
         position: 'absolute',
         bottom: -15,
-        right: 16, // Position tail to point to cube icon
+        right: 8, // Position tail to point to cube icon
         width: 0,
         height: 0,
         borderLeftWidth: 12,
@@ -569,9 +601,5 @@ const styles = StyleSheet.create({
     },
     regularMessageContainer: {
         marginBottom: 10,
-    },
-    icon: {
-        fontSize: 38,
-        fontWeight: '900',
     },
 });

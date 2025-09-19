@@ -25,7 +25,7 @@ interface StatsScreenProps {
 }
 
 export default function StatsScreen({ route }: StatsScreenProps) {
-    const { setRoundLevel, setCurrentTurn, round, currentTurn, tasksCompleted, consumedChocolates, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
+    const { setRoundLevel, setCurrentTurn, round, currentTurn, tasksCompleted, consumedChocolates, didFinal, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
     const { isDark } = useThemeToggle();
 
     // Function to calculate total completed tasks separated by sex
@@ -107,9 +107,9 @@ export default function StatsScreen({ route }: StatsScreenProps) {
                         <View style={[styles.statRow, {
                             borderBottomColor: isDark ? '#4B5563' : '#6D788F' // Dark theme: #4B5563, Light theme: original #6D788F
                         }]}>
-                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{gameStats.superGameSlayed.player1}</Text>
+                            <Text style={[styles.leftValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{didFinal ? 'Yes' : 'No'}</Text>
                             <Text style={[styles.statLabel, { color: isDark ? '#9CA3AF' : '#000000' }]}>SUPER GAME SLAYED</Text>
-                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{gameStats.superGameSlayed.player2}</Text>
+                            <Text style={[styles.rightValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{didFinal ? 'Yes' : 'No'}</Text>
                         </View>
 
                         {/* Row 5: Avg. Time Per Round */}

@@ -1,10 +1,12 @@
+import { MenuButton } from '@/components/MenuButton';
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
-import { useThemeToggle } from '@/hooks/useAppTheme';
+import { useAppThemeColor, useThemeToggle } from '@/hooks/useAppTheme';
 import { useGameStore } from '@/state/useGameStore';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function UserInfo() {
     const [player1Name, setPlayer1Name] = useState('Alexa');
@@ -13,6 +15,10 @@ export default function UserInfo() {
     const [player2Age, setPlayer2Age] = useState('32');
     const { isDark } = useThemeToggle();
     const { setPlayerNames, setRoundLevel } = useGameStore();
+    const barGrey = useAppThemeColor('bar');
+    const textColor = useAppThemeColor('text');
+
+
 
     // Focus states for inputs
     const [focusedInput, setFocusedInput] = useState<string | null>(null);
@@ -30,6 +36,15 @@ export default function UserInfo() {
         router.push('/girlAvatarSelection');
     };
 
+    const handleBack = () => {
+        // Go back to sign-in page
+        router.back();
+    };
+
+    const handleMenu = () => {
+        router.push('/menu');
+    };
+
     return (
         <KeyboardAvoidingView
             style={[styles.container, { backgroundColor: isDark ? '#27282A' : '#EDEFF2' }]}
@@ -41,6 +56,14 @@ export default function UserInfo() {
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+                        <Ionicons name="chevron-back" size={24} color='#79828F' />
+                        <Text style={[styles.backText, { color: barGrey }]}> BACK</Text>
+                    </TouchableOpacity>
+
+                    <MenuButton onPress={handleMenu} />
+                </View>
                 <View style={styles.inputCardWraper}>
                     {/* Player 1 Card */}
                     <View style={[styles.playerCard, {
@@ -157,6 +180,7 @@ export default function UserInfo() {
                         onPress={handleContinue}
                         variant='primary'
                         backgroundImage={IMAGES.IMAGES.btnBg1}
+                        color='#C2185B'
                     />
                 </View>
             </ScrollView>
@@ -173,11 +197,26 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     scrollContent: {
-        paddingTop: 60,
         paddingHorizontal: 20,
         paddingBottom: 40,
         flexGrow: 1,
         justifyContent: 'center',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        // paddingHorizontal: 20,
+        paddingVertical: 16,
+        marginTop: 70,
+    },
+    menuButton: {
+        padding: 8,
+    },
+    backButton: {
+        padding: 8,
+        display:'flex',
+        flexDirection: 'row'
     },
     playerCard: {
         // backgroundColor: '#FFFFFF', // Removed to use conditional styling
@@ -275,4 +314,9 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         letterSpacing: 0.5,
     },
+    backText: {
+        fontSize: 16,
+        fontWeight: '600',
+        letterSpacing: 0.5,
+      },
 });

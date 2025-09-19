@@ -1,3 +1,4 @@
+import { MenuButton } from "@/components/MenuButton";
 import { SelectOptionButton } from "@/components/SelectOptionButton";
 import ActionButton from "@/components/prompts/ActionButton";
 import { IMAGES } from "@/constants";
@@ -5,6 +6,7 @@ import { Mode } from "@/constants/Types";
 import { useAppThemeColor } from "@/hooks/useAppTheme";
 import { useThemeContext } from "@/providers/ThemeProvider";
 import { useGameStore } from "@/state/useGameStore";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -14,6 +16,7 @@ export default function GameSelectionPage() {
     const [selectedGame, setSelectedGame] = useState<Mode>('A');
     const backgroundColor = useAppThemeColor('background');
     const { setMode } = useGameStore();
+    const barGrey = useAppThemeColor('bar');
 
     const handleUnleashDrama = () => {
         // Navigate to the selected game
@@ -24,6 +27,15 @@ export default function GameSelectionPage() {
     const handlePeekRules = () => {
         // Navigate to rules page
         // router.push('/(tabs)');
+    };
+
+    const handleBack = () => {
+        // Go back to sign-in page
+        router.back();
+    };
+
+    const handleMenu = () => {
+        router.push('/menu');
     };
 
     return (
@@ -37,6 +49,14 @@ export default function GameSelectionPage() {
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+                        <Ionicons name="chevron-back" size={24} color='#79828F' />
+                        <Text style={[styles.backText, { color: barGrey }]}> BACK</Text>
+                    </TouchableOpacity>
+
+                    <MenuButton onPress={handleMenu} />
+                </View>
                 <View style={styles.contentContainer}>
                     <View style={{ flex: 1, justifyContent: 'center', }}>
                         <Text style={[
@@ -143,5 +163,24 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: '#5C6BC0',
         textDecorationLine: 'underline',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        marginTop: 70,
+    },
+    backButton: {
+        padding: 8,
+        display: 'flex',
+        flexDirection: 'row'
+    },
+
+    backText: {
+        fontSize: 16,
+        fontWeight: '600',
+        letterSpacing: 0.5,
     },
 });

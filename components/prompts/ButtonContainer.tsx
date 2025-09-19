@@ -10,10 +10,11 @@ interface ButtonContainerProps {
     onPlayerChoice?: (choice: string, buttonType: 'success' | 'fail') => void;
     onContinue?: (gameState: ProcessingState) => void;
     isGamePaused?: boolean;
+    loading?: boolean;
 }
 
-export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaused = false }: ButtonContainerProps) {
-    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice, getMockMessageByKind } = useGameStore();
+export default function ButtonContainer({ onPlayerChoice, onContinue, loading = false, isGamePaused = false }: ButtonContainerProps) {
+    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice, getMockMessageByKind, setDidFinal } = useGameStore();
     const { clear, enqueue } = useMessages();
     const { isDark } = useThemeToggle();
     const [blinkStage, setBlinkStage] = useState(1);
@@ -36,8 +37,10 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
     // Loading states for buttons
     const [isSuccessLoading, setIsSuccessLoading] = useState(false);
     const [isFailLoading, setIsFailLoading] = useState(false);
+    const [buttonLoading, setButtonLoading] = useState(false);
 
     const handleLetsGetMessy = async () => {
+        // setButtonLoading(true);
         if (userState.firstFail) {
             setGameState({ ...gameState, gameSurvived: true, gamePaused: true });
             setUserState({ ...userState, survived: true });
@@ -49,9 +52,18 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
             onPlayerChoice?.('LET\'S GET MESSY', 'success');
             level === 12 && setGameState({ ...gameState, gameNewLevelStarted: true, gamePaused: true, gameSucceeded: true });
         }
+        // setButtonLoading(false);
     };
 
     const handleContinue = async () => {
+        // setButtonLoading(true);
+        if (round === 3) {
+            onContinue?.(gameState);
+            setDidFinal(true)
+            setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameNewLevelStarted: false });
+            setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
+            return;
+        }
         if (level === 12) {
             if (round === 1) {
                 if (blinkStage === 1) {
@@ -128,11 +140,12 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
             setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameNewLevelStarted: false });
             setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
         }
+        // setButtonLoading(false);
     };
 
     const handleNahIBail = async (buttonText: string) => {
-
-        if (buttonText === 'End Game') {
+        setButtonLoading(true);
+        if (buttonText === 'End Game' || buttonText === 'No') {
             router.push('/(game)/a/statsA');
             clear();
             clearState();
@@ -140,6 +153,13 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
         }
 
         if (userState.firstFail) {
+            if (round === 3) {
+                await enqueue(getMockMessageByKind('fail'));
+                router.push('/(game)/a/statsA');
+                clear();
+                clearState();
+                return;
+            }
             if (level === 12) {
                 setGameState({ ...gameState, gamePaused: true, gameFailed: true, gameNewLevelStarted: true });
                 enqueue(getMockMessageByKind('fail'));
@@ -161,6 +181,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
             onPlayerChoice?.('NAH, I BAIL', 'fail');
             setUserState({ ...userState, firstFail: true });
         }
+        // setButtonLoading(false);
     };
 
     const handleButtonText = (): string[] => {
@@ -197,6 +218,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
         console.log('Game State', gameState);
     }, [gameState]);
 
+
     return (
         <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : 'transparent' }]}>
             <View style={styles.buttonContainer}>
@@ -211,8 +233,8 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
                                 ? require('@/assets/images/buttonBg3.png')  // Different background for him
                                 : require('@/assets/images/btn-bg1.png')  // Default background for her
                     }
-                    loading={isSuccessLoading}
-                    disabled={isSuccessLoading || isFailLoading}
+                    loading={buttonLoading || loading}
+                    disabled={buttonLoading || loading}
                 />
                 {/* Only show the second button when game is not paused */}
                 <ActionButton
@@ -221,8 +243,8 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
                     variant="secondary"
                     color='#7A1818'
                     backgroundImage={require('@/assets/images/btn-bg2.png')}
-                    loading={isFailLoading}
-                    disabled={isSuccessLoading || isFailLoading}
+                    loading={buttonLoading || loading}
+                    disabled={buttonLoading || loading}
                     hide={hideButton()}
                 />
             </View>

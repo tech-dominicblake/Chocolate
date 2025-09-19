@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ActionButtonProps {
     title: string;
@@ -47,9 +47,20 @@ export default function ActionButton({
                     imageStyle={styles.buttonImage}
                     resizeMode="stretch"
                 >
-                    <Text style={[styles.buttonText, {color: `${color}`}]}>
-                        {title}
-                    </Text>
+                    <View style={styles.buttonContent}>
+                        {loading ? (
+                            <View style={styles.loadingContainer}>
+                                <ActivityIndicator size="small" color={color || '#FFFFFF'} />
+                                <Text style={[styles.buttonText, {color: `${color}`, marginLeft: 8}]}>
+                                    {title}
+                                </Text>
+                            </View>
+                        ) : (
+                            <Text style={[styles.buttonText, {color: `${color}`}]}>
+                                {title}
+                            </Text>
+                        )}
+                    </View>
                 </ImageBackground>
             </TouchableOpacity>
         );
@@ -66,7 +77,16 @@ export default function ActionButton({
             activeOpacity={loading || disabled ? 1 : 0.8}
             disabled={loading || disabled}
         >
-            <Text style={styles.buttonText}>{title}</Text>
+            <View style={styles.buttonContent}>
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="small" color="#FFFFFF" />
+                        <Text style={[styles.buttonText, {marginLeft: 8}]}>{title}</Text>
+                    </View>
+                ) : (
+                    <Text style={styles.buttonText}>{title}</Text>
+                )}
+            </View>
         </TouchableOpacity>
     );
 }
@@ -81,6 +101,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         height: 70,
         width: '100%',
+    },
+    buttonContent: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    loadingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     buttonImage: {
         width: '100%',

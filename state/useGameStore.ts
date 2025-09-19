@@ -31,7 +31,7 @@ interface GameState {
       completedLevel: number[];
     }[]
   };
-
+  didFinal: boolean;
   failsSuffered: { her: number; him: number }; // Individual fail counts for each player
   timePerRound: number;
   superGamePlayed: boolean;
@@ -40,6 +40,8 @@ interface GameState {
   selectedMessy: boolean; // Track if user has selected messy
   activeTooltip: boolean; // Track if user has selected messy
   showBtns: boolean;
+  herChoco: number;
+  himChoco: number;
 
   // Actions
   setMode: (mode: Mode) => void;
@@ -70,6 +72,9 @@ interface GameState {
   setShowBtns: (value: boolean) => void;
   clearState: () => void;
   setPlayerAvatar: (player: 'her' | 'him', avatar: string) => void;
+  setHerChoco: (value: number) => void;
+  setHimChoco: (value: number) => void;
+  setDidFinal: (value: boolean) => void;
 }
 
 const initialState = {
@@ -77,8 +82,8 @@ const initialState = {
   stage: null,
   language: 'english' as Language,
   playerNames: { her: '', him: '' },
-  round: 2,
-  level: 10,
+  round: 1,
+  level: 1,
   currentTurn: 'her' as PlayerId,
   consumedChocolates: [],
   selectedChocoIndex: 0,
@@ -94,6 +99,9 @@ const initialState = {
   roundStarted: false,
   showBtns: true,
   playerAvatar: { her: '', him: '' },
+  herChoco: 1,
+  himChoco: 7,
+  didFinal: false,
 };
 
 // Mock messages data structure
@@ -360,7 +368,9 @@ export const useGameStore = create<GameState>((set) => ({
   })),
 
   resetConsumedChocolates: () => set({ consumedChocolates: [] }),
-
+  setHerChoco: (value: number) => set({ herChoco: value }),
+  setHimChoco: (value: number) => set({ himChoco: value }),
+  setDidFinal: (value: boolean) => set({ didFinal: value }),
 }));
 
 // Message queue

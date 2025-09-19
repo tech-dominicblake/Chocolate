@@ -5,15 +5,16 @@ import { IMAGES } from '@/constants';
 import { Language } from '@/constants/Types';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
 import { useGameStore } from '@/state/useGameStore';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const languages = [
@@ -55,7 +56,8 @@ export default function LanguageSelectionScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <Text style={[styles.backText, { color: barGrey }]}>← BACK</Text>
+          <Ionicons name="chevron-back" size={24} color='#79828F' />
+          <Text style={[styles.backText, { color: barGrey }]}> BACK</Text>
         </TouchableOpacity>
 
         <MenuButton onPress={handleMenu} />
@@ -105,6 +107,8 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   backButton: {
+    display: 'flex',
+    flexDirection:'row',
     paddingVertical: 8,
     paddingHorizontal: 4,
   },

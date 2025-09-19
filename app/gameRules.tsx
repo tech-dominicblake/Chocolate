@@ -1,3 +1,4 @@
+import { MenuButton } from '@/components/MenuButton';
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
@@ -29,6 +30,10 @@ export default function GameRules() {
         router.push('/experienceNoteB');
     };
 
+    const handleMenu = () => {
+        router.push('/menu');
+    };
+
     return (
         <View style={[
             styles.container,
@@ -37,17 +42,15 @@ export default function GameRules() {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                    <Ionicons
-                        name="arrow-back"
-                        size={24}
-                        color={useAppThemeColor('text')}
-                    />
+                    <Ionicons name="chevron-back" size={24} color='#79828F' />
                 </TouchableOpacity>
                 <Text style={[
                     styles.title,
                     { color: useAppThemeColor('text') }
                 ]}>What is hushh?</Text>
                 {/* <View style={styles.placeholder} /> */}
+                <MenuButton onPress={handleMenu} />
+
             </View>
 
             {/* Content */}
