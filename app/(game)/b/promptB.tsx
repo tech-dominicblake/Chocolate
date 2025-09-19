@@ -1,6 +1,7 @@
 import ButtonContainer from "@/components/prompts/ButtonContainer";
 import MessageItem from "@/components/prompts/MessageItem";
 import { IMAGES } from '@/constants';
+import { ProcessingState } from "@/constants/Types";
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useGameStore, useMessages } from "@/state/useGameStore";
 import { Ionicons } from '@expo/vector-icons';
@@ -73,7 +74,7 @@ const GameHeader = () => {
                         <TouchableOpacity style={styles.iconButton}>
                             <Ionicons name="cube-outline" size={32} color={activeTooltip ? '#7E80F4' : '#9BA1A6'} style={styles.icon} />
                         </TouchableOpacity>
-                        <View style={styles.speechBubbleTail} />
+                        {activeTooltip && <View style={styles.speechBubbleTail} />}
                     </View>
 
                     <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/menu')}>
@@ -82,11 +83,11 @@ const GameHeader = () => {
                 </View>
 
                 {/* Speech Bubble */}
-                <View style={styles.speechBubbleContainer}>
+                {activeTooltip && <View style={styles.speechBubbleContainer}>
                     <View style={styles.speechBubble}>
                         <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>
                     </View>
-                </View>
+                </View>}
 
             </View>
 
@@ -151,10 +152,15 @@ export default function PromptB() {
     const [currentLevel] = useState(Number(params.level) || 1);
     const [playerChoice, setPlayerChoice] = useState<string | undefined>();
     const [showSuccessDelay, setShowSuccessDelay] = useState(false);
-
+    const [showCongrats, setShowCongrats] = useState(false);
+    const [isGamePaused, setIsGamePaused] = useState(false);
+    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+    const scrollViewRef = useRef<ScrollView>(null);
     const { isDark } = useThemeToggle();
+
     const {
         setTaskCompleted,
+        setActiveTooltip,
         selectedChocoIndex,
         currentTurn,
         consumeChocolate,
@@ -172,152 +178,115 @@ export default function PromptB() {
         setSheFailedTwice,
         sheFailedTwice,
         setCurrentTurn,
-        setConsumedChocolatesEachCount
+        setConsumedChocolatesEachCount,
+        setFailSurvivedTask
     } = useGameStore();
-
-    const { queue, clear } = useMessages();
-    const scrollViewRef = useRef<ScrollView>(null);
+    const { queue, enqueue, clear } = useMessages();
 
     // Enqueue game info messages when component mounts
     useEffect(() => {
-        // Clear the queue first, then add new preset messages
-        const { clear } = useMessages.getState();
         enqueueGameInfoMessages();
-
-        // Reset fail state when page opens
-        setHasFailedOnce(false);
+        setActiveTooltip(true);
+        setTimeout(()=>{
+            setActiveTooltip(false);
+        },5000);
     }, []);
 
     // Auto-scroll to bottom when new messages are added
     useEffect(() => {
-        if (queue.length > 0) {
+        if (queue.length > 0 && shouldAutoScroll) {
             // Small delay to ensure the message is rendered
             setTimeout(() => {
                 scrollViewRef.current?.scrollToEnd({ animated: true });
             }, 100);
         }
-    }, [queue]);
+    }, [queue, shouldAutoScroll]);
 
-    // Reset game stage when level changes
-    useEffect(() => {
-        setGameStage(1);
-    }, [currentLevel]);
+    // Handle scroll events to determine if auto-scroll should be enabled
+    const handleScroll = (event: any) => {
+        const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+        const isAtBottom = contentOffset.y + layoutMeasurement.height >= contentSize.height - 20;
+        setShouldAutoScroll(isAtBottom);
+    };
 
     const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
-        setPlayerChoice(choice);
-
-        // Enqueue the user's choice as a message with button type
-        const { enqueue } = useMessages.getState();
-        {
-            choice !== "Continue" && enqueue({
+        if (buttonType === 'success') {
+            enqueue({
                 kind: 'userchoice' as const,
                 body: choice,
                 group: 'user_action' as const,
                 meta: { buttonType } // Store the button type in meta for future use
             });
+            const successMessage = getMockMessageByKind('success');
+            if (successMessage) {
+                enqueue(successMessage);
+            }
         }
-
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
                 setHasFailedOnce(true);
-                // First fail: show dare message and new prompt
                 const dareMessage = getMockMessageByKind('dare');
                 if (dareMessage) {
                     enqueue(dareMessage);
                 }
-                // Get a new prompt message (second prompt from mock data)
                 const newPromptMessage = getMockMessageByKind('prompt');
                 if (newPromptMessage) {
-                    // Add a small delay before showing the new prompt
-                    setTimeout(() => {
-                        enqueue(newPromptMessage);
-                    }, 2000); // 1 second delay between dare message and new prompt
+                    enqueue(newPromptMessage);
                 }
             } else {
-                setHasFailedOnce(false);
-                if (useGameStore.getState().currentTurn === 'her') {
-                    setSheFailedTwice(true);
-                } else if (useGameStore.getState().currentTurn === 'him' &&
-                    sheFailedTwice.state &&
-                    sheFailedTwice.level === useGameStore.getState().level - 1) {
-                    enqueue(getMockMessageByKind('fail'));
-                    setTimeout(() => {
-                        router.push('/final');
-                    }, 2000);
-                    return;
-                }
-                // Second fail: show fail message and navigate to stats
                 const failMessage = getMockMessageByKind('fail');
                 if (failMessage) {
                     enqueue(failMessage);
                 }
-
-                // Navigate to stats after fail message has been visible for 2 seconds
-                setTimeout(() => {
-                    if (round === 3) {
-                        router.push('/(game)/b/statsB');
-                        return;
-                    }
-                    setRoundLevel(level);
-                    const updatedLevel = useGameStore.getState().level; // Get fresh level from store
-                    setCurrentTurn(updatedLevel); // Use updated level instead of old level
-                    router.push('/(game)/b/chocoStats');
-                }, 2000);
+                enqueueGameInfoMessages();
+                if (currentTurn === 'her') {
+                    setSheFailedTwice(true);
+                }
+                setRoundLevel(level);
+                setCurrentTurn(level + 1);
+                setHasFailedOnce(false);
+                router.push('/(game)/b/chocoStats');
             }
         }
+    }
 
-        if (buttonType === 'success') {
-            if (choice === "LET'S GET MESSY" && !hasFailedOnce) {
+    const handleContinue = (gameState: ProcessingState) => {
+        if (gameState.gameSucceeded) {
+            setTimeout(() => {
                 setTaskCompleted(currentTurn);
                 setConsumedChocolatesEachCount();
-
-                const successMessage = getMockMessageByKind('success');
-                if (successMessage) {
-                    enqueue(successMessage);
-                }
-            }
-            if (choice === "Continue") {
-                setTimeout(() => {
-                    if (round === 3) {
-                        router.push('/(game)/b/chocoStats');
-                        return;
-                    } else {
-                        router.push('/congratsChoco');
-                    }
-                    consumeChocolate(selectedChocoIndex);
-                    setRoundLevel(level);
-                    const updatedLevel = useGameStore.getState().level;
-                    setCurrentTurn(updatedLevel);
-                    enqueueGameInfoMessages();
-                    setHasFailedOnce(false);
-                }, 2000);
-            }
-            // If player failed once before succeeding, increment their fail count
-            if (hasFailedOnce) {
-                incrementPlayerFailCount(currentTurn);
-                setTimeout(() => {
-                    if (round === 3) {
-                        router.push('/final');
-                        return;
-                    }
-                    consumeChocolate(selectedChocoIndex);
-                    setRoundLevel(level);
-                    const updatedLevel = useGameStore.getState().level;
-                    setCurrentTurn(updatedLevel);
-                    setHasFailedOnce(false);
-                    router.push('/congratsChoco');
-                }, 2000);
-            }
+                consumeChocolate(selectedChocoIndex); // Mark chocolate as consumed
+                setRoundLevel(level);
+                setCurrentTurn(level + 1);
+                enqueueGameInfoMessages();
+            }, 2000);
+        } else if (gameState.gameSurvived) {
+            setTaskCompleted(currentTurn);
+            setConsumedChocolatesEachCount();
+            consumeChocolate(selectedChocoIndex); // Mark chocolate as consumed
+            setRoundLevel(level);
+            setCurrentTurn(level + 1);
+            setHasFailedOnce(false);
+            enqueueGameInfoMessages();
         }
-    };
-
-    const handleStageChange = (newStage: number) => {
-        setGameStage(newStage);
+        router.push('/(game)/b/chocoStats');
     };
 
     // Render messages from the queue using MessageItem component
     const renderMessages = () => {
         return queue.map((message, index) => {
+            // Special handling for separator messages
+            if (message.kind === 'separator') {
+                return (
+                    <MessageItem
+                        key={message.id || index}
+                        text={message.body}
+                        isDark={isDark}
+                        kind="separator"
+                    />
+                );
+            }
+
             // Special handling for prompt messages (show title + body)
             if (message.kind === 'prompt' && message.title) {
                 return (
@@ -378,7 +347,13 @@ export default function PromptB() {
                     <ScrollView
                         ref={scrollViewRef}
                         style={styles.scrollContainer}
-                        showsVerticalScrollIndicator={false}
+                        showsVerticalScrollIndicator={true}
+                        showsHorizontalScrollIndicator={false}
+                        scrollIndicatorInsets={{ bottom: 40 }}
+                        indicatorStyle="black"
+                        persistentScrollbar={true}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={16}
                         contentContainerStyle={styles.scrollContent}
                     >
                         {renderMessages()}
@@ -391,8 +366,8 @@ export default function PromptB() {
                     />
                 </View>
                 <ButtonContainer
-                    onStageChange={handleStageChange}
                     onPlayerChoice={handlePlayerChoice}
+                    onContinue={handleContinue}
                 />
             </View>
         </SafeAreaView>
@@ -577,7 +552,7 @@ const styles = StyleSheet.create({
         bottom: -15,
         right: 16, // Position tail to point to cube icon
         width: 0,
-        height: 0, 
+        height: 0,
         borderLeftWidth: 12,
         borderRightWidth: 12,
         borderBottomWidth: 12,

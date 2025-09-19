@@ -14,7 +14,7 @@ export default function EndPage() {
     const secondaryTextColor = useAppThemeColor('placeholderText');
     const borderColor = useAppThemeColor('border');
     const primaryColor = useAppThemeColor('primary');
-    const { mode, currentTurn } = useGameStore();
+    const { mode, currentTurn, playerAvatar } = useGameStore();
 
     const handleBringChocolate = () => {
         // // Handle bring chocolate action
@@ -44,7 +44,7 @@ export default function EndPage() {
                 <View style={[styles.topCard, { backgroundColor: useAppThemeColor('cardBackground') }]}>
                     <Text style={[styles.gameInfo, { color: '#8994A3' }]}>{`GAME ${mode} • ROUND 6`}</Text>
                     <View style={[styles.avatar, { backgroundColor, borderColor: primaryColor }]}>
-                        {currentTurn === 'her' ? <Image source={IMAGES.IMAGES.image12} style={styles.avatarImage} /> : <Image source={IMAGES.IMAGES.image7} style={styles.avatarImage} />}
+                        {currentTurn === 'her' ? <Image source={playerAvatar.her} style={styles.avatarImage} /> : <Image source={playerAvatar.him} style={styles.avatarImage} />}
                     </View>
                     <Text style={[styles.playerName, { color: textColor }]}>Alex</Text>
                 </View>

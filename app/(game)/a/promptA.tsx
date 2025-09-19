@@ -26,24 +26,31 @@ export default function Prompt() {
         currentTurn,
         round,
         level,
-        sheFailedTwice,
         setTaskCompleted,
         setRoundLevel,
         enqueueGameInfoMessages,
         getMockMessageByKind,
         setHasFailedOnce,
-        incrementPlayerFailCount,
+        consumeChocolate,
         setConsumedChocolatesEachCount,
         setSheFailedTwice,
         setCurrentTurn,
-        setShowBtns,
-        setFailSurvivedTask,
+        resetConsumedChocolates,
+        setActiveTooltip,
     } = useGameStore();
     const { queue, enqueue, clear } = useMessages();
 
     useEffect(() => {
         enqueueGameInfoMessages();
+        setActiveTooltip(true);
+        setTimeout(() => {
+            setActiveTooltip(false);
+        }, 5000);
     }, []);
+
+    useEffect(() => {
+        resetConsumedChocolates();
+    }, [round]);
 
     // Auto-scroll to bottom when new messages are added
     useEffect(() => {
@@ -122,6 +129,7 @@ export default function Prompt() {
             setHasFailedOnce(false);
             enqueueGameInfoMessages();
         }
+        consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6);
         // enqueue(getMockMessageByKind('prompt'));
     };
 
@@ -260,11 +268,6 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 80,
-    },
-    scrollIndicator: {
-        width: 50,
-        backgroundColor: '#FF0000',
-        borderRadius: 2.5,
     },
     promptContainer: {
         marginBottom: 10,

@@ -37,7 +37,7 @@ const BoyAVATARS = [
 export default function GirlAvatarSelection() {
     const [selectedAvatar, setSelectedAvatar] = useState<number>(1);
     const { isDark } = useThemeToggle();
-    const { playerNames } = useGameStore();
+    const { playerNames, setPlayerAvatar } = useGameStore();
 
     const handleAvatarSelect = (avatarId: number) => {
         setSelectedAvatar(avatarId);
@@ -45,6 +45,7 @@ export default function GirlAvatarSelection() {
 
     const handleContinue = () => {
         // Save avatar selection and navigate to game
+        setPlayerAvatar('her', GirlAVATARS[selectedAvatar - 1].emoji);
         // You can add avatar selection to your game store here if needed
         router.push('/boyAvatarSelection');
     };
@@ -73,7 +74,7 @@ export default function GirlAvatarSelection() {
                     </Text>
                 </View>
                 
-                <TouchableOpacity style={styles.menuButton}>
+                <TouchableOpacity style={styles.menuButton} onPress={() => router.push('/menu')}>
                     <Ionicons name="menu" size={24} color='#79828F' />
                 </TouchableOpacity>
             </View>
@@ -100,7 +101,7 @@ export default function GirlAvatarSelection() {
                                         styles.avatarCard,
                                         {
                                             backgroundColor: selectedAvatar === avatar.id 
-                                                ? '#FFE4E6' 
+                                               ? (isDark ? '#363339' : '#FFE4E6')
                                                 : isDark ? '#3A3A3A' : '#FFFFFF',
                                             borderColor: selectedAvatar === avatar.id 
                                                 ? '#FF6B9D' 
@@ -113,8 +114,8 @@ export default function GirlAvatarSelection() {
                                    <Image source={avatar.emoji} style={styles.avatarImage} />
                                    
                                     {selectedAvatar === avatar.id && (
-                                        <View style={styles.checkmarkContainer}>
-                                            <Ionicons name="checkmark" size={16} color="#FF6B9D" />
+                                        <View style={[styles.checkmarkContainer, { backgroundColor: isDark ? '#FF6B9D' : '#ffffff' }]}>
+                                            <Ionicons name="checkmark" size={16} color={isDark ? '#363339' : '#FF6B9D'} />
                                         </View>
                                     )}
                                 </TouchableOpacity>

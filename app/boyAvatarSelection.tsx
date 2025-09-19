@@ -37,7 +37,7 @@ const BoyAVATARS = [
 export default function BoyAvatarSelection() {
     const [selectedAvatar, setSelectedAvatar] = useState<number>(1);
     const { isDark } = useThemeToggle();
-    const { playerNames } = useGameStore();
+    const { playerNames, setPlayerAvatar } = useGameStore();
 
     const handleAvatarSelect = (avatarId: number) => {
         setSelectedAvatar(avatarId);
@@ -45,13 +45,14 @@ export default function BoyAvatarSelection() {
 
     const handleContinue = () => {
         // Save avatar selection and navigate to game
+        setPlayerAvatar('him', BoyAVATARS[selectedAvatar - 1].emoji);
         // You can add avatar selection to your game store here if needed
         router.push('/gameSelection');
     };
 
     const handleBack = () => {
         // Go back to sign-in page
-        router.push('/(auth)/sign-in');
+        router.back();
     };
 
     return (
@@ -65,15 +66,15 @@ export default function BoyAvatarSelection() {
                 </TouchableOpacity>
                 
                 <View style={styles.headerCenter}>
-                    <Text style={[styles.playerText, { color: isDark ? '#FF6B9D' : '#FF6B9D' }]}>
-                        PLAYER 1 • HER
+                    <Text style={[styles.playerText, { color: '#7E80F4' }]}>
+                        PLAYER 2 • HIM
                     </Text>
                     <Text style={[styles.nameText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
                         {playerNames?.him}
                     </Text>
                 </View>
                 
-                <TouchableOpacity style={styles.menuButton}>
+                <TouchableOpacity style={styles.menuButton} onPress={() => router.push('/menu')}>
                     <Ionicons name="menu" size={24} color='#79828F' />
                 </TouchableOpacity>
             </View>
@@ -100,11 +101,11 @@ export default function BoyAvatarSelection() {
                                         styles.avatarCard,
                                         {
                                             backgroundColor: selectedAvatar === avatar.id 
-                                                ? '#FFE4E6' 
-                                                : isDark ? '#3A3A3A' : '#FFFFFF',
-                                            borderColor: selectedAvatar === avatar.id 
-                                                ? '#FF6B9D' 
-                                                : isDark ? '#4B5563' : '#E5E5E5',
+                                            ? (isDark ? '#31333D' : '#ECECFD')
+                                             : isDark ? '#3A3A3A' : '#FFFFFF',
+                                         borderColor: selectedAvatar === avatar.id 
+                                             ? '#7E80F4' 
+                                             : isDark ? '#4B5563' : '#E5E5E5',
                                         }
                                     ]}
                                     onPress={() => handleAvatarSelect(avatar.id)}
@@ -113,9 +114,9 @@ export default function BoyAvatarSelection() {
                                    <Image source={avatar.emoji} style={styles.avatarImage} />
                                    
                                     {selectedAvatar === avatar.id && (
-                                        <View style={styles.checkmarkContainer}>
-                                            <Ionicons name="checkmark" size={16} color="#FF6B9D" />
-                                        </View>
+                                        <View style={[styles.checkmarkContainer, { backgroundColor: isDark ? '#7E80F4' : '#7E80F4' }]}>
+                                        <Ionicons name="checkmark" size={16} color={isDark ? '#363339' : '#FFFFFF'} />
+                                    </View>
                                     )}
                                 </TouchableOpacity>
                             </View>
@@ -130,8 +131,8 @@ export default function BoyAvatarSelection() {
                     title="CONTINUE"
                     onPress={handleContinue}
                     variant="primary"
-                    backgroundImage={IMAGES.IMAGES.btnBg1}
-                    color='#C2185B'
+                    backgroundImage={IMAGES.IMAGES.buttonBg3}
+                    color='#33358F'
                 />
             </View>
         </SafeAreaView>

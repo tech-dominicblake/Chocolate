@@ -7,12 +7,12 @@ import { useGameStore } from '../../state/useGameStore';
 
 // Header component for game pages
 const GameAHeader = () => {
-    const { round, level, currentTurn, playerNames } = useGameStore();
+    const { round, level, currentTurn, playerNames, playerAvatar, activeTooltip } = useGameStore();
     const { isDark } = useThemeToggle();
 
     const isRoundThree = round === 3;
-    const herAvatar = IMAGES.IMAGES.image12;
-    const himAvatar = IMAGES.IMAGES.image7;
+    const herAvatar = playerAvatar.her || IMAGES.IMAGES.avatarGirl1;
+    const himAvatar = playerAvatar.him || IMAGES.IMAGES.avatarMan1;
     const userName = playerNames?.[currentTurn] || '';
 
     return (
@@ -54,14 +54,26 @@ const GameAHeader = () => {
                     <Ionicons name="map-outline" size={24} color="#9BA1A6" />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.iconButton}>
-                    <Ionicons name="cube-outline" size={24} color={isDark ? '#7F81F5' : '#9BA1A6'} />
-                </TouchableOpacity>
+                <View>
+                    <TouchableOpacity style={styles.iconButton}
+                        onPress={() => router.push('/(game)/a/chocoStatsRound1')}
+                    >
+                        <Ionicons name="cube-outline" size={24} color={activeTooltip ? '#7E80F4' : '#9BA1A6'} />
+                    </TouchableOpacity>
+                </View>
 
                 <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/menu')}>
                     <Ionicons name="menu-outline" size={24} color="#9BA1A6" />
                 </TouchableOpacity>
             </View>
+
+            {/* Speech Bubble */}
+            {activeTooltip && <View style={styles.speechBubbleContainer}>
+                <View style={styles.speechBubble}>
+                    <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>
+                    {<View style={styles.speechBubbleTail} />}
+                </View>
+            </View>}
         </View>
     );
 };
@@ -125,6 +137,39 @@ const styles = StyleSheet.create({
     iconButton: {
         padding: 8,
         marginLeft: 8,
+    },
+    speechBubbleContainer: {
+        position: 'absolute',
+        top: 100, // Position below the header
+        right: 20, // Align with the right side where cube icon is
+        zIndex: 10,
+    },
+    speechBubble: {
+        backgroundColor: '#7E80F4',
+        borderRadius: 16,
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        position: 'relative',
+        width: '100%',
+    },
+    speechBubbleText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    speechBubbleTail: {
+        position: 'absolute',
+        top: -11,
+        right: 55, // Position tail to point to cube icon
+        width: 0,
+        height: 0,
+        borderLeftWidth: 12,
+        borderRightWidth: 12,
+        borderBottomWidth: 12,
+        borderLeftColor: 'transparent',
+        borderRightColor: 'transparent',
+        borderBottomColor: '#7E80F4',
     },
 });
 

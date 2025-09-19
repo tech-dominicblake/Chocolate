@@ -13,7 +13,7 @@ interface ButtonContainerProps {
 }
 
 export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaused = false }: ButtonContainerProps) {
-    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice } = useGameStore();
+    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice, setActiveTooltip } = useGameStore();
     const { clear } = useMessages();
     const { isDark } = useThemeToggle();
     const [userState, setUserState] = useState<UserState>({

@@ -5,11 +5,10 @@ import type { Message } from '@/constants/Types';
 
 interface GameState {
   // Game configuration
-  mode: Mode | null;
-  stage: RelationshipLevel | null;
   language: Language;
   playerNames: { her: string; him: string };
-
+  playerAvatar: { her: string; him: string };
+  
   // Game progress
   round: number;
   level: number;
@@ -18,7 +17,9 @@ interface GameState {
   consumedChocolatesEachCount: { her: number; him: number }; // for game A
   selectedChocoIndex: number;
   roundStarted: boolean;
-
+  mode: Mode | null;
+  stage: RelationshipLevel | null;
+  
   // Stats
   tasksCompleted: {
     her: {
@@ -49,6 +50,7 @@ interface GameState {
   setCurrentTurn: (level: number) => void;
   switchTurn: () => void;
   consumeChocolate: (id: number) => void;
+  resetConsumedChocolates: () => void;
   setSelectedChocoIndex: (index: number) => void;
   setFailSurvivedTask: (turn: PlayerId) => void;
   incrementPlayerFailCount: (player: PlayerId) => void; // New action to increment fail count for specific player
@@ -67,6 +69,7 @@ interface GameState {
   setRoundStarted: (value: boolean) => void;
   setShowBtns: (value: boolean) => void;
   clearState: () => void;
+  setPlayerAvatar: (player: 'her' | 'him', avatar: string) => void;
 }
 
 const initialState = {
@@ -87,9 +90,10 @@ const initialState = {
   consumedChocolatesEachCount: { her: 0, him: 0 },
   sheFailedTwice: { level: 0, state: false },
   selectedMessy: false,
-  activeTooltip: true,
+  activeTooltip: false,
   roundStarted: false,
   showBtns: true,
+  playerAvatar: { her: '', him: '' },
 };
 
 // Mock messages data structure
@@ -343,10 +347,20 @@ export const useGameStore = create<GameState>((set) => ({
   setRoundStarted: (value: boolean) => set({ roundStarted: value }),
 
   setShowBtns: (value: boolean) => set({ showBtns: value }),
+
+  setPlayerAvatar: (player: 'her' | 'him', avatar: string) => set((state) => ({
+    playerAvatar: {
+      ...state.playerAvatar,
+      [player]: avatar
+    }
+  })),
+
   clearState: () => set((state) => ({
     ...initialState,
     language: state.language, // Preserve current language
   })),
+
+  resetConsumedChocolates: () => set({ consumedChocolates: [] }),
 
 }));
 

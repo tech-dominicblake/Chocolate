@@ -1,12 +1,14 @@
 import { IMAGES } from '@/constants';
+import { herChocoLevel, himChocoLevel } from '@/constants/Functions';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
+import { useThemeContext } from '@/providers/ThemeProvider';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ConsumeTick from '../../../components/ConsumeTick';
 import { useGameStore } from '../../../state/useGameStore';
-import { Ionicons } from '@expo/vector-icons';
 interface ChocoStatsProps {
     route?: {
         params?: {
@@ -20,6 +22,17 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
     const { setSelectedChocoIndex, consumedChocolates, currentTurn, level, round, playerAvatar, playerNames } = useGameStore();
     const [herchoco, setHerchoco] = useState<number>(0);
     const [himchoco, setHimchoco] = useState<number>(0);
+    const { isDark } = useThemeContext();
+
+    useEffect(() => {
+        console.log('herchoco', herchoco);
+        console.log('himchoco', himchoco);
+    }, [herchoco, himchoco]);
+
+    useEffect(() => {
+        setHerchoco(herChocoLevel(level));
+        setHimchoco(himChocoLevel(level) + 6);
+    }, [level]);
 
     const challenges = [
         {
@@ -53,21 +66,6 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
             player2Item: require('../../../assets/images/choco12.png'), // Light grey with orange splash
         },
     ];
-
-    const handleChocolatePress = (challengeNumber: number) => {
-
-        // Save the selected chocolate index to global state
-        // Note: challengeNumber is 1-13, but array index is 0-12, so subtract 1
-        setSelectedChocoIndex(challengeNumber);
-        if (currentTurn === 'her') {
-            setHerchoco(challengeNumber);
-        } else {
-            setHimchoco(challengeNumber);
-        }
-
-        // Navigate to promptB
-        router.push('/(game)/b/promptB');
-    };
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: useAppThemeColor('background') }]}>
@@ -125,9 +123,9 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                     <View style={styles.player1Container}>
                                         <TouchableOpacity
                                             style={styles.player1Item}
-                                            onPress={() => handleChocolatePress(challenge.number)}
+                                            // onPress={() => handleChocolatePress(challenge.number)}
                                             activeOpacity={0.7}
-                                            disabled={consumedChocolates.includes(challenge.number) || currentTurn === 'him'}
+                                        // disabled={consumedChocolates.includes(challenge.number) || currentTurn === 'him'}
                                         >
                                             {consumedChocolates.includes(challenge.number) &&
                                                 <View style={styles.consumeTickContainer}>
@@ -140,12 +138,13 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                                 resizeMode="contain"
                                             />
                                             {herchoco === challenge.number && <View style={styles.herAvatarContainer}>
-                                                <View style={styles.speechBubble}>
+                                                <View style={[styles.speechBubble, { backgroundColor: isDark ? '#3C4047' : '#FFFFFF' }]}>
                                                     <Image
                                                         source={playerAvatar.her || IMAGES.IMAGES.avatarGirl1}
                                                         style={styles.playerAvatar}
                                                         resizeMode="contain"
                                                     />
+                                                    <View style={[styles.leftSpeechBubbleTail, { borderLeftColor: isDark ? '#3C4047' : '#FFFFFF' }]} />
                                                 </View>
                                             </View>}
                                         </TouchableOpacity>
@@ -156,9 +155,9 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                     <View style={styles.player2Container}>
                                         <TouchableOpacity
                                             style={styles.player2Item}
-                                            onPress={() => handleChocolatePress(challenge.number + 6)}
+                                            // onPress={() => handleChocolatePress(challenge.number + 6)}
                                             activeOpacity={0.7}
-                                            disabled={consumedChocolates.includes(challenge.number + 6) || currentTurn === 'her'}
+                                        // disabled={consumedChocolates.includes(challenge.number + 6) || currentTurn === 'her'}
                                         >
                                             {consumedChocolates.includes(challenge.number + 6) &&
                                                 <View style={styles.consumeTickContainer}>
@@ -170,12 +169,13 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                                                 resizeMode="contain"
                                             />
                                             {himchoco === challenge.number + 6 && <View style={styles.himAvatarContainer}>
-                                                <View style={styles.speechBubble}>
+                                                <View style={[styles.speechBubble, { backgroundColor: isDark ? '#3C4047' : '#FFFFFF' }]}>
                                                     <Image
                                                         source={playerAvatar.him || IMAGES.IMAGES.avatarMan1}
                                                         style={styles.playerAvatar}
                                                         resizeMode="contain"
                                                     />
+                                                    <View style={[styles.rightSpeechBubbleTail, { borderRightColor: isDark ? '#3C4047' : '#FFFFFF' }]} />
                                                 </View>
                                             </View>}
                                         </TouchableOpacity>
@@ -185,29 +185,11 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                         ))}
                     </View>
 
-                    {/* Supergame Section */}
-                    <View style={styles.supergameSection}>
-                        <View style={styles.supergameLineContainer}>
-                            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-                                <View style={styles.supergameLine} />
-                                <View style={styles.supergameLine} />
-                            </View>
-                            <View style={styles.supergameLine2} />
-                            <View style={styles.supergameLine} />
+                    <View style={{ marginTop: 48 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                            <View style={round === 1 ? styles.activePagenationDot : styles.pagenationDot} />
+                            <View style={round === 1 ? styles.pagenationDot : styles.activePagenationDot} />
                         </View>
-                        <TouchableOpacity
-                            style={styles.supergameItem}
-                            onPress={() => handleChocolatePress(13)}
-                            activeOpacity={0.7}
-                            disabled={round < 3}
-                        >
-                            <Image
-                                source={require('../../../assets/images/choco13.png')} // Red heart with gold speckles
-                                style={styles.supergameChocolate}
-                                resizeMode="contain"
-                            />
-                        </TouchableOpacity>
-                        <Text style={styles.supergameTitle}>N°13 • Supergame</Text>
                     </View>
                 </View>
             </ScrollView>
@@ -225,13 +207,14 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         paddingHorizontal: 28,
+        marginTop: 32,
     },
     scrollContent: {
         flexGrow: 1,
         paddingHorizontal: 51,
         paddingTop: 64,
         paddingBottom: 20,
-        justifyContent: 'center',
+        // justifyContent: 'center',
         alignItems: 'center',
     },
     challengeTitle: {
@@ -246,19 +229,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 24,
         width: '100%',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
     },
     avatarContainer: {
         alignItems: 'center',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 10,
     },
     speechBubble: {
-        backgroundColor: '#F7F8FA',
+        // backgroundColor: '#3C4047',
+        borderColor: '#3C4047',
         borderRadius: 20,
         padding: 8,
         shadowColor: '#000',
@@ -269,10 +247,38 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 3,
+        position: 'relative',
+    },
+    leftSpeechBubbleTail: {
+        // borderColor: '#FFFFFF',
+        position: 'absolute',
+        width: 0,
+        height: 0,
+        borderTopWidth: 8,
+        borderBottomWidth: 8,
+        borderLeftWidth: 12,
+        borderTopColor: 'transparent',
+        borderBottomColor: 'transparent',
+        top: '50%',
+        right: -6,
+    },
+    rightSpeechBubbleTail: {
+        position: 'absolute',
+        width: 0,
+        height: 0,
+        borderTopWidth: 8,
+        borderBottomWidth: 8,
+        borderRightWidth: 12,
+        borderTopColor: 'transparent',
+        borderBottomColor: 'transparent',
+        // bottom: -8,
+        top: '50%',
+        left: -6,
+        // marginLeft: -8,
     },
     playerAvatar: {
-        width: 32,
-        height: 32,
+        width: 24,
+        height: 24,
         borderRadius: 16,
     },
     connectingLine: {
@@ -290,7 +296,6 @@ const styles = StyleSheet.create({
     },
     challengesContainer: {
         width: '100%',
-        marginBottom: 24,
     },
     challengeRow: {
         flexDirection: 'row',
@@ -331,10 +336,8 @@ const styles = StyleSheet.create({
         height: 60,
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'relative',
     },
     player2Item: {
-        position: 'relative',
         width: 60,
         height: 60,
         justifyContent: 'center',
@@ -354,15 +357,15 @@ const styles = StyleSheet.create({
         height: 16,
         backgroundColor: '#CBD5E0', // Light grey line
     },
-    supergameLine2: {
-        width: '100%',
+    supergameTopLine2: {
+        width: '30%',
         height: 2,
         backgroundColor: '#CBD5E0', // Light grey line
         // marginBottom: 12,
         zIndex: 10
     },
-    supergameTopLine2: {
-        width: '30%',
+    supergameLine2: {
+        width: '100%',
         height: 2,
         backgroundColor: '#CBD5E0', // Light grey line
         // marginBottom: 12,
@@ -397,21 +400,31 @@ const styles = StyleSheet.create({
         height: 96,
     },
     backButtonContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         paddingTop: 32,
         zIndex: 10,
+        paddingHorizontal: 26,
     },
     backButton: {
         top: 60,
-        left: 20,
+        // left: 20,
         zIndex: 10,
         backgroundColor: 'transparent',
-        paddingHorizontal: 16,
+        // paddingHorizontal: 16,
         paddingVertical: 8,
+        width: 50
     },
     backButtonContent: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 4,
+    },
+    menuButtonContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
     },
     backButtonText: {
         fontSize: 14,
@@ -424,28 +437,38 @@ const styles = StyleSheet.create({
     herAvatarContainer: {
         position: 'absolute',
         top: 0,
-        left: 50,
-        right: 0,
+        left: -50,
         bottom: 0,
         zIndex: 10,
     },
     himAvatarContainer: {
         position: 'absolute',
         top: 0,
-        right: 50,
-        left: 0,
+        right: -50,
         bottom: 0,
         zIndex: 10,
-    },
-    menuButtonContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
     },
     roundText: {
         fontSize: 18,
         fontWeight: '700',
         color: '#000000',
         top: 60,
+    },
+    pagenationDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 6,
+        backgroundColor: '#CBD5E0',
+    },
+    activePagenationDot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#7E80F4',
+        outlineColor: '#7E80F4',
+        outlineOffset: 2,
+        outlineStyle: 'solid',
+        outlineWidth: 2,
+
     },
 });
