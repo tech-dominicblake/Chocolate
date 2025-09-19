@@ -40,7 +40,6 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
         setThemeMode(savedTheme as ThemeMode);
       }
     } catch (error) {
-      console.log('Error loading theme preference:', error);
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +49,6 @@ export function ThemeProvider({ children }: React.PropsWithChildren) {
     try {
       await AsyncStorage.setItem('globalThemeMode', mode);
     } catch (error) {
-      console.log('Error saving theme preference:', error);
     }
   };
 

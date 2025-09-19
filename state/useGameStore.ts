@@ -77,8 +77,8 @@ const initialState = {
   stage: null,
   language: 'english' as Language,
   playerNames: { her: '', him: '' },
-  round: 1,
-  level: 1,
+  round: 2,
+  level: 10,
   currentTurn: 'her' as PlayerId,
   consumedChocolates: [],
   selectedChocoIndex: 0,
@@ -179,7 +179,6 @@ export const useGameStore = create<GameState>((set) => ({
   },
 
   setRoundLevel: (currentlevel: number) => set((state) => {
-    console.log('setRoundLevel called with level:', state.level);
     return {
       round: currentlevel === 12 ? state.round + 1 : state.round,
       level: currentlevel === 12 ? 1 : currentlevel + 1,
@@ -382,7 +381,6 @@ export const useMessages = create<MessageState>((set, get) => ({
     // Check if queue is currently processing a message with duration
     const state = get();
     if (state.isProcessing) {
-      console.log('Queue is busy, message will be queued after current processing completes');
       // Wait for current processing to complete
       while (state.isProcessing) {
         await new Promise(resolve => setTimeout(resolve, 1000));

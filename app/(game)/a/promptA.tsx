@@ -50,6 +50,10 @@ export default function Prompt() {
 
     useEffect(() => {
         resetConsumedChocolates();
+        setActiveTooltip(true);
+        setTimeout(() => {
+            setActiveTooltip(false);
+        }, 5000);
     }, [round]);
 
     // Auto-scroll to bottom when new messages are added
@@ -68,6 +72,10 @@ export default function Prompt() {
         const isAtBottom = contentOffset.y + layoutMeasurement.height >= contentSize.height - 20;
         setShouldAutoScroll(isAtBottom);
     };
+
+    useEffect(() => {
+        console.log('level state', level);
+    }, [level]);
 
     const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
         if (buttonType === 'success') {
@@ -112,6 +120,14 @@ export default function Prompt() {
 
     const handleContinue = (gameState: ProcessingState) => {
         if (gameState.gameSucceeded) {
+            if (gameState.gameNewLevelStarted) {
+                setTaskCompleted(currentTurn);
+                setRoundLevel(level);
+                setCurrentTurn(level + 1);
+                setConsumedChocolatesEachCount();
+                enqueueGameInfoMessages();
+                return;
+            }
             setShowCongrats(true);
             setTimeout(() => {
                 setShowCongrats(false);
@@ -130,7 +146,11 @@ export default function Prompt() {
             enqueueGameInfoMessages();
         }
         consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6);
-        // enqueue(getMockMessageByKind('prompt'));
+        if (gameState.gameFailed) {
+            setRoundLevel(level);
+            setCurrentTurn(level + 1);
+            enqueueGameInfoMessages();
+        }
     };
 
     // Render messages from the queue using MessageItem component

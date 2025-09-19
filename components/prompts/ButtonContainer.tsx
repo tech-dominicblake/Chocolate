@@ -13,9 +13,10 @@ interface ButtonContainerProps {
 }
 
 export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaused = false }: ButtonContainerProps) {
-    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice, setActiveTooltip } = useGameStore();
-    const { clear } = useMessages();
+    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice, getMockMessageByKind } = useGameStore();
+    const { clear, enqueue } = useMessages();
     const { isDark } = useThemeToggle();
+    const [blinkStage, setBlinkStage] = useState(1);
     const [userState, setUserState] = useState<UserState>({
         success: false,
         firstFail: false,
@@ -29,7 +30,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
         gameSurvived: false,
         gameStarted: false,
         gameEnded: false,
-        gameRestarted: false
+        gameNewLevelStarted: false
     });
 
     // Loading states for buttons
@@ -41,34 +42,120 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
             setGameState({ ...gameState, gameSurvived: true, gamePaused: true });
             setUserState({ ...userState, survived: true });
             onPlayerChoice?.('Continue', 'success');
-            console.log('survived', userState);
+            level === 12 && setGameState({ ...gameState, gameNewLevelStarted: true, gamePaused: true, gameSurvived: true });
         } else {
             setGameState({ ...gameState, gameSucceeded: true, gamePaused: true });
             setUserState({ ...userState, success: true });
             onPlayerChoice?.('LET\'S GET MESSY', 'success');
+            level === 12 && setGameState({ ...gameState, gameNewLevelStarted: true, gamePaused: true, gameSucceeded: true });
         }
     };
 
     const handleContinue = async () => {
+        if (level === 12) {
+            if (round === 1) {
+                if (blinkStage === 1) {
+                    enqueue(
+                        {
+                            kind: 'prompt',
+                            body: 'You survived the warm-up, ready for round 2?',
+                        }
+                    );
+                    setBlinkStage(2);
+                } else if (blinkStage === 2) {
+                    enqueue(
+                        {
+                            kind: 'userchoice',
+                            body: 'Continue',
+                        }
+                    );
+                    enqueue(
+                        {
+                            kind: 'prompt',
+                            body: 'I’m in, let’s see what the hype’s about...',
+                        }
+                    );
+                    setBlinkStage(3);
+                } else if (blinkStage === 3) {
+                    await enqueue(
+                        {
+                            kind: 'prompt',
+                            body: 'Round one messed me up a bit, bit I’m totally pumped for more.',
+                            group: 'question',
+                            durationMs: 2000,
+                        }
+                    );
+                    onContinue?.(gameState);
+                    setBlinkStage(1);
+                    setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameNewLevelStarted: false });
+                    setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
+                }
+            } else if (round === 2) {
+                if (blinkStage === 1) {
+                    enqueue(
+                        {
+                            kind: 'prompt',
+                            body: 'Ready for Super Game?',
+                        }
+                    );
+                    setBlinkStage(2);
+                } else if (blinkStage === 2) {
+                    enqueue(
+                        {
+                            kind: 'userchoice',
+                            body: 'Yes',
+                        }
+                    );
+                    await enqueue(
+                        {
+                            kind: 'prompt',
+                            body: ' Final round, final piece. We’re ready. Let it ruin us beautifully.',
+                            group: 'question',
+                            durationMs: 2000,
+                        }
+                    );
+                    onContinue?.(gameState);
+                    setBlinkStage(1);
+                    setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameNewLevelStarted: false });
+                    setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
+                }
+            }
+            return;
+        }
+
         if (gameState.gameSucceeded || gameState.gameSurvived) {
             onContinue?.(gameState);
+            setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameNewLevelStarted: false });
+            setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
         }
-        setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameRestarted: false });
-        setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
     };
 
-    const handleNahIBail = async () => {
+    const handleNahIBail = async (buttonText: string) => {
+
+        if (buttonText === 'End Game') {
+            router.push('/(game)/a/statsA');
+            clear();
+            clearState();
+            return;
+        }
+
         if (userState.firstFail) {
+            if (level === 12) {
+                setGameState({ ...gameState, gamePaused: true, gameFailed: true, gameNewLevelStarted: true });
+                enqueue(getMockMessageByKind('fail'));
+                return;
+            }
+
             setGameState({ ...gameState, gameFailed: true, gamePaused: true });
             setUserState({ ...userState, secondFail: true });
             currentTurn === 'her' && setSheFailedTwice(true)
-            if (currentTurn === 'him' && sheFailedTwice.state && sheFailedTwice.level === (level-1)) {
+            if (currentTurn === 'him' && sheFailedTwice.state && sheFailedTwice.level === (level - 1)) {
                 router.push('/(game)/a/statsA');
                 clear();
                 clearState();
             }
             onPlayerChoice?.('I can\'t hang', 'fail');
-            setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameRestarted: false });
+            setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameNewLevelStarted: false });
             setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
         } else {
             onPlayerChoice?.('NAH, I BAIL', 'fail');
@@ -77,6 +164,14 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
     };
 
     const handleButtonText = (): string[] => {
+        if (gameState.gameNewLevelStarted && gameState.gamePaused) {
+            if (round === 1) {
+                return ['Continue', 'End Game'];
+            } else if (round === 2 && blinkStage > 1) {
+                return ['Yes', 'No'];
+            }
+        }
+
         if (!userState.firstFail && !userState.success && !userState.secondFail && !userState.survived) {
             return ['Let\'s get messy', 'Nah, I bail'];
         } else if (userState.firstFail && !userState.secondFail) {
@@ -88,10 +183,19 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
     }
     const buttonText = handleButtonText();
 
+    const hideButton = () => {
+        if (gameState.gamePaused && gameState.gameNewLevelStarted && blinkStage >= 2) {
+            return false;
+        }
+        if (gameState.gameSucceeded || gameState.gameSurvived || gameState.gameFailed) {
+            return true;
+        }
+        return false;
+    }
+
     useEffect(() => {
-        console.log('current Game State', gameState);
-        console.log('current User State', userState);
-    }, [gameState, userState]);
+        console.log('Game State', gameState);
+    }, [gameState]);
 
     return (
         <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : 'transparent' }]}>
@@ -112,15 +216,15 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, isGamePaus
                 />
                 {/* Only show the second button when game is not paused */}
                 <ActionButton
-                        title={buttonText[1]}
-                        onPress={handleNahIBail}
-                        variant="secondary"
-                        color='#7A1818'
-                        backgroundImage={require('@/assets/images/btn-bg2.png')}
-                        loading={isFailLoading}
-                        disabled={isSuccessLoading || isFailLoading}
-                        hide={gameState.gameSucceeded || gameState.gameSurvived}
-                    />
+                    title={buttonText[1]}
+                    onPress={() => handleNahIBail(buttonText[1])}
+                    variant="secondary"
+                    color='#7A1818'
+                    backgroundImage={require('@/assets/images/btn-bg2.png')}
+                    loading={isFailLoading}
+                    disabled={isSuccessLoading || isFailLoading}
+                    hide={hideButton()}
+                />
             </View>
         </View>
     );

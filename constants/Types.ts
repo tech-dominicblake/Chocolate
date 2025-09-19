@@ -93,5 +93,5 @@ export interface ProcessingState {
   gamePaused: boolean;
   gameStarted: boolean;
   gameEnded: boolean;
-  gameRestarted: boolean;
+  gameNewLevelStarted: boolean;
 }

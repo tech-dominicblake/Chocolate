@@ -25,11 +25,6 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
     const { isDark } = useThemeContext();
 
     useEffect(() => {
-        console.log('herchoco', herchoco);
-        console.log('himchoco', himchoco);
-    }, [herchoco, himchoco]);
-
-    useEffect(() => {
         setHerchoco(herChocoLevel(level));
         setHimchoco(himChocoLevel(level) + 6);
     }, [level]);
@@ -436,14 +431,14 @@ const styles = StyleSheet.create({
     },
     herAvatarContainer: {
         position: 'absolute',
-        top: 0,
+        top: 10,
         left: -50,
         bottom: 0,
         zIndex: 10,
     },
     himAvatarContainer: {
         position: 'absolute',
-        top: 0,
+        top: 10,
         right: -50,
         bottom: 0,
         zIndex: 10,

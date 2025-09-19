@@ -190,9 +190,11 @@ const styles = StyleSheet.create({
     cardsContainer: {
         alignItems: 'center',
         marginBottom: 48,
+        // backgroundColor: '#FFFFFF',
     },
     scrollContent: {
         alignItems: 'center',
+        backgroundColor: '#FFFFFF',
     },
     cardContainer: {
         width: screenWidth - 40, // Full width minus padding
