@@ -22,34 +22,34 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
 
     const challenges = [
         {
-            player1Item: require('../../../assets/images/choco1.png'), // Orange-yellow spherical
+            player1Item: require('../../../assets/images/choco10.png'), // Orange-yellow spherical
             number: 1,
-            player2Item: require('../../../assets/images/choco2.png'), // Red heart-shaped
+            player2Item: require('../../../assets/images/choco5.png'), // Red heart-shaped
         },
         {
             number: 2,
-            player1Item: require('../../../assets/images/choco3.png'), // Red heart-shaped
-            player2Item: require('../../../assets/images/choco4.png'), // Cream heart-shaped
+            player1Item: require('../../../assets/images/choco9.png'), // Red heart-shaped
+            player2Item: require('../../../assets/images/choco12.png'), // Cream heart-shaped
         },
         {
             number: 3,
-            player1Item: require('../../../assets/images/choco5.png'), // Dark faceted with white speckles
-            player2Item: require('../../../assets/images/choco6.png'), // Purple spherical with gold speckles
+            player1Item: require('../../../assets/images/choco6.png'), // Dark faceted with white speckles
+            player2Item: require('../../../assets/images/choco2.png'), // Purple spherical with gold speckles
         },
         {
             number: 4,
-            player1Item: require('../../../assets/images/choco7.png'), // Purple with orange ring
-            player2Item: require('../../../assets/images/choco8.png'), // Blue with white speckles
+            player1Item: require('../../../assets/images/choco11.png'), // Purple with orange ring
+            player2Item: require('../../../assets/images/choco3.png'), // Blue with white speckles
         },
         {
             number: 5,
-            player1Item: require('../../../assets/images/choco9.png'), // Green faceted with yellow speckles
-            player2Item: require('../../../assets/images/choco10.png'), // Yellow faceted with dark speckles
+            player1Item: require('../../../assets/images/choco7.png'), // Green faceted with yellow speckles
+            player2Item: require('../../../assets/images/choco8.png'), // Yellow faceted with dark speckles
         },
         {
             number: 6,
-            player1Item: require('../../../assets/images/choco11.png'), // Dark grey with red swirl
-            player2Item: require('../../../assets/images/choco12.png'), // Light grey with orange splash
+            player1Item: require('../../../assets/images/choco4.png'), // Dark grey with red swirl
+            player2Item: require('../../../assets/images/choco1.png'), // Light grey with orange splash
         },
     ];
 
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 24,
-        width: '100%',
+        width: 350,
         justifyContent: 'center',
     },
     avatarContainer: {
@@ -312,7 +312,6 @@ const styles = StyleSheet.create({
     playerAvatar: {
         width: 24,
         height: 24,
-        borderRadius: 16,
     },
     rightSpeechBubbleTail: {
         position: 'absolute',
@@ -342,7 +341,7 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     challengesContainer: {
-        width: '100%',
+        width: 350,
         marginBottom: 24,
     },
     challengeRow: {
@@ -400,7 +399,7 @@ const styles = StyleSheet.create({
     supergameSection: {
         alignItems: 'center',
         marginTop: 16,
-        width: '100%'
+        width: 350,
     },
     supergameLine: {
         width: 2,

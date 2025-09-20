@@ -191,17 +191,20 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         paddingBottom: 20,
+        alignItems: 'center',
     },
     avatarGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        gap: 8,
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
+        width: 400, // 145 + 8 + 145 = 298px for 2 columns with gap
     },
     avatarColumn: {
         width: 145,
-        // marginBottom: 8,
+        height: 145,
+        marginRight: 8, // Gap between columns
+        marginBottom: 16, // Space between rows
     },
     avatarCard: {
         width: '100%',
@@ -211,14 +214,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        elevation: 5,
     },
     avatarEmoji: {
         fontSize: 48,
@@ -238,14 +233,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 1,
-        },
-        shadowOpacity: 0.2,
-        shadowRadius: 1.41,
-        elevation: 2,
     },
     buttonContainer: {
         paddingHorizontal: 20,

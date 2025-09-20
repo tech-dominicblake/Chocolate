@@ -1,11 +1,12 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
-import { useGameStore, useMessages } from '@/state/useGameStore';
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
+import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useState } from 'react';
 
 interface GameStats {
     chocolatesConsumed: { player1: string; player2: string };
@@ -29,6 +30,35 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const { setRoundLevel, setCurrentTurn, clearAllStates, round, currentTurn, tasksCompleted, consumedChocolates, didFinal, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
     const { isDark } = useThemeToggle();
     const [isNavigating, setIsNavigating] = useState(false);
+    const [isPageVisible, setIsPageVisible] = useState(true);
+
+    // Background music - using existing music file
+    const backgroundMusic = require('../../../assets/images/audio/background-music.mpeg');
+    
+    // Use background music hook
+    useBackgroundMusic({
+        musicFile: backgroundMusic,
+        shouldPlay: isPageVisible,
+        volume: 1.0, // Maximum volume - 4x louder!
+        loop: true
+    });
+
+    // Handle page visibility and navigation
+    useEffect(() => {
+        setIsPageVisible(true);
+        
+        return () => {
+            // Stop music when component unmounts (navigation away)
+            setIsPageVisible(false);
+        };
+    }, []);
+
+    // Stop music when navigating away
+    useEffect(() => {
+        return () => {
+            setIsPageVisible(false);
+        };
+    }, []);
 
     // Function to calculate total completed tasks separated by sex
     const getTotalCompletedTasks = (player: 'her' | 'him') => {
@@ -58,6 +88,9 @@ export default function StatsScreen({ route }: StatsScreenProps) {
         
         try {
             setIsNavigating(true);
+            
+            // Stop background music immediately when continuing
+            setIsPageVisible(false);
             
             // Clear ALL global states comprehensively
             clearAllStates();

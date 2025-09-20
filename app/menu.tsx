@@ -6,6 +6,8 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+    Alert,
+    Linking,
     SafeAreaView,
     StyleSheet,
     Text,
@@ -32,7 +34,7 @@ export default function MenuPage() {
     };
 
     const handleGameRules = () => {
-        router.push('/aboutPage');
+        router.push('/gameRules');
     };
 
     const handleReviewApp = () => {
@@ -41,6 +43,48 @@ export default function MenuPage() {
 
     const handleHomeBtn = () => {
         router.push('/startPage');
+    };
+
+    const handleWhatsAppContact = async () => {
+        const whatsappUrl = 'https://wa.me/6282342431740';
+        try {
+            const supported = await Linking.canOpenURL(whatsappUrl);
+            if (supported) {
+                await Linking.openURL(whatsappUrl);
+            } else {
+                Alert.alert('Error', 'WhatsApp is not installed on this device');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to open WhatsApp');
+        }
+    };
+
+    const handleWhatsAppAffiliate = async () => {
+        const whatsappUrl = 'https://wa.me/6282342431740?text=Hi! I want to become an affiliate for Hushh Chocolate.';
+        try {
+            const supported = await Linking.canOpenURL(whatsappUrl);
+            if (supported) {
+                await Linking.openURL(whatsappUrl);
+            } else {
+                Alert.alert('Error', 'WhatsApp is not installed on this device');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to open WhatsApp');
+        }
+    };
+
+    const handleWhatsAppBuy = async () => {
+        const whatsappUrl = 'https://wa.me/6282342431740?text=Hi! I want to buy Hushh Chocolate.';
+        try {
+            const supported = await Linking.canOpenURL(whatsappUrl);
+            if (supported) {
+                await Linking.openURL(whatsappUrl);
+            } else {
+                Alert.alert('Error', 'WhatsApp is not installed on this device');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to open WhatsApp');
+        }
     };
 
     const menuButtons = [
@@ -159,21 +203,21 @@ export default function MenuPage() {
                 />
                 <ActionButton
                     title='CONTACT SUPPORT'
-                    onPress={() => {}}
+                    onPress={handleWhatsAppContact}
                     variant="secondary"
                     backgroundImage={IMAGES.IMAGES.buttonBg1}
                     color='#33358F'
                 />
                 <ActionButton
                     title='BECOME AN AFFILIATE'
-                    onPress={() => {}}
+                    onPress={handleWhatsAppAffiliate}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg2}
                     color= '#33358F'
                 />
                 <ActionButton
                     title='BUY HUSHH CHOCOLATE'
-                    onPress={() => {}}
+                    onPress={handleWhatsAppBuy}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg3}
                     color='#33358F'

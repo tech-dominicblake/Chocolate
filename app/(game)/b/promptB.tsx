@@ -12,19 +12,19 @@ import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, Vi
 
 // Chocolate queue data
 const chocolateQueue = [
-    { id: 1, image: require('../../../assets/images/choco1.png'), color: '#FF6B35' },
-    { id: 2, image: require('../../../assets/images/choco2.png'), color: '#FF1744' },
-    { id: 3, image: require('../../../assets/images/choco3.png'), color: '#6A1B9A' },
-    { id: 4, image: require('../../../assets/images/choco4.png'), color: '#00BCD4' },
-    { id: 5, image: require('../../../assets/images/choco5.png'), color: '#4CAF50' },
-    { id: 6, image: require('../../../assets/images/choco6.png'), color: '#FF9800' },
+    { id: 1, image: require('../../../assets/images/choco10.png'), color: '#FF6B35' },
+    { id: 2, image: require('../../../assets/images/choco9.png'), color: '#FF1744' },
+    { id: 3, image: require('../../../assets/images/choco6.png'), color: '#6A1B9A' },
+    { id: 4, image: require('../../../assets/images/choco11.png'), color: '#00BCD4' },
+    { id: 5, image: require('../../../assets/images/choco7.png'), color: '#4CAF50' },
+    { id: 6, image: require('../../../assets/images/choco4.png'), color: '#FF9800' },
     { id: 0, image: '', color: '#FF9800' },
-    { id: 7, image: require('../../../assets/images/choco7.png'), color: '#9C27B0' },
-    { id: 8, image: require('../../../assets/images/choco8.png'), color: '#2196F3' },
-    { id: 9, image: require('../../../assets/images/choco9.png'), color: '#795548' },
-    { id: 10, image: require('../../../assets/images/choco10.png'), color: '#607D8B' },
-    { id: 11, image: require('../../../assets/images/choco11.png'), color: '#E91E63' },
-    { id: 12, image: require('../../../assets/images/choco12.png'), color: '#3F51B5' },
+    { id: 7, image: require('../../../assets/images/choco5.png'), color: '#9C27B0' },
+    { id: 8, image: require('../../../assets/images/choco12.png'), color: '#2196F3' },
+    { id: 9, image: require('../../../assets/images/choco2.png'), color: '#795548' },
+    { id: 10, image: require('../../../assets/images/choco3.png'), color: '#607D8B' },
+    { id: 11, image: require('../../../assets/images/choco8.png'), color: '#E91E63' },
+    { id: 12, image: require('../../../assets/images/choco1.png'), color: '#3F51B5' },
     { id: 0, image: '', color: '#3F51B5' },
     { id: 13, image: require('../../../assets/images/choco13.png'), color: '#FF5722' },
 ];
@@ -60,7 +60,7 @@ const GameHeader = () => {
                         {currentTurn === "her" ?
                             <Image source={playerAvatar.her || IMAGES.IMAGES.image12} style={styles.avatar} /> : <Image source={playerAvatar.him || IMAGES.IMAGES.image7} style={styles.avatar} />
                         }
-                        <Text style={styles.userName}>{playerNames?.her || 'Alexa'}</Text>
+                        <Text style={styles.userName}>{playerNames?.[currentTurn] || 'Alexa'}</Text>
                     </View>
                 </View>
 
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
     },
     queueContainer: {
         width: '100%',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
     },
     chocoItem: {
         alignItems: 'center',
@@ -505,6 +505,9 @@ const styles = StyleSheet.create({
     },
     chocoItemContainer: {
         alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
     },
     selectionLineContainer: {
         flexDirection: 'row',

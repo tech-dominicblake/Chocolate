@@ -14,7 +14,7 @@ export default function EndPage() {
     const secondaryTextColor = useAppThemeColor('placeholderText');
     const borderColor = useAppThemeColor('border');
     const primaryColor = useAppThemeColor('primary');
-    const { mode, currentTurn, playerAvatar } = useGameStore();
+    const { mode, currentTurn, playerAvatar, playerNames } = useGameStore();
 
     const handleBringChocolate = () => {
         // // Handle bring chocolate action
@@ -29,7 +29,7 @@ export default function EndPage() {
     const handleIBail = () => {
         // // Handle bail action
         // // Navigate back or to menu
-        router.push('/congratsChoco');
+        router.push('/startPage');
     };
 
     return (
@@ -46,7 +46,7 @@ export default function EndPage() {
                     <View style={[styles.avatar, { backgroundColor, borderColor: primaryColor }]}>
                         {currentTurn === 'her' ? <Image source={playerAvatar.her} style={styles.avatarImage} /> : <Image source={playerAvatar.him} style={styles.avatarImage} />}
                     </View>
-                    <Text style={[styles.playerName, { color: textColor }]}>Alex</Text>
+                    <Text style={[styles.playerName, { color: textColor }]}>{playerNames.her}</Text>
                 </View>
                 {/* Bottom Section - Action Buttons */}
                 <View style={styles.actionContainer}>
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     avatarImage: {
         width: 64,
         height: 64,
-        borderRadius: 35,
+        // borderRadius: 35,
     },
     avatar: {
         width: 128,

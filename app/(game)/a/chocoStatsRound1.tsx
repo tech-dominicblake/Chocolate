@@ -29,35 +29,67 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
         setHimchoco(himChocoLevel(level) + 6);
     }, [level]);
 
-    const challenges = [
+    const challenges1 = [
         {
-            player1Item: require('../../../assets/images/choco1.png'), // Orange-yellow spherical
+            player1Item: require('../../../assets/images/choco2.png'), // Orange-yellow spherical
             number: 1,
             player2Item: require('../../../assets/images/choco2.png'), // Red heart-shaped
         },
         {
             number: 2,
-            player1Item: require('../../../assets/images/choco3.png'), // Red heart-shaped
+            player1Item: require('../../../assets/images/choco4.png'), // Red heart-shaped
             player2Item: require('../../../assets/images/choco4.png'), // Cream heart-shaped
         },
         {
             number: 3,
-            player1Item: require('../../../assets/images/choco5.png'), // Dark faceted with white speckles
-            player2Item: require('../../../assets/images/choco6.png'), // Purple spherical with gold speckles
+            player1Item: require('../../../assets/images/choco8.png'), // Dark faceted with white speckles
+            player2Item: require('../../../assets/images/choco8.png'), // Purple spherical with gold speckles
         },
         {
             number: 4,
-            player1Item: require('../../../assets/images/choco7.png'), // Purple with orange ring
-            player2Item: require('../../../assets/images/choco8.png'), // Blue with white speckles
+            player1Item: require('../../../assets/images/choco3.png'), // Purple with orange ring
+            player2Item: require('../../../assets/images/choco3.png'), // Blue with white speckles
         },
         {
             number: 5,
-            player1Item: require('../../../assets/images/choco9.png'), // Green faceted with yellow speckles
+            player1Item: require('../../../assets/images/choco10.png'), // Green faceted with yellow speckles
             player2Item: require('../../../assets/images/choco10.png'), // Yellow faceted with dark speckles
         },
         {
             number: 6,
-            player1Item: require('../../../assets/images/choco11.png'), // Dark grey with red swirl
+            player1Item: require('../../../assets/images/choco9.png'), // Dark grey with red swirl
+            player2Item: require('../../../assets/images/choco9.png'), // Light grey with orange splash
+        },
+    ];
+    const challenges2 = [
+        {
+            player1Item: require('../../../assets/images/choco5.png'), // Orange-yellow spherical
+            number: 1,
+            player2Item: require('../../../assets/images/choco5.png'), // Red heart-shaped
+        },
+        {
+            number: 2,
+            player1Item: require('../../../assets/images/choco1.png'), // Red heart-shaped
+            player2Item: require('../../../assets/images/choco1.png'), // Cream heart-shaped
+        },
+        {
+            number: 3,
+            player1Item: require('../../../assets/images/choco7.png'), // Dark faceted with white speckles
+            player2Item: require('../../../assets/images/choco7.png'), // Purple spherical with gold speckles
+        },
+        {
+            number: 4,
+            player1Item: require('../../../assets/images/choco9.png'), // Purple with orange ring
+            player2Item: require('../../../assets/images/choco9.png'), // Blue with white speckles
+        },
+        {
+            number: 5,
+            player1Item: require('../../../assets/images/choco6.png'), // Green faceted with yellow speckles
+            player2Item: require('../../../assets/images/choco6.png'), // Yellow faceted with dark speckles
+        },
+        {
+            number: 6,
+            player1Item: require('../../../assets/images/choco12.png'), // Dark grey with red swirl
             player2Item: require('../../../assets/images/choco12.png'), // Light grey with orange splash
         },
     ];
@@ -112,7 +144,7 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
 
                     {/* Challenges Table */}
                     <View style={styles.challengesContainer}>
-                        {challenges.map((challenge, index) => (
+                        {(round === 1 ? challenges1 : challenges2).map((challenge, index) => (
                             <View key={challenge.number} style={styles.challengeRow}>
                                 <View style={styles.challengeItems}>
                                     <View style={styles.player1Container}>
@@ -223,7 +255,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 24,
-        width: '100%',
+        width: 350,
         justifyContent: 'space-between',
     },
     avatarContainer: {
@@ -290,7 +322,7 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     challengesContainer: {
-        width: '100%',
+        width: 350,
     },
     challengeRow: {
         flexDirection: 'row',

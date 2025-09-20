@@ -115,8 +115,8 @@ const mockMessagesData = {
       kind: 'prompt' as const,
       group: 'question' as const,
       durationMs: 2000,
-    },
-    {
+    },],
+    survive: [{
       title: "Too Hot to Handle 🔥💋",
       body: "Slowly and seductively lick the chocolate piece... Whisper your partner's three sexiest features 😍🔥",
       kind: 'prompt' as const,
@@ -128,14 +128,6 @@ const mockMessagesData = {
     {
       body: "No flinching. No excuses. Just pure, delicious chaos. You're built for this 😮‍💨",
       kind: 'success' as const,
-      group: 'game_result' as const,
-      durationMs: 1000,
-    }
-  ],
-  survive: [
-    {
-      body: "You bounced back! That's the spirit 💪 Ready to keep going?",
-      kind: 'survive' as const,
       group: 'game_result' as const,
       durationMs: 1000,
     }

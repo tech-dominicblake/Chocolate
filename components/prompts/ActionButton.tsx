@@ -1,4 +1,5 @@
 import { ActivityIndicator, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// import { useSoundEffects } from '../../hooks/useSoundEffects'; // Temporarily disabled
 
 interface ActionButtonProps {
     title: string;
@@ -21,8 +22,15 @@ export default function ActionButton({
     disabled = false,
     hide = false
 }: ActionButtonProps) {
+    // const { playCorkPop } = useSoundEffects(); // Temporarily disabled
+    
     const handlePress = () => {
         if (loading || disabled) return;
+        
+        // Play cork pop sound effect - temporarily disabled
+        // playCorkPop();
+        
+        // Execute the original onPress function
         onPress();
     };
 

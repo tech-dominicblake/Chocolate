@@ -63,7 +63,7 @@ export default function StartPage() {
                         />
                         <ActionButton
                             title="WHAT IS HUSHH?"
-                            onPress={() => router.push('/gameRules')}
+                            onPress={() => router.push('/aboutPage')}
                             variant="primary"
                             backgroundImage={IMAGES.IMAGES.buttonBg2}
                             color='#33358F'

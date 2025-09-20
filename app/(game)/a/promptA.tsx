@@ -117,11 +117,17 @@ export default function Prompt() {
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
                 setHasFailedOnce(true);
+                enqueue({
+                    kind: 'userchoice' as const,
+                    body: 'Nah, I bail.',
+                    group: 'game_result' as const,
+                    durationMs: 1000,
+                });
                 const dareMessage = getMockMessageByKind('dare');
                 if (dareMessage) {
                     enqueue(dareMessage);
                 }
-                const newPromptMessage = getMockMessageByKind('prompt');
+                const newPromptMessage = getMockMessageByKind('survive');
                 if (newPromptMessage) {
                     enqueue(newPromptMessage);
                 }
