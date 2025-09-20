@@ -1,7 +1,7 @@
 import { IMAGES } from '@/constants';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeToggle } from '../../hooks/useAppTheme';
 import { useGameStore } from '../../state/useGameStore';
 
@@ -67,13 +67,18 @@ const GameAHeader = () => {
                 </TouchableOpacity>
             </View>
 
-            {/* Speech Bubble */}
-            {activeTooltip && <View style={styles.speechBubbleContainer}>
-                <View style={styles.speechBubble}>
-                    <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>
-                    {<View style={styles.speechBubbleTail} />}
+            {/* Speech Bubble - Production-safe positioning */}
+            {activeTooltip && (
+                <View style={[
+                    styles.speechBubbleContainer,
+                    Platform.OS === 'android' && styles.androidProductionFix
+                ]}>
+                    <View style={styles.speechBubble}>
+                        <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>
+                        <View style={styles.speechBubbleTail} />
+                    </View>
                 </View>
-            </View>}
+            )}
         </View>
     );
 };
@@ -88,8 +93,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderBottomWidth: 1,
         borderBottomColor: '#E5E7EB', // Add explicit border color
-        zIndex: 100, // Ensure header is above body content
-        elevation: 5, // For Android
+        zIndex: 10, // Lower z-index to allow speech bubble to appear above
+        elevation: 2, // Lower elevation for Android
     },
     leftSection: {
         flex: 1,
@@ -145,8 +150,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 100, // Position below the header
         right: 20, // Align with the right side where cube icon is
-        zIndex: 1000, // Higher z-index to ensure it's above body content
-        elevation: 10, // For Android
+        zIndex: 9999, // Much higher z-index to ensure it's above everything
+        elevation: 50, // Very high elevation for Android production builds
+        // Additional production-specific properties
+        backgroundColor: 'transparent', // Ensure no background conflicts
     },
     speechBubble: {
         backgroundColor: '#7E80F4',
@@ -185,7 +192,19 @@ const styles = StyleSheet.create({
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
         borderBottomColor: '#7E80F4',
-        zIndex: 1001, // Higher than speech bubble
+        zIndex: 10000, // Even higher than speech bubble container
+        elevation: 51, // Even higher elevation for Android production
+    },
+    // Android production-specific fix
+    androidProductionFix: {
+        position: 'absolute',
+        top: 0, // Position at very top
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 99999,
+        elevation: 100,
+        pointerEvents: 'box-none', // Allow touches to pass through
     },
 });
 
