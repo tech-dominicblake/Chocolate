@@ -97,7 +97,7 @@ const initialState = {
   consumedChocolatesEachCount: { her: 0, him: 0 },
   sheFailedTwice: { level: 0, state: false },
   selectedMessy: false,
-  activeTooltip: false,
+  activeTooltip: true,
   roundStarted: false,
   showBtns: true,
   playerAvatar: { her: '', him: '' },

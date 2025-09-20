@@ -192,6 +192,14 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         borderRadius: 12,
         width: '100%',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.84,
+        elevation: 8,
     },
     playerEmoji: {
         width: 32,

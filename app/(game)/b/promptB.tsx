@@ -82,12 +82,16 @@ const GameHeader = () => {
                     </TouchableOpacity>
                 </View>
 
-                {/* Speech Bubble */}
-                {activeTooltip && <View style={styles.speechBubbleContainer}>
-                    <View style={styles.speechBubble}>
-                        <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>
+                {/* Speech Bubble - Production-safe positioning */}
+                {activeTooltip && (
+                    <View style={[
+                        styles.speechBubbleContainer,
+                    ]}>
+                        <View style={styles.speechBubble}>
+                            <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>
+                        </View>
                     </View>
-                </View>}
+                )}
 
             </View>
 
@@ -563,8 +567,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 110, // Position below the header
         right: 20, // Align with the right side where cube icon is
-        zIndex: 1000, // Higher z-index to ensure it's above body content
-        elevation: 10, // For Android
+        zIndex: 9999, // Much higher z-index to ensure it's above everything
+        elevation: 50, // Very high elevation for Android production builds
+        // Additional production-specific properties
+        backgroundColor: 'transparent', // Ensure no background conflicts
     },
     speechBubble: {
         backgroundColor: '#7E80F4',
@@ -603,8 +609,17 @@ const styles = StyleSheet.create({
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
         borderBottomColor: '#7E80F4',
-        zIndex: 1001, // Higher than speech bubble
-        elevation: 11, // For Android
+        zIndex: 10000, // Even higher than speech bubble container
+        elevation: 51, // Even higher elevation for Android production
+    },
+    // Android production-specific fix
+    androidProductionFix: {
+        position: 'absolute',
+        top: 100, // Position below header
+        right: 20, // Align with cube icon
+        zIndex: 99999,
+        elevation: 100,
+        pointerEvents: 'box-none', // Allow touches to pass through
     },
     promptContainer: {
         marginBottom: 10,

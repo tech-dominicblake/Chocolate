@@ -1,7 +1,7 @@
 import { IMAGES } from '@/constants';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeToggle } from '../../hooks/useAppTheme';
 import { useGameStore } from '../../state/useGameStore';
 
@@ -71,7 +71,6 @@ const GameAHeader = () => {
             {activeTooltip && (
                 <View style={[
                     styles.speechBubbleContainer,
-                    Platform.OS === 'android' && styles.androidProductionFix
                 ]}>
                     <View style={styles.speechBubble}>
                         <Text style={styles.speechBubbleText}>Locate the floating Chocolate in the box</Text>

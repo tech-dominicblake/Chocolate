@@ -1,6 +1,8 @@
+import { MenuButton } from '@/components/MenuButton';
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useAppThemeColor, useThemeToggle } from '@/hooks/useAppTheme';
+import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -12,8 +14,6 @@ import {
     Text,
     View
 } from 'react-native';
-import { useGameStore } from '@/state/useGameStore';
-import { MenuButton } from '@/components/MenuButton';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         alignItems: 'center',
-        backgroundColor: '#FFFFFF',
+        // backgroundColor: '#FFFFFF',
     },
     cardContainer: {
         width: screenWidth - 40, // Full width minus padding
@@ -210,21 +210,23 @@ const styles = StyleSheet.create({
     },
     card: {
         width: '100%',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'transparent',
         borderRadius: 20,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 8,
+        // shadowColor: '#000',
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 4,
+        // },
+        // shadowOpacity: 0.1,
+        // shadowRadius: 8,
+        // elevation: 8,
         overflow: 'hidden',
     },
     cardHeader: {
         height: 171,
         paddingTop: 24,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
         // justifyContent: 'center',
         // alignItems: 'center',
     },

@@ -26,9 +26,8 @@ interface StatsScreenProps {
 }
 
 export default function StatsScreen({ route }: StatsScreenProps) {
-    const { setRoundLevel, setCurrentTurn, clearState, resetGame, round, currentTurn, tasksCompleted, consumedChocolates, didFinal, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
+    const { setRoundLevel, setCurrentTurn, clearAllStates, round, currentTurn, tasksCompleted, consumedChocolates, didFinal, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
     const { isDark } = useThemeToggle();
-    const { clear } = useMessages();
     const [isNavigating, setIsNavigating] = useState(false);
 
     // Function to calculate total completed tasks separated by sex
@@ -60,20 +59,11 @@ export default function StatsScreen({ route }: StatsScreenProps) {
         try {
             setIsNavigating(true);
             
-            // Clear message queue first
-            clear();
+            // Clear ALL global states comprehensively
+            clearAllStates();
             
-            // Add a small delay to prevent race conditions
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            // Clear game state
-            clearState();
-            
-            // Add another small delay
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            // Reset game
-            resetGame();
+            // Add a small delay to ensure state clearing completes
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             // Navigate after all operations complete
             router.push('/startPage');
