@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB', // Add explicit border color
         zIndex: 100, // Ensure header is above body content
         elevation: 5, // For Android
     },
@@ -154,6 +155,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         position: 'relative',
         width: '100%',
+        // Add explicit border for production
+        borderWidth: 1,
+        borderColor: '#6366F1', // Slightly darker purple for border
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -182,7 +186,6 @@ const styles = StyleSheet.create({
         borderRightColor: 'transparent',
         borderBottomColor: '#7E80F4',
         zIndex: 1001, // Higher than speech bubble
-        elevation: 11, // For Android
     },
 });
 

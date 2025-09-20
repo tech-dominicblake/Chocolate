@@ -4,6 +4,7 @@ import { useThemeToggle } from '@/hooks/useAppTheme';
 import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 interface GameStats {
@@ -25,8 +26,9 @@ interface StatsScreenProps {
 }
 
 export default function StatsScreen({ route }: StatsScreenProps) {
-    const { setRoundLevel, setCurrentTurn, mode, currentTurn, tasksCompleted,didFinal, consumedChocolates, level, failsSuffered } = useGameStore();
+    const { setRoundLevel, setCurrentTurn, mode, currentTurn, tasksCompleted,didFinal, consumedChocolates, level, failsSuffered, clearAllStates } = useGameStore();
     const { isDark } = useThemeToggle();
+    const [isNavigating, setIsNavigating] = useState(false);
 
     // Function to calculate total completed tasks separated by sex
     const getTotalCompletedTasks = (player: 'her' | 'him') => {
@@ -47,8 +49,27 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const gameStats = route?.params?.gameStats || defaultStats;
     const gameResult = route?.params?.gameResult || 'success';
 
-    const handleContinue = () => {
-            router.push('/congrats');
+    const handleContinue = async () => {
+        if (isNavigating) return; // Prevent multiple presses
+        
+        try {
+            setIsNavigating(true);
+            
+            // Clear ALL global states comprehensively
+            clearAllStates();
+            
+            // Add a small delay to ensure state clearing completes
+            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            // Navigate after all operations complete
+            router.push('/startPage');
+        } catch (error) {
+            console.error('Error in handleContinue:', error);
+            // Fallback: just navigate even if clearing fails
+            router.push('/startPage');
+        } finally {
+            setIsNavigating(false);
+        }
     };
 
     return (
@@ -122,11 +143,13 @@ export default function StatsScreen({ route }: StatsScreenProps) {
                 {/* Continue Button */}
                 <View style={styles.buttonContainer}>
                     <ActionButton
-                        title="CONTINUE"
+                        title={isNavigating ? "LOADING..." : "CONTINUE"}
                         onPress={handleContinue}
                         variant="primary"
                         backgroundImage={currentTurn === 'her' ? require('@/assets/images/btn-bg1.png') : require('@/assets/images/buttonBg3.png')}
                         color={currentTurn === 'her' ? '#8B2756' : '#33358F'}
+                        loading={isNavigating}
+                        disabled={isNavigating}
                     />
                 </View>
             </ScrollView>
@@ -169,14 +192,6 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         borderRadius: 12,
         width: '100%',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 3.84,
-        elevation: 8,
     },
     playerEmoji: {
         width: 32,

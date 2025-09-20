@@ -1,6 +1,6 @@
 import Images from '@/constants/Images';
 import { useThemeContext } from '@/providers/ThemeProvider';
-import { useGameStore, useMessages } from '@/state/useGameStore';
+import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -15,14 +15,13 @@ import {
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function FinalPage() {
-const { clear } = useMessages();
-const { resetGame } = useGameStore();
+const { clearAllStates } = useGameStore();
 const { isDark } = useThemeContext();
 
     useEffect(() => {
-        // Clear message queue and reset all game states to initial values
-        clear();
-        resetGame();
+        // Clear ALL global states comprehensively
+        clearAllStates();
+        
         const timer = setTimeout(() => {
             router.push('/startPage');
         }, 2000);
@@ -217,14 +216,6 @@ const styles = StyleSheet.create({
             { scaleX: 1.2 },
             { scaleY: 0.8 }
         ],
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 8,
-        },
-        shadowOpacity: 0.4,
-        shadowRadius: 16,
-        elevation: 8,
     },
     heartHighlight1: {
         position: 'absolute',
@@ -270,8 +261,5 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         textAlign: 'center',
         lineHeight: 50,
-        textShadowColor: 'rgba(0, 0, 0, 0.5)',
-        textShadowOffset: { width: 1, height: 1 },
-        textShadowRadius: 3,
     },
 });

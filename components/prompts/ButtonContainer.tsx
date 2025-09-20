@@ -14,7 +14,7 @@ interface ButtonContainerProps {
 }
 
 export default function ButtonContainer({ onPlayerChoice, onContinue, loading = false, isGamePaused = false }: ButtonContainerProps) {
-    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice, getMockMessageByKind, setDidFinal } = useGameStore();
+    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice, getMockMessageByKind, setDidFinal, hasFailedOnce, setHasFailedOnce } = useGameStore();
     const { clear, enqueue } = useMessages();
     const { isDark } = useThemeToggle();
     const [blinkStage, setBlinkStage] = useState(1);

@@ -2,6 +2,7 @@ import { Language, Mode, PlayerId, RelationshipLevel } from '@/constants/Types';
 import { create } from 'zustand';
 
 import type { Message } from '@/constants/Types';
+import { useSessionStore } from './useSessionStore';
 
 interface GameState {
   // Game configuration
@@ -71,6 +72,7 @@ interface GameState {
   setRoundStarted: (value: boolean) => void;
   setShowBtns: (value: boolean) => void;
   clearState: () => void;
+  clearAllStates: () => void;
   setPlayerAvatar: (player: 'her' | 'him', avatar: string) => void;
   setHerChoco: (value: number) => void;
   setHimChoco: (value: number) => void;
@@ -369,6 +371,21 @@ export const useGameStore = create<GameState>((set) => ({
     ...initialState,
     language: state.language, // Preserve current language
   })),
+
+  // Complete state reset function that clears ALL global states
+  clearAllStates: () => {
+    // Clear game state
+    set(initialState);
+    
+    // Clear message queue
+    useMessages.getState().clear();
+    
+    // Clear session state
+    const { signOut } = useSessionStore.getState();
+    signOut();
+    
+    // Note: Settings store is preserved as it contains user preferences
+  },
 
   resetConsumedChocolates: () => set({ consumedChocolates: [] }),
   setHerChoco: (value: number) => set({ herChoco: value }),

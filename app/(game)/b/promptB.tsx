@@ -563,7 +563,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 110, // Position below the header
         right: 20, // Align with the right side where cube icon is
-        zIndex: 10,
+        zIndex: 1000, // Higher z-index to ensure it's above body content
+        elevation: 10, // For Android
     },
     speechBubble: {
         backgroundColor: '#7E80F4',
@@ -572,7 +573,17 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         position: 'relative',
         width: '100%',
-        // maxWidth: 200,
+        // Add explicit border for production
+        borderWidth: 1,
+        borderColor: '#6366F1', // Slightly darker purple for border
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 8, // For Android shadow
     },
     speechBubbleText: {
         color: '#FFFFFF',
@@ -592,6 +603,8 @@ const styles = StyleSheet.create({
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
         borderBottomColor: '#7E80F4',
+        zIndex: 1001, // Higher than speech bubble
+        elevation: 11, // For Android
     },
     promptContainer: {
         marginBottom: 10,

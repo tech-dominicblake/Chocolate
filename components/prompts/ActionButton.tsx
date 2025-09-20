@@ -124,6 +124,9 @@ const styles = StyleSheet.create({
         // marginVertical: 8,
         alignItems: 'center',
         justifyContent: 'center',
+        // Add explicit border for production
+        borderWidth: 1,
+        borderColor: '#E91E63', // Slightly darker pink for border
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -142,6 +145,9 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         alignItems: 'center',
         justifyContent: 'center',
+        // Add explicit border for production
+        borderWidth: 1,
+        borderColor: '#E53E3E', // Slightly darker red for border
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
