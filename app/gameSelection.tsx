@@ -26,7 +26,7 @@ export default function GameSelectionPage() {
 
     const handlePeekRules = () => {
         // Navigate to rules page
-        // router.push('/(tabs)');
+        router.push('/ageGate');
     };
 
     const handleBack = () => {

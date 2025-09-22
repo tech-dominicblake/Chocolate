@@ -1,30 +1,32 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
+import { useThemeToggle } from '@/hooks/useAppTheme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';
-import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ExperienceNoteA() {
+    const { isDark } = useThemeToggle();
+    
     const handleBack = () => {
         router.back();
     };
 
     const handleGotIt = () => {
         // Navigate to next step or back to game selection
-        router.push('/gameSelection');
+        router.back();
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : '#F5F5F5' }]}>
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                    <AntDesign name="left" size={24} color="black" />
+                    <AntDesign name="left" size={24} color={isDark ? '#FFFFFF' : '#000000'} />
                 </TouchableOpacity>
                 <View style={styles.titleContainer}>
                     <View style={styles.titleRow}>
-                        <Text style={styles.title}>Our Story</Text>
+                        <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#333' }]}>Our Story</Text>
                     </View>
                 </View>
             </View>
@@ -33,71 +35,71 @@ export default function ExperienceNoteA() {
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Game Categories Section */}
                 <View style={styles.section}>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Once upon a time…
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Just kidding. We don't do fairy tales here.
                     </Text>
 
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Hushh. was born out of late-night confessions, chaotic relationships, and the kind of laughter that makes your abs sore.
                     </Text>
                 </View>
 
                 {/* How to Play Section */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>The Idea</Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>The Idea</Text>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         We've all been there — stuck between craving connection and being too cool to talk about feelings.
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         So we thought:
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         What if chocolate wasn't just a snack… but a spark?
                     </Text>
                 </View>
 
                 {/* Rules and Consequences Section */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>The Game</Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>The Game</Text>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         We created a game where couples stop scrolling and start experiencing.
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Where the tension simmers, the dares get personal, and the fails? Unhinged, delicious chaos.
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Every chocolate holds a challenge.
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Every challenge peels back a layer.
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Every fail becomes a memory (or a reason to laugh for hours).
                     </Text>
                 </View>
 
                 {/* The Journey Section */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>The Experience</Text>
-                    <Text style={styles.description}>
-                    This isn’t about being perfect.
+                    <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>The Experience</Text>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
+                    This isn't about being perfect.
                     </Text>
-                    <Text style={styles.description}>
-                    It’s about being real, raw, and a little unhinged.
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
+                    It's about being real, raw, and a little unhinged.
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                     For the lovers, the fighters, the situationships, and the soulmates —
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                     the hushh. Experience is for you.
                     </Text>
                 </View>
                
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Now let the games begin 🍫</Text>
+                    <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>Now let the games begin 🍫</Text>
                 </View>
             </ScrollView>
 
@@ -117,7 +119,6 @@ export default function ExperienceNoteA() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
     },
     header: {
         position: 'relative',
@@ -151,7 +152,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#333',
     },
     chocolateIcon: {
         width: 32,
@@ -167,7 +167,6 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#333',
         marginBottom: 16,
         lineHeight: 24,
     },
@@ -210,11 +209,9 @@ const styles = StyleSheet.create({
     },
     description: {
         fontSize: 16,
-        color: '#191919',
         fontWeight: '500',
         lineHeight: 20,
         marginBottom: 12,
-
     },
     actionContainer: {
         width: '100%',

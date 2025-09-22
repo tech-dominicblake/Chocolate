@@ -2,6 +2,7 @@ import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
 import { useThemeContext } from '@/providers/ThemeProvider';
+import { useGameStore, useMessages } from '@/state/useGameStore';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -9,6 +10,8 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 
 export default function ExperienceNoteA() {
     const { isDark } = useThemeContext();
+    const { queue } = useMessages();
+    const { mode } = useGameStore();
     
     const handleBack = () => {
         router.back();
@@ -16,7 +19,15 @@ export default function ExperienceNoteA() {
 
     const handleGotIt = () => {
         // Navigate to next step or back to game selection
-        router.push('/gameSelection');
+        if (queue.length > 0) {
+            if (mode === 'A') {
+                router.push('/(game)/a/promptA');
+            } else {
+                router.push('/(game)/b/promptB');
+            }
+        } else {
+            router.push('/startPage');
+        }
     };
 
     return (
@@ -30,7 +41,7 @@ export default function ExperienceNoteA() {
                     <AntDesign 
                         name="left" 
                         size={24} 
-                        color={useAppThemeColor('text')} 
+                        color={isDark ? '#79828F' : '#000000'} 
                     />
                 </TouchableOpacity>
                 <View style={styles.titleContainer}>
@@ -41,7 +52,7 @@ export default function ExperienceNoteA() {
                     <View style={styles.titleRow}>
                         <Text style={[
                             styles.title,
-                            { color: useAppThemeColor('text') }
+                            { color: isDark ? '#FFFFFF' : '#333' }
                         ]}>hushh. Experience</Text>
                         <Image source={IMAGES.IMAGES.image2} style={styles.chocolateIcon} />
                     </View>
@@ -54,7 +65,7 @@ export default function ExperienceNoteA() {
                 <View style={styles.section}>
                     <Text style={[
                         styles.categoryTitle,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#333' }
                     ]}>
                         In this game, you'll face three spicy categories — depending on relationship stage:
                     </Text>
@@ -66,7 +77,7 @@ export default function ExperienceNoteA() {
                             <View style={styles.categoryContent}>
                                 <Text style={[
                                     styles.categoryTitle,
-                                    { color: useAppThemeColor('text') }
+                                    { color: isDark ? '#79828F' : '#333' }
                                 ]}>Recently Met (&lt;3 months) - flirty, fresh, still pretending to be normal</Text>
                             </View>
                         </View>
@@ -77,7 +88,7 @@ export default function ExperienceNoteA() {
                             <View style={styles.categoryContent}>
                                 <Text style={[
                                     styles.categoryTitle,
-                                    { color: useAppThemeColor('text') }
+                                    { color: isDark ? '#79828F' : '#333' }
                                 ]}>Getting Serious (3-12 months) - feelings are real, chaos is rising</Text>
                             </View>
                         </View>
@@ -88,7 +99,7 @@ export default function ExperienceNoteA() {
                             <View style={styles.categoryContent}>
                                 <Text style={[
                                     styles.categoryTitle,
-                                    { color: useAppThemeColor('text') }
+                                    { color: isDark ? '#79828F' : '#333' }
                                 ]}>We Already Hate Each Other  love is strong, patience is not(1+ year) - </Text>
                                 <Text style={[
                                     styles.categoryDescription,
@@ -105,29 +116,29 @@ export default function ExperienceNoteA() {
                 <View style={styles.section}>
                     <Text style={[
                         styles.sectionTitle,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#333' }
                     ]}>How to Play</Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         You'll take turns pulling chocolates and completing challenges that test your boldness, chemistry... and maybe your dignity
                     </Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         Each category comes with two wild rounds and 12 daring tasks
                     </Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         The chocolates are laid out in a set path inside the box — each piece guides you deeper into the game.
                     </Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         No skipping. No cheating. One bite at a time.
                     </Text>
@@ -137,23 +148,23 @@ export default function ExperienceNoteA() {
                 <View style={styles.section}>
                     <Text style={[
                         styles.sectionTitle,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#333' }
                     ]}>Rules and Consequences</Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         Refuse the task?
                     </Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         No escape — you get a Fail instead
                     </Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         And trust us, they're not polite either 👀
                     </Text>
@@ -163,35 +174,35 @@ export default function ExperienceNoteA() {
                 <View style={styles.section}>
                     <Text style={[
                         styles.sectionTitle,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#333' }
                     ]}>The Journey</Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         Start cute
                     </Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         Get chaotic
                     </Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         End with no regrets (or clothes) 💚💦
                     </Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         Each category cranks up the heat — and just when you think you've survived it all...
                     </Text>
                     <Text style={[
                         styles.description,
-                        { color: useAppThemeColor('text') }
+                        { color: isDark ? '#79828F' : '#191919' }
                     ]}>
                         The Final Piece shows up to ruin you. Beautifully.
                     </Text>

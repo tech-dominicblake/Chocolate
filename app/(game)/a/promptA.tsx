@@ -18,6 +18,8 @@ export default function Prompt() {
     const [isGamePaused, setIsGamePaused] = useState(false);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const [buttonLoading, setButtonLoading] = useState(false);
+    const [startTime, setStartTime] = useState<number | null>(null);
+    const [elapsedTime, setElapsedTime] = useState(0);
 
     const { isDark } = useThemeToggle();
     const scrollViewRef = useRef<ScrollView>(null);
@@ -28,6 +30,7 @@ export default function Prompt() {
         currentTurn,
         round,
         level,
+        failsSuffered,
         setTaskCompleted,
         setRoundLevel,
         enqueueGameInfoMessages,
@@ -37,9 +40,10 @@ export default function Prompt() {
         setConsumedChocolatesEachCount,
         setSheFailedTwice,
         setCurrentTurn,
-        resetConsumedChocolates,
         setActiveTooltip,
         setDidFinal,
+        setHimTimePerLevel,
+        setHerTimePerLevel,
     } = useGameStore();
     const { queue, enqueue, clear } = useMessages();
 
@@ -62,10 +66,32 @@ export default function Prompt() {
         initializeGame();
     }, []);
 
+    // Timer functionality for both players
+    useEffect(() => {
+        // Start timer when it's any player's turn
+        const start = Date.now();
+        setStartTime(start);
+        
+        return () => {
+            // Stop timer when component unmounts or turn changes
+            if (startTime) {
+                const end = Date.now();
+                const timeSpent = end - start;
+                setElapsedTime(timeSpent);
+                
+                // Save time for the appropriate player
+                if (currentTurn === 'him') {
+                    setHimTimePerLevel(level, timeSpent);
+                } else if (currentTurn === 'her') {
+                    setHerTimePerLevel(level, timeSpent);
+                }
+            }
+        };
+    }, [currentTurn, level]);
+
     useEffect(() => {
         const handleRoundChange = async () => {
             setButtonLoading(true);
-            resetConsumedChocolates();
             setActiveTooltip(true);
             
             // Wait for the full duration
@@ -78,6 +104,10 @@ export default function Prompt() {
         handleRoundChange();
         round === 3 && setDidFinal(true)
     }, [round]);
+
+    useEffect(() => {
+        console.log('failsSuffered', failsSuffered);
+    },[failsSuffered])
 
     // Auto-scroll to bottom when new messages are added
     useEffect(() => {
@@ -96,11 +126,7 @@ export default function Prompt() {
         setShouldAutoScroll(isAtBottom);
     };
 
-    useEffect(() => {
-        console.log('level state', level);
-    }, [level]);
-
-    const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
+    const handlePlayerChoice = async (choice: string, buttonType: 'success' | 'fail') => {
         setButtonLoading(true);
         if (buttonType === 'success') {
             enqueue({
@@ -125,7 +151,7 @@ export default function Prompt() {
                 });
                 const dareMessage = getMockMessageByKind('dare');
                 if (dareMessage) {
-                    enqueue(dareMessage);
+                    await enqueue(dareMessage);
                 }
                 const newPromptMessage = getMockMessageByKind('survive');
                 if (newPromptMessage) {
@@ -151,6 +177,19 @@ export default function Prompt() {
 
     const handleContinue = (gameState: ProcessingState) => {
         setButtonLoading(true);
+        
+        // Save time for both players when level completes
+        if (startTime) {
+            const end = Date.now();
+            const timeSpent = end - startTime;
+            
+            if (currentTurn === 'him') {
+                setHimTimePerLevel(level, timeSpent);
+            } else if (currentTurn === 'her') {
+                setHerTimePerLevel(level, timeSpent);
+            }
+        }
+        
         if (round === 3) {
             router.push('/(game)/a/statsA');
             setButtonLoading(false);
@@ -158,6 +197,10 @@ export default function Prompt() {
         }
         if (gameState.gameSucceeded) {
             if (gameState.gameNewLevelStarted) {
+                setShowCongrats(true);
+                setTimeout(() => {
+                    setShowCongrats(false);
+                }, 2000);
                 setTaskCompleted(currentTurn);
                 setRoundLevel(level);
                 setCurrentTurn(level + 1);
@@ -183,7 +226,7 @@ export default function Prompt() {
             setHasFailedOnce(false);
             enqueueGameInfoMessages();
         }
-        consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6);
+        consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6, round);
         if (gameState.gameFailed) {
             setRoundLevel(level);
             setCurrentTurn(level + 1);

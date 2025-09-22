@@ -1,3 +1,4 @@
+import CongratsChocoPage from "@/app/congratsChoco";
 import ButtonContainer from "@/components/prompts/ButtonContainer";
 import MessageItem from "@/components/prompts/MessageItem";
 import { IMAGES } from '@/constants';
@@ -7,32 +8,73 @@ import { useGameStore, useMessages } from "@/state/useGameStore";
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-// Chocolate queue data
+// Chocolate queue data - 25 chocolates total (12 her + 12 him + 1 super)
 const chocolateQueue = [
-    { id: 1, image: require('../../../assets/images/choco10.png'), color: '#FF6B35' },
-    { id: 2, image: require('../../../assets/images/choco9.png'), color: '#FF1744' },
-    { id: 3, image: require('../../../assets/images/choco6.png'), color: '#6A1B9A' },
-    { id: 4, image: require('../../../assets/images/choco11.png'), color: '#00BCD4' },
-    { id: 5, image: require('../../../assets/images/choco7.png'), color: '#4CAF50' },
-    { id: 6, image: require('../../../assets/images/choco4.png'), color: '#FF9800' },
-    { id: 0, image: '', color: '#FF9800' },
-    { id: 7, image: require('../../../assets/images/choco5.png'), color: '#9C27B0' },
-    { id: 8, image: require('../../../assets/images/choco12.png'), color: '#2196F3' },
-    { id: 9, image: require('../../../assets/images/choco2.png'), color: '#795548' },
-    { id: 10, image: require('../../../assets/images/choco3.png'), color: '#607D8B' },
-    { id: 11, image: require('../../../assets/images/choco8.png'), color: '#E91E63' },
-    { id: 12, image: require('../../../assets/images/choco1.png'), color: '#3F51B5' },
-    { id: 0, image: '', color: '#3F51B5' },
-    { id: 13, image: require('../../../assets/images/choco13.png'), color: '#FF5722' },
+    // Her chocolates (1-12) - Page 1
+    { id: 1, image: require('../../../assets/images/choco2.png'), color: '#FF6B35' },
+    { id: 2, image: require('../../../assets/images/choco4.png'), color: '#FF1744' },
+    { id: 3, image: require('../../../assets/images/choco8.png'), color: '#6A1B9A' },
+    { id: 4, image: require('../../../assets/images/choco3.png'), color: '#00BCD4' },
+    { id: 5, image: require('../../../assets/images/choco10.png'), color: '#4CAF50' },
+    { id: 6, image: require('../../../assets/images/choco9.png'), color: '#FF9800' },
+    // Her chocolates (7-12) - Page 2
+    { id: 7, image: require('../../../assets/images/choco10.png'), color: '#9C27B0' },
+    { id: 8, image: require('../../../assets/images/choco9.png'), color: '#2196F3' },
+    { id: 9, image: require('../../../assets/images/choco6.png'), color: '#795548' },
+    { id: 10, image: require('../../../assets/images/choco11.png'), color: '#607D8B' },
+    { id: 11, image: require('../../../assets/images/choco7.png'), color: '#E91E63' },
+    { id: 12, image: require('../../../assets/images/choco4.png'), color: '#3F51B5' },
+    // seperator
+    { id: 0, image: null, color: '#FFFFFF' },
+    // Him chocolates (13-18) - Page 1
+    { id: 13, image: require('../../../assets/images/choco2.png'), color: '#FF6B35' },
+    { id: 14, image: require('../../../assets/images/choco5.png'), color: '#FF1744' },
+    { id: 15, image: require('../../../assets/images/choco12.png'), color: '#6A1B9A' },
+    { id: 16, image: require('../../../assets/images/choco2.png'), color: '#00BCD4' },
+    { id: 17, image: require('../../../assets/images/choco3.png'), color: '#4CAF50' },
+    { id: 18, image: require('../../../assets/images/choco8.png'), color: '#FF9800' },
+    // Him chocolates (19-24) - Page 2
+    { id: 19, image: require('../../../assets/images/choco11.png'), color: '#9C27B0' },
+    { id: 20, image: require('../../../assets/images/choco3.png'), color: '#2196F3' },
+    { id: 21, image: require('../../../assets/images/choco7.png'), color: '#795548' },
+    { id: 22, image: require('../../../assets/images/choco8.png'), color: '#607D8B' },
+    { id: 23, image: require('../../../assets/images/choco4.png'), color: '#E91E63' },
+    { id: 24, image: require('../../../assets/images/choco1.png'), color: '#3F51B5' },
+    // seperator
+    { id: 0, image: null, color: '#FFFFFF' },
+    // Super chocolate at the end
+    { id: 25, image: require('../../../assets/images/choco13.png'), color: '#FF5722' },
 ];
 
 // Header component with chocolate queue
 const GameHeader = () => {
-    const { round, level, currentTurn, playerNames, selectedChocoIndex, consumedChocolates, activeTooltip, playerAvatar } = useGameStore();
+    const { round, level, currentTurn, playerNames, selectedChocoIndex, herChoco, himChoco, consumedChocoInB, consumedChocolates, activeTooltip, playerAvatar } = useGameStore();
     const { isDark } = useThemeToggle();
+
+    // Function to check if a chocolate is consumed based on its queue ID
+    const isChocolateConsumed = (chocoId: number) => {
+        // Map queue IDs to consumption tracking
+        if (chocoId <= 6) {
+            // Her chocolates 1-6 (Page 1)
+            return consumedChocolates[1]?.includes(chocoId) || false;
+        } else if (chocoId <= 12) {
+            // Her chocolates 7-12 (Page 2)
+            return consumedChocolates[2]?.includes(chocoId) || false;
+        } else if (chocoId <= 18) {
+            // Him chocolates 13-18 (Page 1)
+            return consumedChocolates[1]?.includes(chocoId) || false;
+        } else if (chocoId <= 24) {
+            // Him chocolates 19-24 (Page 2)
+            return consumedChocolates[2]?.includes(chocoId) || false;
+        } else if (chocoId === 25) {
+            // Super chocolate - check both pages for ID 13
+            return consumedChocolates[1]?.includes(13) || consumedChocolates[2]?.includes(13) || false;
+        }
+        return false;
+    };
 
     // Determine player turn text
     const getPlayerTurnText = () => {
@@ -42,6 +84,10 @@ const GameHeader = () => {
             return playerNames?.him || 'FOR HIM';
         }
     };
+
+    useEffect(() => {
+        console.log('consumedChocoInB', consumedChocoInB);
+    }, [consumedChocoInB]);
 
     return (
         <>
@@ -99,18 +145,16 @@ const GameHeader = () => {
             <View style={[styles.chocolateQueue, { backgroundColor: isDark ? '#2D2F33' : '#FFFFFF' }]}>
                 {/* Full-width selection line divided into segments */}
                 <View style={styles.selectionLineContainer}>
-                    {chocolateQueue.map((choco, index) => (
+                    {/* {chocolateQueue.map((choco, index) => (
                         <React.Fragment key={index}>
                             <View
                                 style={[
                                     styles.selectionLineSegment,
                                     choco.id === selectedChocoIndex && styles.selectedSegment
                                 ]}
-                            >
-                                <View style={choco.id === selectedChocoIndex && styles.bubbleTail} />
-                            </View>
+                            />
                         </React.Fragment>
-                    ))}
+                    ))} */}
                 </View>
 
                 <ScrollView
@@ -123,20 +167,20 @@ const GameHeader = () => {
                             <View
                                 style={styles.chocoItem}
                             >
-                                {(choco.id !== 0) && (!consumedChocolates.includes(choco.id)) ? (
-                                    <Image
-                                        source={choco.image}
-                                        style={styles.chocoImage}
-                                        resizeMode="contain"
-                                    />
-                                ) : choco.id !== 0 && consumedChocolates.includes(choco.id) ? (
+                                {choco.id === 0 ? (
+                                    <Text style={styles.separator}> • </Text>
+                                ) : consumedChocoInB.includes(choco.id) ? (
                                     <Image
                                         source={IMAGES.IMAGES.image14}
                                         style={styles.consumedChocoImage}
                                         resizeMode="contain"
                                     />
                                 ) : (
-                                    <Text style={styles.separator}> • </Text>
+                                    <Image
+                                        source={choco.image}
+                                        style={styles.chocoImage}
+                                        resizeMode="contain"
+                                    />
                                 )}
                             </View>
                         </View>
@@ -152,6 +196,7 @@ const GameHeader = () => {
 
 export default function PromptB() {
     const params = useLocalSearchParams();
+    const pageRound = params.pageRound ? parseInt(params.pageRound as string) : null;
     const [gameStage, setGameStage] = useState(1);
     const [currentLevel] = useState(Number(params.level) || 1);
     const [playerChoice, setPlayerChoice] = useState<string | undefined>();
@@ -161,6 +206,8 @@ export default function PromptB() {
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const scrollViewRef = useRef<ScrollView>(null);
     const [buttonLoading, setButtonLoading] = useState(false);
+    const [startTime, setStartTime] = useState<number | null>(null);
+    const [elapsedTime, setElapsedTime] = useState(0);
     const { isDark } = useThemeToggle();
 
     const {
@@ -184,7 +231,9 @@ export default function PromptB() {
         sheFailedTwice,
         setCurrentTurn,
         setConsumedChocolatesEachCount,
-        setFailSurvivedTask
+        setFailSurvivedTask,
+        setHimTimePerLevel,
+        setHerTimePerLevel
     } = useGameStore();
     const { queue, enqueue, clear } = useMessages();
 
@@ -192,18 +241,43 @@ export default function PromptB() {
     useEffect(() => {
         const initializeGame = async () => {
             setButtonLoading(true);
-            enqueueGameInfoMessages();
             setActiveTooltip(true);
             
-            // Wait for the full duration
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            
+            // Enqueue messages without waiting
+            enqueueGameInfoMessages();
+
+            // Shorter delay for better responsiveness
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
             setActiveTooltip(false);
             setButtonLoading(false);
         };
-        
+
         initializeGame();
     }, []);
+
+    // Timer functionality for both players
+    useEffect(() => {
+        // Start timer when it's any player's turn
+        const start = Date.now();
+        setStartTime(start);
+        
+        return () => {
+            // Stop timer when component unmounts or turn changes
+            if (startTime) {
+                const end = Date.now();
+                const timeSpent = end - start;
+                setElapsedTime(timeSpent);
+                
+                // Save time for the appropriate player
+                if (currentTurn === 'him') {
+                    setHimTimePerLevel(level, timeSpent);
+                } else if (currentTurn === 'her') {
+                    setHerTimePerLevel(level, timeSpent);
+                }
+            }
+        };
+    }, [currentTurn, level]);
 
     // Auto-scroll to bottom when new messages are added
     useEffect(() => {
@@ -267,43 +341,63 @@ export default function PromptB() {
 
     const handleContinue = (gameState: ProcessingState) => {
         setButtonLoading(true);
+        
+        // Save time for both players when level completes
+        if (startTime) {
+            const end = Date.now();
+            const timeSpent = end - startTime;
+            
+            if (currentTurn === 'him') {
+                setHimTimePerLevel(level, timeSpent);
+            } else if (currentTurn === 'her') {
+                setHerTimePerLevel(level, timeSpent);
+            }
+        }
+        
         if (round === 3) {
-            router.push('/(game)/b/chocoStats');
+            router.push('/(game)/b/statsB');
             return;
         }
         if (gameState.gameSucceeded) {
             if (gameState.gameNewLevelStarted) {
+                setShowCongrats(true);
                 setTaskCompleted(currentTurn);
                 setRoundLevel(level);
                 setCurrentTurn(level + 1);
                 setConsumedChocolatesEachCount();
-                consumeChocolate(selectedChocoIndex); // Mark chocolate as consumed
-                router.push('/(game)/b/chocoStats');
+                consumeChocolate(selectedChocoIndex, pageRound || 1); // Mark chocolate as consumed
+                setTimeout(() => {
+                    setShowCongrats(false);
+                    router.push('/(game)/b/chocoStats');
+                }, 2000);
                 return;
             }
-            // setTimeout(() => {
-                setTaskCompleted(currentTurn);
-                setConsumedChocolatesEachCount();
-                consumeChocolate(selectedChocoIndex); // Mark chocolate as consumed
-                setRoundLevel(level);
-                setCurrentTurn(level + 1);
-            //     // enqueueGameInfoMessages();
-            // }, 2000);
+            setShowCongrats(true);
+            setTaskCompleted(currentTurn);
+            setConsumedChocolatesEachCount();
+            console.log('About to consume chocolate:', selectedChocoIndex, 'pageRound:', pageRound, 'round:', round);
+            consumeChocolate(selectedChocoIndex, pageRound || 1); // Mark chocolate as consumed
+            setRoundLevel(level);
+            setCurrentTurn(level + 1);
+            setTimeout(() => {
+                setShowCongrats(false);
+                router.push('/(game)/b/chocoStats');
+            }, 2000);
         } else if (gameState.gameSurvived) {
             setTaskCompleted(currentTurn);
             setConsumedChocolatesEachCount();
-            consumeChocolate(selectedChocoIndex); // Mark chocolate as consumed
+            consumeChocolate(selectedChocoIndex, pageRound || 1); // Mark chocolate as consumed
             setRoundLevel(level);
             setCurrentTurn(level + 1);
             setHasFailedOnce(false);
             // enqueueGameInfoMessages();
-        }
-        if (gameState.gameFailed) {
+            router.push('/(game)/b/chocoStats');
+        } else if (gameState.gameFailed) {
             setRoundLevel(level);
             setCurrentTurn(level + 1);
             // enqueueGameInfoMessages();
+            router.push('/(game)/b/chocoStats');
         }
-        router.push('/(game)/b/chocoStats');
         setButtonLoading(false);
     };
 
@@ -406,6 +500,11 @@ export default function PromptB() {
                     onContinue={handleContinue}
                 />
             </View>
+            {showCongrats && (
+                <View style={styles.congratsOverlay}>
+                    <CongratsChocoPage />
+                </View>
+            )}
         </SafeAreaView>
     )
 }
@@ -487,11 +586,11 @@ const styles = StyleSheet.create({
     chocolateQueue: {
         backgroundColor: '#FFFFFF', // Light gray background as in screenshot
         paddingBottom: 17,
-        paddingHorizontal: 8,
+        // paddingHorizontal: 8,
     },
     queueContainer: {
-        width: '100%',
-        justifyContent: 'space-around',
+        // paddingHorizontal: 8,
+        // gap: 8,
     },
     chocoItem: {
         alignItems: 'center',
@@ -508,12 +607,14 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
+        width: 40,
+        minWidth: 40,
     },
     selectionLineContainer: {
         flexDirection: 'row',
         width: '100%',
         height: 3,
-        marginBottom: 15,
+        marginBottom: 8,
         borderRadius: 1.5,
         marginTop: -1
     },
@@ -633,5 +734,15 @@ const styles = StyleSheet.create({
     },
     regularMessageContainer: {
         marginBottom: 10,
+    },
+    congratsOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 1000,
     },
 });

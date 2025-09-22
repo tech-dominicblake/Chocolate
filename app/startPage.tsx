@@ -1,4 +1,5 @@
 import { Logo } from "@/components/Logo";
+import { MenuButton } from "@/components/MenuButton";
 import ActionButton from "@/components/prompts/ActionButton";
 import { IMAGES } from "@/constants";
 import { useAppThemeColor } from "@/hooks/useAppTheme";
@@ -20,8 +21,15 @@ export default function StartPage() {
         router.push('/userInfo');
     };
 
+    const handleMenu = () => {
+        router.push('/menu');
+    };
+
     return (
         <View style={styles.container}>
+            <View style={styles.header}>
+                <MenuButton onPress={handleMenu} />
+            </View>
             <View style={styles.logoContainer}>
                 <Logo size={186} />
                 <Text style={[styles.title, { color: useAppThemeColor('text') }]}>It's tension you can taste.</Text>
@@ -79,14 +87,21 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        justifyContent: "center",
-        alignItems: "center"
+        // justifyContent: "center",
+        // alignItems: "center"
     },
-
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        marginTop: 70,
+    },
     logoContainer: {
         alignItems: 'center',
         marginBottom: 46, // Increased spacing
-        marginTop: 20,
+        marginTop: 133,
     },
     title: {
         fontSize: 20, // Increased font size

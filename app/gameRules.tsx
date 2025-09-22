@@ -3,6 +3,7 @@ import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
 import { useThemeContext } from '@/providers/ThemeProvider';
+import { useGameStore, useMessages } from '@/state/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -10,12 +11,26 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 
 export default function GameRules() {
     const { isDark } = useThemeContext();
+    const backgroundColor = useAppThemeColor('background');
+    const textColor = useAppThemeColor('text');
+    const cardBackgroundColor = useAppThemeColor('cardBackground');
+    const { mode } = useGameStore();
+    const { queue } = useMessages();
 
     const handleBack = () => {
         router.back();
     };
 
     const handleConfirmContinue = () => {
+        if (queue.length > 0) {
+            if (mode === 'A') {
+                router.push('/(game)/a/promptA');
+            } else {
+                router.push('/(game)/b/promptB');
+            }
+        } else {
+            router.push('/startPage');
+        }
         // // Navigate to game selection or next step
         // router.push('/aboutPage');
     };
@@ -37,7 +52,7 @@ export default function GameRules() {
     return (
         <View style={[
             styles.container,
-            isDark && { backgroundColor: useAppThemeColor('background') }
+            { backgroundColor }
         ]}>
             {/* Header */}
             <View style={styles.header}>
@@ -46,7 +61,7 @@ export default function GameRules() {
                 </TouchableOpacity>
                 <Text style={[
                     styles.title,
-                    { color: useAppThemeColor('text') }
+                    { color: textColor }
                 ]}>What is hushh?</Text>
                 {/* <View style={styles.placeholder} /> */}
                 <MenuButton onPress={handleMenu} />
@@ -58,7 +73,7 @@ export default function GameRules() {
                 {/* Game A Card */}
                 <TouchableOpacity style={[
                     styles.gameCard,
-                    { backgroundColor: useAppThemeColor('cardBackground') }
+                    { backgroundColor: cardBackgroundColor }
                 ]} onPress={handleGameACard}>
                     <View style={styles.iconContainer}>
                         <View style={styles.chocolateIcon}>
@@ -71,14 +86,14 @@ export default function GameRules() {
                     ]}>GAME A</Text>
                     <Text style={[
                         styles.gameTitle,
-                        { color: useAppThemeColor('text') }
+                        { color: textColor }
                     ]}>hushh. Experience</Text>
                 </TouchableOpacity>
 
                 {/* Game B Card */}
                 <TouchableOpacity style={[
                     styles.gameCard,
-                    { backgroundColor: useAppThemeColor('cardBackground') }
+                    { backgroundColor: cardBackgroundColor }
                 ]} onPress={handleGameBCard}>
                     <View style={styles.iconContainer}>
                         <Image source={IMAGES.IMAGES.image13} style={styles.chocolateIcon} />
@@ -89,7 +104,7 @@ export default function GameRules() {
                     ]}>GAME B</Text>
                     <Text style={[
                         styles.gameTitle,
-                        { color: useAppThemeColor('text') }
+                        { color: textColor }
                     ]}>hushh. Mayhem</Text>
                 </TouchableOpacity>
             </ScrollView>

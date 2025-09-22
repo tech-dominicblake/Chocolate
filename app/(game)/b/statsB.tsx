@@ -27,7 +27,7 @@ interface StatsScreenProps {
 }
 
 export default function StatsScreen({ route }: StatsScreenProps) {
-    const { setRoundLevel, setCurrentTurn, mode, currentTurn, tasksCompleted,didFinal, consumedChocolates, level, failsSuffered, clearAllStates } = useGameStore();
+    const { setRoundLevel, setCurrentTurn, mode, currentTurn, tasksCompleted,didFinal, consumedChocolates, playerAvatar, level, failsSuffered, clearAllStates, himTimePerLevel, herTimePerLevel } = useGameStore();
     const { isDark } = useThemeToggle();
     const [isNavigating, setIsNavigating] = useState(false);
     const [isPageVisible, setIsPageVisible] = useState(true);
@@ -67,13 +67,36 @@ export default function StatsScreen({ route }: StatsScreenProps) {
             .reduce((sum, count) => sum + count, 0);
     };
 
+    // Get totals for each player
+    const herTotalTasks = getTotalCompletedTasks('her');
+    const himTotalTasks = getTotalCompletedTasks('him');
+
+    // Calculate average time for both players
+    const getHimAverageTime = () => {
+        const timeValues = Object.values(himTimePerLevel);
+        if (timeValues.length === 0) return '—';
+        
+        const totalTime = timeValues.reduce((sum, time) => sum + time, 0);
+        const averageTime = totalTime / timeValues.length;
+        return `${Math.round(averageTime / 1000)} sec`;
+    };
+
+    const getHerAverageTime = () => {
+        const timeValues = Object.values(herTimePerLevel);
+        if (timeValues.length === 0) return '—';
+        
+        const totalTime = timeValues.reduce((sum, time) => sum + time, 0);
+        const averageTime = totalTime / timeValues.length;
+        return `${Math.round(averageTime / 1000)} sec`;
+    };
+
     // Default stats or use passed stats
     const defaultStats: GameStats = {
         chocolatesConsumed: { player1: '0/12', player2: '4/12' },
         taskCompleted: { player1: '0', player2: '1' },
         failsSuffered: { player1: '—', player2: '—' },
         superGameSlayed: { player1: 'No', player2: 'No' },
-        avgTimePerRound: { player1: '—', player2: '44 sec' },
+        avgTimePerRound: { player1: getHerAverageTime(), player2: getHimAverageTime() },
     };
 
     const gameStats = route?.params?.gameStats || defaultStats;
@@ -88,14 +111,14 @@ export default function StatsScreen({ route }: StatsScreenProps) {
             // Stop background music immediately when continuing
             setIsPageVisible(false);
             
-            // Clear ALL global states comprehensively
-            clearAllStates();
-            
-            // Add a small delay to ensure state clearing completes
-            await new Promise(resolve => setTimeout(resolve, 200));
-            
-            // Navigate after all operations complete
+            // Navigate first to show the stats
             router.push('/startPage');
+            
+            // Clear ALL global states after navigation (in background)
+            setTimeout(() => {
+                clearAllStates();
+            }, 100);
+            
         } catch (error) {
             console.error('Error in handleContinue:', error);
             // Fallback: just navigate even if clearing fails
@@ -119,9 +142,9 @@ export default function StatsScreen({ route }: StatsScreenProps) {
                     <View style={[styles.playerCard, {
                         backgroundColor: isDark ? '#374151' : '#FFFFFF' // Dark theme: #374151, Light theme: original white
                     }]}>
-                        <Image source={IMAGES.IMAGES.image7} style={styles.playerEmoji} />
+                        <Image source={playerAvatar.him} style={styles.playerEmoji} />
                         <Text style={[styles.playerText, { color: isDark ? '#9CA3AF' : '#000000' }]}>Player</Text>
-                        <Image source={IMAGES.IMAGES.image12} style={styles.playerEmoji} />
+                        <Image source={playerAvatar.her} style={styles.playerEmoji} />
                     </View>
 
                     {/* Statistics Table */}
@@ -130,9 +153,9 @@ export default function StatsScreen({ route }: StatsScreenProps) {
                         <View style={[styles.statRow, {
                             borderBottomColor: isDark ? '#4B5563' : '#6D788F' // Dark theme: #4B5563, Light theme: original #6D788F
                         }]}>
-                            <Text style={[styles.leftValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{`${consumedChocolates.filter(choco => choco > 6).length}/12`}</Text>
+                            <Text style={[styles.leftValue, { color: isDark ? '#EC4899' : '#EC4899' }]}>{`${Object.values(consumedChocolates).flat().filter(choco => choco > 12).length}/12`}</Text>
                             <Text style={[styles.statLabel, { color: isDark ? '#9CA3AF' : '#000000' }]}>CHOCOLATES CONSUMED</Text>
-                            <Text style={[styles.rightValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{`${consumedChocolates.filter(choco => choco < 7).length}/12`}</Text>
+                            <Text style={[styles.rightValue, { color: isDark ? '#7F81F5' : '#3B82F6' }]}>{`${Object.values(consumedChocolates).flat().filter(choco => choco < 13).length}/12`}</Text>
                         </View>
 
                         {/* Row 2: Task Completed */}

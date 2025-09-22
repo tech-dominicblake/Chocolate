@@ -2,7 +2,7 @@ import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
 import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
-import { useGameStore } from '@/state/useGameStore';
+import { useGameStore, useMessages } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -27,10 +27,11 @@ interface StatsScreenProps {
 }
 
 export default function StatsScreen({ route }: StatsScreenProps) {
-    const { setRoundLevel, setCurrentTurn, clearAllStates, round, currentTurn, tasksCompleted, consumedChocolates, didFinal, level, failsSuffered, consumedChocolatesEachCount } = useGameStore();
+    const { setRoundLevel, setCurrentTurn, clearAllStates, round, currentTurn, tasksCompleted, playerAvatar, consumedChocolates, didFinal, level, failsSuffered, consumedChocolatesEachCount, himTimePerLevel, herTimePerLevel } = useGameStore();
     const { isDark } = useThemeToggle();
     const [isNavigating, setIsNavigating] = useState(false);
     const [isPageVisible, setIsPageVisible] = useState(true);
+    const { clear } = useMessages();
 
     // Background music - using existing music file
     const backgroundMusic = require('../../../assets/images/audio/background-music.mpeg');
@@ -71,13 +72,32 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const herTotalTasks = getTotalCompletedTasks('her');
     const himTotalTasks = getTotalCompletedTasks('him');
 
+    // Calculate average time for both players
+    const getHimAverageTime = () => {
+        const timeValues = Object.values(himTimePerLevel);
+        if (timeValues.length === 0) return '—';
+        
+        const totalTime = timeValues.reduce((sum, time) => sum + time, 0);
+        const averageTime = totalTime / timeValues.length;
+        return `${Math.round(averageTime / 1000)} sec`;
+    };
+
+    const getHerAverageTime = () => {
+        const timeValues = Object.values(herTimePerLevel);
+        if (timeValues.length === 0) return '—';
+        
+        const totalTime = timeValues.reduce((sum, time) => sum + time, 0);
+        const averageTime = totalTime / timeValues.length;
+        return `${Math.round(averageTime / 1000)} sec`;
+    };
+
     // Default stats or use passed stats
     const defaultStats: GameStats = {
         chocolatesConsumed: { player1: '0/12', player2: '4/12' },
         taskCompleted: { player1: '0', player2: '1' },
         failsSuffered: { player1: '—', player2: '—' },
         superGameSlayed: { player1: 'No', player2: 'No' },
-        avgTimePerRound: { player1: '—', player2: '44 sec' },
+        avgTimePerRound: { player1: getHerAverageTime(), player2: getHimAverageTime() },
     };
 
     const gameStats = route?.params?.gameStats || defaultStats;
@@ -92,14 +112,15 @@ export default function StatsScreen({ route }: StatsScreenProps) {
             // Stop background music immediately when continuing
             setIsPageVisible(false);
             
-            // Clear ALL global states comprehensively
-            clearAllStates();
-            
-            // Add a small delay to ensure state clearing completes
-            await new Promise(resolve => setTimeout(resolve, 200));
-            
-            // Navigate after all operations complete
+            // Navigate first to show the stats
             router.push('/startPage');
+            
+            // Clear ALL global states after navigation (in background)
+            setTimeout(() => {
+                clearAllStates();
+                clear();
+            }, 100);
+            
         } catch (error) {
             console.error('Error in handleContinue:', error);
             // Fallback: just navigate even if clearing fails
@@ -123,9 +144,9 @@ export default function StatsScreen({ route }: StatsScreenProps) {
                     <View style={[styles.playerCard, {
                         backgroundColor: isDark ? '#374151' : '#FFFFFF' // Dark theme: #374151, Light theme: original white
                     }]}>
-                        <Image source={IMAGES.IMAGES.image7} style={styles.playerEmoji} />
+                        <Image source={playerAvatar.him} style={styles.playerEmoji} />
                         <Text style={[styles.playerText, { color: isDark ? '#9CA3AF' : '#000000' }]}>Player</Text>
-                        <Image source={IMAGES.IMAGES.image12} style={styles.playerEmoji} />
+                        <Image source={playerAvatar.her} style={styles.playerEmoji} />
                     </View>
 
                     {/* Statistics Table */}

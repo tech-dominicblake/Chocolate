@@ -14,7 +14,7 @@ interface ButtonContainerProps {
 }
 
 export default function ButtonContainer({ onPlayerChoice, onContinue, loading = false, isGamePaused = false }: ButtonContainerProps) {
-    const { round, currentTurn, level, sheFailedTwice, clearState, setSheFailedTwice, getMockMessageByKind, setDidFinal, hasFailedOnce, setHasFailedOnce } = useGameStore();
+    const { round, currentTurn, level, sheFailedTwice,mode, clearState,setFailSurvivedTask, consumeChocolate, setSheFailedTwice, getMockMessageByKind, setDidFinal, hasFailedOnce, setHasFailedOnce } = useGameStore();
     const { clear, enqueue } = useMessages();
     const { isDark } = useThemeToggle();
     const [blinkStage, setBlinkStage] = useState(1);
@@ -45,17 +45,19 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
             setGameState({ ...gameState, gameSurvived: true, gamePaused: true });
             setUserState({ ...userState, survived: true });
             onPlayerChoice?.('Continue', 'success');
-            level === 12 && setGameState({ ...gameState, gameNewLevelStarted: true, gamePaused: true, gameSurvived: true });
+            setFailSurvivedTask(currentTurn);
+            mode === 'A' && level === 12 && setGameState({ ...gameState, gameNewLevelStarted: true, gamePaused: true, gameSurvived: true });
         } else {
             setGameState({ ...gameState, gameSucceeded: true, gamePaused: true });
             setUserState({ ...userState, success: true });
             onPlayerChoice?.('LET\'S GET MESSY', 'success');
-            level === 12 && setGameState({ ...gameState, gameNewLevelStarted: true, gamePaused: true, gameSucceeded: true });
+            mode === 'A' && level === 12 && setGameState({ ...gameState, gameNewLevelStarted: true, gamePaused: true, gameSucceeded: true });
         }
         // setButtonLoading(false);
     };
 
     const handleContinue = async () => {
+        consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6, round);
         // setButtonLoading(true);
         if (round === 3) {
             onContinue?.(gameState);
@@ -64,7 +66,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
             setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
             return;
         }
-        if (level === 12) {
+        if (mode === 'A' && level === 12) {
             if (round === 1) {
                 if (blinkStage === 1) {
                     enqueue(
@@ -147,20 +149,19 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
         setButtonLoading(true);
         if (buttonText === 'End Game' || buttonText === 'No') {
             router.push('/(game)/a/statsA');
-            clear();
-            clearState();
+           
             return;
         }
 
         if (userState.firstFail) {
+            consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6, round);
             if (round === 3) {
                 await enqueue(getMockMessageByKind('fail'));
                 router.push('/(game)/a/statsA');
-                clear();
-                clearState();
+               
                 return;
             }
-            if (level === 12) {
+            if (mode === 'A' && level === 12) {
                 setGameState({ ...gameState, gamePaused: true, gameFailed: true, gameNewLevelStarted: true });
                 enqueue(getMockMessageByKind('fail'));
                 return;
@@ -171,8 +172,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
             currentTurn === 'her' && setSheFailedTwice(true)
             if (currentTurn === 'him' && sheFailedTwice.state && sheFailedTwice.level === (level - 1)) {
                 router.push('/(game)/a/statsA');
-                clear();
-                clearState();
+              
                 return;
             }
             onPlayerChoice?.('I can\'t hang', 'fail');
@@ -214,11 +214,6 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
         }
         return false;
     }
-
-    useEffect(() => {
-        console.log('Game State', gameState);
-    }, [gameState]);
-
 
     return (
         <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : 'transparent' }]}>

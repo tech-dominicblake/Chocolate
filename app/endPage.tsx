@@ -1,3 +1,4 @@
+import { MenuButton } from '@/components/MenuButton';
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
@@ -32,6 +33,10 @@ export default function EndPage() {
         router.push('/startPage');
     };
 
+    const handleMenu = () => {
+        router.push('/menu');
+    };
+
     return (
         <View style={[styles.container, { backgroundColor }]}>
             <ScrollView
@@ -40,9 +45,12 @@ export default function EndPage() {
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
             >
+                 <View style={styles.header}>
+                    <MenuButton onPress={handleMenu} />
+                </View>
                 {/* Top Section - Game Info and Player Profile */}
                 <View style={[styles.topCard, { backgroundColor: useAppThemeColor('cardBackground') }]}>
-                    <Text style={[styles.gameInfo, { color: '#8994A3' }]}>{`GAME ${mode} • ROUND 6`}</Text>
+                    <Text style={[styles.gameInfo, { color: '#8994A3' }]}>{`GAME ${mode} • Challenge 1`}</Text>
                     <View style={[styles.avatar, { backgroundColor, borderColor: primaryColor }]}>
                         {currentTurn === 'her' ? <Image source={playerAvatar.her} style={styles.avatarImage} /> : <Image source={playerAvatar.him} style={styles.avatarImage} />}
                     </View>
@@ -78,8 +86,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'space-between',
-        paddingTop: 60,
+        // paddingTop: 60,
         paddingBottom: 40,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        marginTop: 70,
     },
     scrollView: {
         flex: 1,
@@ -90,7 +106,7 @@ const styles = StyleSheet.create({
     },
     topCard: {
         height: "auto",
-        marginTop: 136,
+        marginTop: 30,
         borderRadius: 20,
         paddingTop: 46,
         marginHorizontal: 20,

@@ -1,12 +1,14 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
+import { useThemeToggle } from '@/hooks/useAppTheme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ExperienceNoteB() {
+    const { isDark } = useThemeToggle();
+    
     const handleBack = () => {
         router.back();
     };
@@ -17,16 +19,16 @@ export default function ExperienceNoteB() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : '#F5F5F5' }]}>
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                    <AntDesign name="left" size={24} color="black" />
+                    <AntDesign name="left" size={24} color={isDark ? '#FFFFFF' : '#000000'} />
                 </TouchableOpacity>
                 <View style={styles.titleContainer}>
-                    <Text style={styles.gameLabel}>GAME B</Text>
+                    <Text style={[styles.gameLabel, { color: isDark ? '#9BA1A6' : '#666' }]}>GAME B</Text>
                     <View style={styles.titleRow}>
-                        <Text style={styles.title}>hushh. Experience</Text>
+                        <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#333' }]}>hushh. Experience</Text>
                         <Image source={IMAGES.IMAGES.image3} style={styles.chocolateIcon} />
                     </View>
                 </View>
@@ -36,7 +38,7 @@ export default function ExperienceNoteB() {
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
                 {/* Game Categories Section */}
                 <View style={styles.section}>
-                    <Text style={styles.categoryTitle}>
+                    <Text style={[styles.categoryTitle, { color: isDark ? '#79828F' : '#333' }]}>
                         In this game, you'll face three spicy categories — depending on relationship stage:
                     </Text>
                     <View style={styles.categoryList}>
@@ -45,7 +47,7 @@ export default function ExperienceNoteB() {
                                 <Text style={styles.categoryNumberText}>1</Text>
                             </View>
                             <View style={styles.categoryContent}>
-                                <Text style={styles.categoryTitle}>Recently Met (&lt;3 months) - flirty, fresh, still pretending to be normal</Text>
+                                <Text style={[styles.categoryTitle, { color: isDark ? '#79828F' : '#333' }]}>Recently Met (&lt;3 months) - flirty, fresh, still pretending to be normal</Text>
                             </View>
                         </View>
                         <View style={styles.categoryItem}>
@@ -53,7 +55,7 @@ export default function ExperienceNoteB() {
                                 <Text style={styles.categoryNumberText}>2</Text>
                             </View>
                             <View style={styles.categoryContent}>
-                                <Text style={styles.categoryTitle}>Getting Serious (3-12 months) - feelings are real, chaos is rising</Text>
+                                <Text style={[styles.categoryTitle, { color: isDark ? '#79828F' : '#333' }]}>Getting Serious (3-12 months) - feelings are real, chaos is rising</Text>
                             </View>
                         </View>
                         <View style={styles.categoryItem}>
@@ -61,8 +63,8 @@ export default function ExperienceNoteB() {
                                 <Text style={styles.categoryNumberText}>3</Text>
                             </View>
                             <View style={styles.categoryContent}>
-                                <Text style={styles.categoryTitle}>We Already Hate Each Other  love is strong, patience is not(1+ year) - </Text>
-                                <Text style={styles.categoryDescription}>
+                                <Text style={[styles.categoryTitle, { color: isDark ? '#79828F' : '#333' }]}>We Already Hate Each Other  love is strong, patience is not(1+ year) - </Text>
+                                <Text style={[styles.categoryDescription, { color: isDark ? '#9BA1A6' : '#666' }]}>
 
                                 </Text>
                             </View>
@@ -72,51 +74,51 @@ export default function ExperienceNoteB() {
 
                 {/* How to Play Section */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>How to Play</Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>How to Play</Text>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         You'll take turns pulling chocolates and completing challenges that test your boldness, chemistry… and maybe your dignity
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Each category comes with two wild rounds and 12 daring tasks
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         In this mode, YOU choose the chocolate pieces at random from the box — and take whatever challenge comes with it
                     </Text>
-                    <Text style={styles.description}>
-                        It’s chaos by design.
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
+                        It's chaos by design.
                     </Text>
                 </View>
 
                 {/* Rules and Consequences Section */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Rules and Consequences</Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>Rules and Consequences</Text>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Refuse the task?
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         No escape — you get a Fail instead
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         And trust us, they're not polite either 👀
                     </Text>
                 </View>
 
                 {/* The Journey Section */}
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>The Journey</Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>The Journey</Text>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Start cute
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Get chaotic
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         End with no regrets (or clothes) 💚💦
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         Each category cranks up the heat — and just when you think you've survived it all...
                     </Text>
-                    <Text style={styles.description}>
+                    <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         The Final Piece shows up to ruin you. Beautifully.
                     </Text>
                 </View>
@@ -138,7 +140,6 @@ export default function ExperienceNoteB() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
     },
     header: {
         position: 'relative',
@@ -160,7 +161,6 @@ const styles = StyleSheet.create({
     gameLabel: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#666',
         marginBottom: 8,
         letterSpacing: 1,
     },
@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#333',
     },
     chocolateIcon: {
         width: 32,
@@ -188,7 +187,6 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#333',
         marginBottom: 16,
         lineHeight: 24,
     },
@@ -221,21 +219,17 @@ const styles = StyleSheet.create({
     categoryTitle: {
         fontSize: 16,
         fontWeight: '500',
-        color: '#333',
     },
     categoryDescription: {
         fontSize: 14,
-        color: '#666',
         lineHeight: 20,
         fontStyle: 'italic',
     },
     description: {
         fontSize: 16,
-        color: '#191919',
         fontWeight: '500',
         lineHeight: 20,
         marginBottom: 12,
-
     },
     actionContainer: {
         width: '100%',

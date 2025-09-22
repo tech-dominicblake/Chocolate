@@ -14,7 +14,7 @@ interface GameState {
   round: number;
   level: number;
   currentTurn: PlayerId;
-  consumedChocolates: number[]; // for game B
+  consumedChocolates: { [round: number]: number[] }; // for game B - track per round
   consumedChocolatesEachCount: { her: number; him: number }; // for game A
   selectedChocoIndex: number;
   roundStarted: boolean;
@@ -43,6 +43,11 @@ interface GameState {
   showBtns: boolean;
   herChoco: number;
   himChoco: number;
+  consumedChocoInB: number[];
+  herchoco: number;
+  himchoco: number;
+  himTimePerLevel: { [level: number]: number }; // Track time per level for him player
+  herTimePerLevel: { [level: number]: number }; // Track time per level for her player
 
   // Actions
   setMode: (mode: Mode) => void;
@@ -52,7 +57,7 @@ interface GameState {
   setRoundLevel: (level: number) => void;
   setCurrentTurn: (level: number) => void;
   switchTurn: () => void;
-  consumeChocolate: (id: number) => void;
+  consumeChocolate: (id: number, round?: number) => void;
   resetConsumedChocolates: () => void;
   setSelectedChocoIndex: (index: number) => void;
   setFailSurvivedTask: (turn: PlayerId) => void;
@@ -77,6 +82,11 @@ interface GameState {
   setHerChoco: (value: number) => void;
   setHimChoco: (value: number) => void;
   setDidFinal: (value: boolean) => void;
+  setConsumedChocoInB: (value: number) => void;
+  setHerchoco: (value: number) => void;
+  setHimchoco: (value: number) => void;
+  setHimTimePerLevel: (level: number, time: number) => void;
+  setHerTimePerLevel: (level: number, time: number) => void;
 }
 
 const initialState = {
@@ -87,7 +97,7 @@ const initialState = {
   round: 1,
   level: 1,
   currentTurn: 'her' as PlayerId,
-  consumedChocolates: [],
+  consumedChocolates: { 1: [], 2: [] },
   selectedChocoIndex: 0,
   tasksCompleted: { her: [{ round: 0, completedLevel: [] }], him: [{ round: 0, completedLevel: [] }] },
   failsSuffered: { her: 0, him: 0 }, // Initialize individual fail counts
@@ -104,6 +114,11 @@ const initialState = {
   herChoco: 1,
   himChoco: 7,
   didFinal: false,
+  consumedChocoInB: [],
+  herchoco: 1,
+  himchoco: 13,
+  himTimePerLevel: {},
+  herTimePerLevel: {},
 };
 
 // Mock messages data structure
@@ -191,9 +206,15 @@ export const useGameStore = create<GameState>((set) => ({
     currentTurn: state.currentTurn === 'her' ? 'him' : 'her',
   })),
 
-  consumeChocolate: (id: number) => set((state) => ({
-    consumedChocolates: [...state.consumedChocolates, id],
-  })),
+  consumeChocolate: (id: number, round?: number) => set((state) => {
+    const currentRound = round || state.round;
+    return {
+      consumedChocolates: {
+        ...state.consumedChocolates,
+        [currentRound]: [...(state.consumedChocolates[currentRound] || []), id]
+      }
+    };
+  }),
 
   setSelectedChocoIndex: (index) => set({ selectedChocoIndex: index }),
 
@@ -379,10 +400,19 @@ export const useGameStore = create<GameState>((set) => ({
     // Note: Settings store is preserved as it contains user preferences
   },
 
-  resetConsumedChocolates: () => set({ consumedChocolates: [] }),
+  resetConsumedChocolates: () => set({ consumedChocolates: { 1: [], 2: [] } }),
   setHerChoco: (value: number) => set({ herChoco: value }),
   setHimChoco: (value: number) => set({ himChoco: value }),
   setDidFinal: (value: boolean) => set({ didFinal: value }),
+  setConsumedChocoInB: (value: number) => set((state) => ({ consumedChocoInB: [...state.consumedChocoInB, value] })),
+  setHerchoco: (value: number) => set({ herchoco: value }),
+  setHimchoco: (value: number) => set({ himchoco: value }),
+  setHimTimePerLevel: (level: number, time: number) => set((state) => ({ 
+    himTimePerLevel: { ...state.himTimePerLevel, [level]: time }
+  })),
+  setHerTimePerLevel: (level: number, time: number) => set((state) => ({ 
+    herTimePerLevel: { ...state.herTimePerLevel, [level]: time }
+  })),
 }));
 
 // Message queue

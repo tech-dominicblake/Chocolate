@@ -11,7 +11,7 @@ import {
     View
 } from 'react-native';
 
-export default function CongratsPage() {
+export default function CongratsChocoPage() {
     const { isDark } = useThemeContext();
     const textColor = useAppThemeColor('text');
 
