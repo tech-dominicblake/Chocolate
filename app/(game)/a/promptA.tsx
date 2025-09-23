@@ -49,20 +49,18 @@ export default function Prompt() {
 
     useEffect(() => {
         const initializeGame = async () => {
-            console.log('🚀 Starting game initialization - buttons should be disabled');
             setDidFinal(false)
             setButtonLoading(true);
             enqueueGameInfoMessages();
             setActiveTooltip(true);
-            
+
             // Wait for the full duration
             await new Promise(resolve => setTimeout(resolve, 5000));
-            
-            console.log('✅ Game initialization complete - buttons should be enabled');
+
             setActiveTooltip(false);
             setButtonLoading(false);
         };
-        
+
         initializeGame();
     }, []);
 
@@ -71,14 +69,14 @@ export default function Prompt() {
         // Start timer when it's any player's turn
         const start = Date.now();
         setStartTime(start);
-        
+
         return () => {
             // Stop timer when component unmounts or turn changes
             if (startTime) {
                 const end = Date.now();
                 const timeSpent = end - start;
                 setElapsedTime(timeSpent);
-                
+
                 // Save time for the appropriate player
                 if (currentTurn === 'him') {
                     setHimTimePerLevel(level, timeSpent);
@@ -93,21 +91,17 @@ export default function Prompt() {
         const handleRoundChange = async () => {
             setButtonLoading(true);
             setActiveTooltip(true);
-            
+
             // Wait for the full duration
             await new Promise(resolve => setTimeout(resolve, 5000));
-            
+
             setActiveTooltip(false);
             setButtonLoading(false);
         };
-        
+
         handleRoundChange();
         round === 3 && setDidFinal(true)
     }, [round]);
-
-    useEffect(() => {
-        console.log('failsSuffered', failsSuffered);
-    },[failsSuffered])
 
     // Auto-scroll to bottom when new messages are added
     useEffect(() => {
@@ -159,15 +153,29 @@ export default function Prompt() {
                 }
             } else {
                 const failMessage = getMockMessageByKind('fail');
+                console.log('failMessage:', failMessage);
                 if (failMessage) {
-                    enqueue(failMessage);
+                    await enqueue({
+                        kind: 'userchoice' as const,
+                        body: 'I can\'t hang.',
+                        group: 'game_result' as const,
+                        durationMs: 1000,
+                    });
+                    await enqueue(failMessage);
+                    console.log('Enqueued fail message');
+                } else {
+                    console.log('No fail message found');
                 }
-                enqueueGameInfoMessages();
                 if (currentTurn === 'her') {
                     setSheFailedTwice(true);
                 }
                 setRoundLevel(level);
-                setCurrentTurn(level + 1);
+                // setRoundLevel increments level internally, so use the new level
+                const newLevel = level + 1;
+                setCurrentTurn(newLevel);
+                // Enqueue messages AFTER state updates so it uses the new values
+                enqueueGameInfoMessages();
+                console.log('handlePlayerChoice', currentTurn);
                 setHasFailedOnce(false);
             }
 
@@ -177,19 +185,19 @@ export default function Prompt() {
 
     const handleContinue = (gameState: ProcessingState) => {
         setButtonLoading(true);
-        
+        console.log('handleContinue', gameState);
         // Save time for both players when level completes
         if (startTime) {
             const end = Date.now();
             const timeSpent = end - startTime;
-            
+
             if (currentTurn === 'him') {
                 setHimTimePerLevel(level, timeSpent);
             } else if (currentTurn === 'her') {
                 setHerTimePerLevel(level, timeSpent);
             }
         }
-        
+
         if (round === 3) {
             router.push('/(game)/a/statsA');
             setButtonLoading(false);

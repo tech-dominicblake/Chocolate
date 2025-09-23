@@ -309,7 +309,7 @@ export const useGameStore = create<GameState>((set) => ({
         },
         {
           kind: 'info' as const,
-          body: `Level ${Math.ceil(Math.ceil(state.level / 2))} - for ${turnMap[state.currentTurn]}`,
+          body: `Challenge ${Math.ceil(state.level / 2)} - for ${turnMap[state.currentTurn]}`,
           group: 'game_info' as const,
           durationMs: 1000,
         }

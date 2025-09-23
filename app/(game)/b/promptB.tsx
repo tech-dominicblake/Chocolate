@@ -296,7 +296,7 @@ export default function PromptB() {
         setShouldAutoScroll(isAtBottom);
     };
 
-    const handlePlayerChoice = (choice: string, buttonType: 'success' | 'fail') => {
+    const handlePlayerChoice = async (choice: string, buttonType: 'success' | 'fail') => {
         setButtonLoading(true);
         if (buttonType === 'success') {
             enqueue({
@@ -313,18 +313,30 @@ export default function PromptB() {
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
                 setHasFailedOnce(true);
+                await enqueue({
+                    kind: 'userchoice' as const,
+                    body: 'Nah, I bail.',
+                    group: 'game_result' as const,
+                    durationMs: 1000,
+                });
                 const dareMessage = getMockMessageByKind('dare');
                 if (dareMessage) {
-                    enqueue(dareMessage);
+                    await enqueue(dareMessage);
                 }
                 const newPromptMessage = getMockMessageByKind('prompt');
                 if (newPromptMessage) {
-                    enqueue(newPromptMessage);
+                    await enqueue(newPromptMessage);
                 }
             } else {
+                await enqueue({
+                    kind: 'userchoice' as const,
+                    body: 'I can\'t hang.',
+                    group: 'game_result' as const,
+                    durationMs: 1000,
+                });
                 const failMessage = getMockMessageByKind('fail');
                 if (failMessage) {
-                    enqueue(failMessage);
+                    await enqueue(failMessage);
                 }
                 // enqueueGameInfoMessages();
                 if (currentTurn === 'her') {

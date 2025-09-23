@@ -2,7 +2,7 @@ import { ProcessingState, UserState } from '@/constants/Types';
 import { useThemeToggle } from '@/hooks/useAppTheme';
 import { useGameStore, useMessages } from '@/state/useGameStore';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ActionButton from './ActionButton';
 
@@ -146,6 +146,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     };
 
     const handleNahIBail = async (buttonText: string) => {
+        console.log(currentTurn, level );
         setButtonLoading(true);
         if (buttonText === 'End Game' || buttonText === 'No') {
             router.push('/(game)/a/statsA');
@@ -158,7 +159,6 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
             if (round === 3) {
                 await enqueue(getMockMessageByKind('fail'));
                 router.push('/(game)/a/statsA');
-               
                 return;
             }
             if (mode === 'A' && level === 12) {

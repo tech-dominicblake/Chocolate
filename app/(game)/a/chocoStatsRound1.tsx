@@ -283,7 +283,7 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
                         <Text style={styles.backButtonText}>BACK</Text>
                     </View>
                 </TouchableOpacity>
-                <Text style={styles.roundText}>Round {currentPage + 1}/2</Text>
+                <Text style={[styles.roundText, {color: useAppThemeColor('text')}]}>Round {currentPage + 1}/2</Text>
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => router.back()}
