@@ -1,5 +1,6 @@
 import { CustomInput } from '@/components/ui/CustomInput';
 import { IMAGES } from '@/constants';
+import { supabase } from '@/utils/supabase';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -26,10 +27,21 @@ export default function SignUpScreen() {
   const linkColor = useAppThemeColor('linkText');
   const greyText = useAppThemeColor('grey');
 
-  const handleSignUp = () => {
-    // Navigate to contact page after successful sign up
-    // router.push('/(auth)/contact');
-  };
+  const handleSignUp = async () => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+    } catch (error) {
+      console.error('Error fetching todos:', error);
+    }
+  }
 
   const handleGoogleSignUp = () => {
     // Handle Google sign up logic
@@ -100,12 +112,12 @@ export default function SignUpScreen() {
               backgroundImage={IMAGES.IMAGES.buttonBg3}
               color='#33358F'
             />
-            
+
             {/* OR Divider */}
             <View style={styles.orDivider}>
               <Text style={styles.orText}>OR</Text>
             </View>
-            
+
             <ActionButton
               title="REGISTER WITH GOOGLE"
               onPress={handleGoogleSignUp}

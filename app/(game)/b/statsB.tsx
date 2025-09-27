@@ -1,5 +1,4 @@
 import ActionButton from '@/components/prompts/ActionButton';
-import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
 import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 import { useGameStore } from '@/state/useGameStore';
@@ -27,14 +26,14 @@ interface StatsScreenProps {
 }
 
 export default function StatsScreen({ route }: StatsScreenProps) {
-    const { setRoundLevel, setCurrentTurn, mode, currentTurn, tasksCompleted,didFinal, consumedChocolates, playerAvatar, level, failsSuffered, clearAllStates, himTimePerLevel, herTimePerLevel } = useGameStore();
+    const { setRoundLevel, setCurrentTurn, mode, currentTurn, tasksCompleted, didFinal, consumedChocolates, playerAvatar, level, failsSuffered, clearAllStates, himTimePerLevel, herTimePerLevel } = useGameStore();
     const { isDark } = useThemeToggle();
     const [isNavigating, setIsNavigating] = useState(false);
     const [isPageVisible, setIsPageVisible] = useState(true);
 
     // Background music - using existing music file
     const backgroundMusic = require('../../../assets/images/audio/background-music.mpeg');
-    
+
     // Use background music hook
     useBackgroundMusic({
         musicFile: backgroundMusic,
@@ -46,7 +45,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     // Handle page visibility and navigation
     useEffect(() => {
         setIsPageVisible(true);
-        
+
         return () => {
             // Stop music when component unmounts (navigation away)
             setIsPageVisible(false);
@@ -75,7 +74,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const getHimAverageTime = () => {
         const timeValues = Object.values(himTimePerLevel);
         if (timeValues.length === 0) return '—';
-        
+
         const totalTime = timeValues.reduce((sum, time) => sum + time, 0);
         const averageTime = totalTime / timeValues.length;
         return `${Math.round(averageTime / 1000)} sec`;
@@ -84,7 +83,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const getHerAverageTime = () => {
         const timeValues = Object.values(herTimePerLevel);
         if (timeValues.length === 0) return '—';
-        
+
         const totalTime = timeValues.reduce((sum, time) => sum + time, 0);
         const averageTime = totalTime / timeValues.length;
         return `${Math.round(averageTime / 1000)} sec`;
@@ -104,21 +103,21 @@ export default function StatsScreen({ route }: StatsScreenProps) {
 
     const handleContinue = async () => {
         if (isNavigating) return; // Prevent multiple presses
-        
+
         try {
             setIsNavigating(true);
-            
+
             // Stop background music immediately when continuing
             setIsPageVisible(false);
-            
+
             // Navigate first to show the stats
             router.push('/startPage');
-            
+
             // Clear ALL global states after navigation (in background)
             setTimeout(() => {
                 clearAllStates();
             }, 100);
-            
+
         } catch (error) {
             console.error('Error in handleContinue:', error);
             // Fallback: just navigate even if clearing fails

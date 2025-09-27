@@ -1,4 +1,5 @@
 import { IMAGES } from '@/constants';
+import { supabase } from '@/utils/supabase';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -17,8 +18,8 @@ import { CustomInput } from '../../components/ui/CustomInput';
 import { useAppThemeColor } from '../../hooks/useAppTheme';
 
 export default function SignInScreen() {
-  const [email, setEmail] = useState('emailtemplate@gmail.com');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('hushhexperience@gmail.com');
+  const [password, setPassword] = useState('password1');
 
   const background = useAppThemeColor('background');
   const textColor = useAppThemeColor('text');
@@ -39,9 +40,25 @@ export default function SignInScreen() {
     // Handle account benefits logic
   };
 
-  const handleSignIn = () => {
-    // Handle sign in logic and navigate to relationship page
-    router.push('/ageGate');
+  const handleSignIn = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      console.log(data);
+      if (data.user) {
+        router.push('/ageGate');
+      }
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+    } catch (error) {
+      console.error('Error fetching todos:', error);
+    }
   };
 
   const handleGoogleSignIn = () => {

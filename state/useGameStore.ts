@@ -1,7 +1,10 @@
 import { Language, Mode, PlayerId, RelationshipLevel } from '@/constants/Types';
 import { create } from 'zustand';
 
+import { getPrompt } from '@/constants/Functions';
+import { categoryTypes, genderTypes } from '@/constants/Prompts';
 import type { Message } from '@/constants/Types';
+import { supabase } from '@/utils/supabase';
 import { useSessionStore } from './useSessionStore';
 
 interface GameState {
@@ -9,7 +12,7 @@ interface GameState {
   language: Language;
   playerNames: { her: string; him: string };
   playerAvatar: { her: string; him: string };
-  
+
   // Game progress
   round: number;
   level: number;
@@ -20,7 +23,7 @@ interface GameState {
   roundStarted: boolean;
   mode: Mode | null;
   stage: RelationshipLevel | null;
-  
+
   // Stats
   tasksCompleted: {
     her: {
@@ -41,6 +44,7 @@ interface GameState {
   selectedMessy: boolean; // Track if user has selected messy
   activeTooltip: boolean; // Track if user has selected messy
   showBtns: boolean;
+  buttonLoading: boolean;
   herChoco: number;
   himChoco: number;
   consumedChocoInB: number[];
@@ -76,6 +80,7 @@ interface GameState {
   setActiveTooltip: (value: boolean) => void;
   setRoundStarted: (value: boolean) => void;
   setShowBtns: (value: boolean) => void;
+  setButtonLoading: (value: boolean) => void;
   clearState: () => void;
   clearAllStates: () => void;
   setPlayerAvatar: (player: 'her' | 'him', avatar: string) => void;
@@ -110,6 +115,7 @@ const initialState = {
   activeTooltip: true,
   roundStarted: false,
   showBtns: true,
+  buttonLoading: false,
   playerAvatar: { her: '', him: '' },
   herChoco: 1,
   himChoco: 7,
@@ -131,13 +137,13 @@ const mockMessagesData = {
       group: 'question' as const,
       durationMs: 2000,
     },],
-    survive: [{
-      title: "Too Hot to Handle 🔥💋",
-      body: "Slowly and seductively lick the chocolate piece... Whisper your partner's three sexiest features 😍🔥",
-      kind: 'prompt' as const,
-      group: 'question' as const,
-      durationMs: 1000,
-    }
+  survive: [{
+    title: "Too Hot to Handle 🔥💋",
+    body: "Slowly and seductively lick the chocolate piece... Whisper your partner's three sexiest features 😍🔥",
+    kind: 'prompt' as const,
+    group: 'question' as const,
+    durationMs: 1000,
+  }
   ],
   success: [
     {
@@ -292,35 +298,52 @@ export const useGameStore = create<GameState>((set) => ({
         {
           kind: 'info' as const,
           body: `Category: ${categoryMap[currentStage]}`,
-          group: 'game_info' as const,
           durationMs: 1000,
         },
         {
           kind: 'info' as const,
           body: gameTypeMap[currentMode],
-          group: 'game_info' as const,
           durationMs: 1000,
         },
         {
           kind: 'info' as const,
           body: `Round ${state.round}`,
-          group: 'game_info' as const,
           durationMs: 1000,
         },
         {
           kind: 'info' as const,
-          body: `Challenge ${Math.ceil(state.level / 2)} - for ${turnMap[state.currentTurn]}`,
-          group: 'game_info' as const,
+          body: `Challenge ${Math.round(state.level / 2)} - for ${turnMap[state.currentTurn]}`,
           durationMs: 1000,
         }
       ];
 
       // Get the first prompt message from mock data
-      const firstPrompt = mockMessagesData.prompt[0];
 
-      // Check if queue is not empty to add separator
+      const { data: prompt, error } = await supabase
+        .from('content_items')
+        .select(`id,
+          content,
+          subContent_1,
+          subContent_2,
+          subContent_3,
+          subContent_4,
+          subContent_5,
+          content_1_time,
+          content_2_time,
+          content_3_time,
+          content_4_time,
+          content_5_time,
+          challenges!inner (id,name)`)
+        .ilike('category', `%${categoryTypes.promptA}%`)
+        .eq('metadata->>round', state.round === 1 ? 'Round One' : 'Round Two')
+        .eq('metadata->>gameType', `Game ${state.mode}`)
+        .eq('challenges.name', `${genderTypes[state.currentTurn]}${Math.round(state.level / 2)}`)
+        .order('subContent_1', { ascending: true });
+        // .limit(1);
+
+
+      console.warn("filtered prompt", prompt);
       const { enqueue, queue } = useMessages.getState();
-
       // If queue is not empty, add a separator message at the beginning
       if (queue.length > 0) {
         const separatorMessage = {
@@ -328,20 +351,20 @@ export const useGameStore = create<GameState>((set) => ({
           body: '',
           group: 'separator' as const,
         };
-        await enqueue(separatorMessage);
+        enqueue(separatorMessage);
       }
 
       // Enqueue each message individually with await to ensure sequential processing
       for (const message of presetMessages) {
         await enqueue(message);
       }
-
-      // Enqueue the first prompt message
-      if (firstPrompt && firstPrompt.title) {
-        await enqueue({ kind: 'prompt', body: firstPrompt.title, group: 'question', durationMs: 1000 });
-        await enqueue({ kind: 'prompt', body: firstPrompt.body, group: 'question', durationMs: 1000 });
-      } else if (firstPrompt) {
-        await enqueue(firstPrompt);
+      if (prompt?.[0]) {
+      const promptMessage = getPrompt(prompt?.[0], 'prompt' as const);
+        if (promptMessage) {
+          for (const message of promptMessage) {
+            await enqueue(message as Message);
+          }
+        }
       }
     } catch (error) {
       console.error('Error in enqueueGameInfoMessages:', error);
@@ -373,6 +396,8 @@ export const useGameStore = create<GameState>((set) => ({
 
   setShowBtns: (value: boolean) => set({ showBtns: value }),
 
+  setButtonLoading: (value: boolean) => set({ buttonLoading: value }),
+
   setPlayerAvatar: (player: 'her' | 'him', avatar: string) => set((state) => ({
     playerAvatar: {
       ...state.playerAvatar,
@@ -389,14 +414,14 @@ export const useGameStore = create<GameState>((set) => ({
   clearAllStates: () => {
     // Clear game state
     set(initialState);
-    
+
     // Clear message queue
     useMessages.getState().clear();
-    
+
     // Clear session state
     const { signOut } = useSessionStore.getState();
     signOut();
-    
+
     // Note: Settings store is preserved as it contains user preferences
   },
 
@@ -407,10 +432,10 @@ export const useGameStore = create<GameState>((set) => ({
   setConsumedChocoInB: (value: number) => set((state) => ({ consumedChocoInB: [...state.consumedChocoInB, value] })),
   setHerchoco: (value: number) => set({ herchoco: value }),
   setHimchoco: (value: number) => set({ himchoco: value }),
-  setHimTimePerLevel: (level: number, time: number) => set((state) => ({ 
+  setHimTimePerLevel: (level: number, time: number) => set((state) => ({
     himTimePerLevel: { ...state.himTimePerLevel, [level]: time }
   })),
-  setHerTimePerLevel: (level: number, time: number) => set((state) => ({ 
+  setHerTimePerLevel: (level: number, time: number) => set((state) => ({
     herTimePerLevel: { ...state.herTimePerLevel, [level]: time }
   })),
 }));

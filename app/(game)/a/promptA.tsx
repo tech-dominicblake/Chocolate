@@ -2,9 +2,12 @@ import CongratsPage from "@/app/congrats";
 import GameAHeader from "@/components/game/GameHeader";
 import ButtonContainer from "@/components/prompts/ButtonContainer";
 import MessageItem from "@/components/prompts/MessageItem";
-import { ProcessingState } from "@/constants/Types";
+import { getPrompt } from "@/constants/Functions";
+import { categoryTypes } from "@/constants/Prompts";
+import { Message, ProcessingState } from "@/constants/Types";
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useGameStore, useMessages } from "@/state/useGameStore";
+import { supabase } from "@/utils/supabase";
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
@@ -17,7 +20,6 @@ export default function Prompt() {
     const [showCongrats, setShowCongrats] = useState(false);
     const [isGamePaused, setIsGamePaused] = useState(false);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-    const [buttonLoading, setButtonLoading] = useState(false);
     const [startTime, setStartTime] = useState<number | null>(null);
     const [elapsedTime, setElapsedTime] = useState(0);
 
@@ -31,6 +33,7 @@ export default function Prompt() {
         round,
         level,
         failsSuffered,
+        mode,
         setTaskCompleted,
         setRoundLevel,
         enqueueGameInfoMessages,
@@ -44,6 +47,8 @@ export default function Prompt() {
         setDidFinal,
         setHimTimePerLevel,
         setHerTimePerLevel,
+        buttonLoading,
+        setButtonLoading,
     } = useGameStore();
     const { queue, enqueue, clear } = useMessages();
 
@@ -120,66 +125,90 @@ export default function Prompt() {
         setShouldAutoScroll(isAtBottom);
     };
 
-    const handlePlayerChoice = async (choice: string, buttonType: 'success' | 'fail') => {
+    const handlePlayerChoice = async (Ichoice: string, IbuttonType: 'success' | 'fail') => {
         setButtonLoading(true);
-        if (buttonType === 'success') {
-            enqueue({
-                kind: 'userchoice' as const,
-                body: choice,
-                group: 'user_action' as const,
-                meta: { buttonType } // Store the button type in meta for future use
-            });
-            const successMessage = getMockMessageByKind('success');
-            if (successMessage) {
-                enqueue(successMessage);
-            }
-        }
-        if (buttonType === 'fail') {
-            if (!hasFailedOnce) {
-                setHasFailedOnce(true);
+        const choice = Ichoice;
+        const buttonType = IbuttonType;
+        const handleClick =  async (choice: string, buttonType: 'success' | 'fail') => {
+            if (buttonType === 'success') {
+
                 enqueue({
                     kind: 'userchoice' as const,
-                    body: 'Nah, I bail.',
-                    group: 'game_result' as const,
-                    durationMs: 1000,
+                    body: choice,
+                    group: 'user_action' as const,
+                    meta: { buttonType } // Store the button type in meta for future use
                 });
-                const dareMessage = getMockMessageByKind('dare');
-                if (dareMessage) {
-                    await enqueue(dareMessage);
+
+
+                const { data: prompt, error } = await supabase
+                    .from('content_items')
+                    .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
+                    .ilike('category', `%${categoryTypes.taskComplete}%`);
+                // .eq('challenges.name', `${genderTypes[currentTurn as keyof typeof genderTypes]}${Math.round(level / 2)}`);
+
+                console.log('task complete prompt:', prompt);
+                if (prompt) {
+                    const messages = getPrompt(prompt?.[0], 'prompt');
+                    for (const message of messages) {
+                        await enqueue(message as Message);
+                    }
                 }
-                const newPromptMessage = getMockMessageByKind('survive');
-                if (newPromptMessage) {
-                    enqueue(newPromptMessage);
-                }
-            } else {
-                const failMessage = getMockMessageByKind('fail');
-                console.log('failMessage:', failMessage);
-                if (failMessage) {
-                    await enqueue({
+            }
+            if (buttonType === 'fail') {
+                if (!hasFailedOnce) {
+                    setHasFailedOnce(true);
+                    enqueue({
                         kind: 'userchoice' as const,
-                        body: 'I can\'t hang.',
+                        body: 'Nah, I bail.',
                         group: 'game_result' as const,
                         durationMs: 1000,
                     });
-                    await enqueue(failMessage);
-                    console.log('Enqueued fail message');
-                } else {
-                    console.log('No fail message found');
-                }
-                if (currentTurn === 'her') {
-                    setSheFailedTwice(true);
-                }
-                setRoundLevel(level);
-                // setRoundLevel increments level internally, so use the new level
-                const newLevel = level + 1;
-                setCurrentTurn(newLevel);
-                // Enqueue messages AFTER state updates so it uses the new values
-                enqueueGameInfoMessages();
-                console.log('handlePlayerChoice', currentTurn);
-                setHasFailedOnce(false);
-            }
 
+                    const { data: dareData } = await supabase
+                        .from('content_items')
+                        .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
+                        .ilike('category', `%${categoryTypes.fail}%`)
+                    // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
+                    // .eq('metadata->>gameType', `Game ${mode}`)
+                    // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)
+
+                    if (dareData?.[0]?.['content']) {
+                        const messages = getPrompt(dareData?.[0], 'dare');
+                        for (const message of messages) {
+                            await enqueue(message as Message);
+                        }
+                    }
+                } else {
+                    const { data: failData } = await supabase
+                        .from('content_items')
+                        .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
+                        .ilike('category', `%${categoryTypes.postFail}%`)
+                    // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
+                    // .eq('metadata->>gameType', `Game ${mode}`)
+                    // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)
+                    if (failData?.[0]?.['content']) {
+                        const messages = getPrompt(failData?.[0], 'fail');
+                        for (const message of messages) {
+                            await enqueue(message as Message);
+                        }
+                    } else {
+                        console.log('No fail message found');
+                    }
+                    if (currentTurn === 'her') {
+                        setSheFailedTwice(true);
+                    }
+                    setRoundLevel(level);
+                    // setRoundLevel increments level internally, so use the new level
+                    const newLevel = level + 1;
+                    setCurrentTurn(newLevel);
+                    // Enqueue messages AFTER state updates so it uses the new values
+                    enqueueGameInfoMessages();
+                    console.log('handlePlayerChoice', currentTurn);
+                    setHasFailedOnce(false);
+                }
+            }
         }
+        handleClick(Ichoice, IbuttonType);
         setButtonLoading(false);
     }
 

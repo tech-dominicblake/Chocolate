@@ -1,6 +1,9 @@
-import { ProcessingState, UserState } from '@/constants/Types';
+import { getPrompt } from '@/constants/Functions';
+import { categoryTypes } from '@/constants/Prompts';
+import { Message, ProcessingState, UserState } from '@/constants/Types';
 import { useThemeToggle } from '@/hooks/useAppTheme';
 import { useGameStore, useMessages } from '@/state/useGameStore';
+import { supabase } from '@/utils/supabase';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -14,7 +17,7 @@ interface ButtonContainerProps {
 }
 
 export default function ButtonContainer({ onPlayerChoice, onContinue, loading = false, isGamePaused = false }: ButtonContainerProps) {
-    const { round, currentTurn, level, sheFailedTwice,mode, clearState,setFailSurvivedTask, consumeChocolate, setSheFailedTwice, getMockMessageByKind, setDidFinal, hasFailedOnce, setHasFailedOnce } = useGameStore();
+    const { round, currentTurn, level, sheFailedTwice,mode, clearState,setFailSurvivedTask, consumeChocolate, setSheFailedTwice, getMockMessageByKind, setDidFinal, hasFailedOnce, setHasFailedOnce, buttonLoading, setButtonLoading } = useGameStore();
     const { clear, enqueue } = useMessages();
     const { isDark } = useThemeToggle();
     const [blinkStage, setBlinkStage] = useState(1);
@@ -37,7 +40,6 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     // Loading states for buttons
     const [isSuccessLoading, setIsSuccessLoading] = useState(false);
     const [isFailLoading, setIsFailLoading] = useState(false);
-    const [buttonLoading, setButtonLoading] = useState(false);
 
     const handleLetsGetMessy = async () => {
         // setButtonLoading(true);
@@ -69,6 +71,16 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
         if (mode === 'A' && level === 12) {
             if (round === 1) {
                 if (blinkStage === 1) {
+                    const { data: levelUpPrompt, error } = await supabase
+                        .from('content_items')
+                        .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
+                        .ilike('category', `%${categoryTypes.levelUp}%`);
+                    if (levelUpPrompt) {
+                        const messages = getPrompt(levelUpPrompt?.[0], 'prompt');
+                        for (const message of messages) {
+                            await enqueue(message as Message);
+                        }
+                    }
                     enqueue(
                         {
                             kind: 'prompt',
@@ -229,8 +241,8 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                                 ? require('@/assets/images/buttonBg3.png')  // Different background for him
                                 : require('@/assets/images/btn-bg1.png')  // Default background for her
                     }
-                    // loading={buttonLoading || loading}
-                    // disabled={buttonLoading || loading}
+                    loading={buttonLoading || loading}
+                    disabled={buttonLoading || loading}
                 />
                 {/* Only show the second button when game is not paused */}
                 <ActionButton

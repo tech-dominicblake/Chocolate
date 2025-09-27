@@ -2,9 +2,12 @@ import CongratsChocoPage from "@/app/congratsChoco";
 import ButtonContainer from "@/components/prompts/ButtonContainer";
 import MessageItem from "@/components/prompts/MessageItem";
 import { IMAGES } from '@/constants';
-import { ProcessingState } from "@/constants/Types";
+import { getPrompt } from "@/constants/Functions";
+import { categoryTypes } from "@/constants/Prompts";
+import { Message, ProcessingState } from "@/constants/Types";
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useGameStore, useMessages } from "@/state/useGameStore";
+import { supabase } from "@/utils/supabase";
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from "expo-router";
@@ -205,7 +208,6 @@ export default function PromptB() {
     const [isGamePaused, setIsGamePaused] = useState(false);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const scrollViewRef = useRef<ScrollView>(null);
-    const [buttonLoading, setButtonLoading] = useState(false);
     const [startTime, setStartTime] = useState<number | null>(null);
     const [elapsedTime, setElapsedTime] = useState(0);
     const { isDark } = useThemeToggle();
@@ -233,7 +235,9 @@ export default function PromptB() {
         setConsumedChocolatesEachCount,
         setFailSurvivedTask,
         setHimTimePerLevel,
-        setHerTimePerLevel
+        setHerTimePerLevel,
+        buttonLoading,
+        setButtonLoading
     } = useGameStore();
     const { queue, enqueue, clear } = useMessages();
 
@@ -242,7 +246,7 @@ export default function PromptB() {
         const initializeGame = async () => {
             setButtonLoading(true);
             setActiveTooltip(true);
-            
+
             // Enqueue messages without waiting
             enqueueGameInfoMessages();
 
@@ -261,14 +265,14 @@ export default function PromptB() {
         // Start timer when it's any player's turn
         const start = Date.now();
         setStartTime(start);
-        
+
         return () => {
             // Stop timer when component unmounts or turn changes
             if (startTime) {
                 const end = Date.now();
                 const timeSpent = end - start;
                 setElapsedTime(timeSpent);
-                
+
                 // Save time for the appropriate player
                 if (currentTurn === 'him') {
                     setHimTimePerLevel(level, timeSpent);
@@ -305,9 +309,18 @@ export default function PromptB() {
                 group: 'user_action' as const,
                 meta: { buttonType } // Store the button type in meta for future use
             });
-            const successMessage = getMockMessageByKind('success');
-            if (successMessage) {
-                enqueue(successMessage);
+            const { data: prompt, error } = await supabase
+                .from('content_items')
+                .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
+                .ilike('category', `%${categoryTypes.taskComplete}%`);
+            // .eq('challenges.name', `${genderTypes[currentTurn as keyof typeof genderTypes]}${Math.round(level / 2)}`);
+
+            console.log('task complete prompt:', prompt);
+            if (prompt) {
+                const messages = getPrompt(prompt?.[0], 'prompt');
+                for (const message of messages) {
+                    await enqueue(message as Message);
+                }
             }
         }
         if (buttonType === 'fail') {
@@ -319,13 +332,19 @@ export default function PromptB() {
                     group: 'game_result' as const,
                     durationMs: 1000,
                 });
-                const dareMessage = getMockMessageByKind('dare');
-                if (dareMessage) {
-                    await enqueue(dareMessage);
-                }
-                const newPromptMessage = getMockMessageByKind('prompt');
-                if (newPromptMessage) {
-                    await enqueue(newPromptMessage);
+                const { data: dareData } = await supabase
+                    .from('content_items')
+                    .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
+                    .ilike('category', `%${categoryTypes.fail}%`)
+                // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
+                // .eq('metadata->>gameType', `Game ${mode}`)
+                // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)
+
+                if (dareData?.[0]?.['content']) {
+                    const messages = getPrompt(dareData?.[0], 'dare');
+                    for (const message of messages) {
+                        await enqueue(message as Message);
+                    }
                 }
             } else {
                 await enqueue({
@@ -334,9 +353,23 @@ export default function PromptB() {
                     group: 'game_result' as const,
                     durationMs: 1000,
                 });
-                const failMessage = getMockMessageByKind('fail');
-                if (failMessage) {
-                    await enqueue(failMessage);
+                const { data: failData } = await supabase
+                    .from('content_items')
+                    .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
+                    .ilike('category', `%${categoryTypes.postFail}%`)
+                // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
+                // .eq('metadata->>gameType', `Game ${mode}`)
+                // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)
+                if (failData?.[0]?.['content']) {
+                    const messages = getPrompt(failData?.[0], 'fail');
+                    for (const message of messages) {
+                        await enqueue(message as Message);
+                    }
+                } else {
+                    console.log('No fail message found');
+                }
+                if (currentTurn === 'her') {
+                    setSheFailedTwice(true);
                 }
                 // enqueueGameInfoMessages();
                 if (currentTurn === 'her') {
@@ -353,19 +386,19 @@ export default function PromptB() {
 
     const handleContinue = (gameState: ProcessingState) => {
         setButtonLoading(true);
-        
+
         // Save time for both players when level completes
         if (startTime) {
             const end = Date.now();
             const timeSpent = end - startTime;
-            
+
             if (currentTurn === 'him') {
                 setHimTimePerLevel(level, timeSpent);
             } else if (currentTurn === 'her') {
                 setHerTimePerLevel(level, timeSpent);
             }
         }
-        
+
         if (round === 3) {
             router.push('/(game)/b/statsB');
             return;

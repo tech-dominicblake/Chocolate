@@ -75,4 +75,19 @@ export const TempMessage = {
     success: TaskCompletePrompts,
     fail: FailConsequencesPrompts,
     game: GamePrompts,
-    postFail: PostFailPrompts,}
+    postFail: PostFailPrompts,
+}
+
+export const categoryTypes = {
+    promptA: 'game_a_prompt',
+    promptB: 'game_b_prompt',
+    fail: 'fail_prompts',
+    postFail: 'post_fail_prompt',
+    taskComplete: 'task_completed_prompts',
+    levelUp: 'level_up_prompts',
+}
+
+export const genderTypes = {
+    her: 'Her',
+    him: 'Him',
+}
