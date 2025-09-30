@@ -1,8 +1,10 @@
 import { IMAGES } from '@/constants';
+import { expoGoogleAuthService as googleAuthService } from '@/lib/api/expoGoogleAuth';
 import { supabase } from '@/utils/supabase';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
+  Animated,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -12,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { Logo } from '../../components/Logo';
 import ActionButton from '../../components/prompts/ActionButton';
 import { CustomInput } from '../../components/ui/CustomInput';
@@ -20,11 +23,67 @@ import { useAppThemeColor } from '../../hooks/useAppTheme';
 export default function SignInScreen() {
   const [email, setEmail] = useState('hushhexperience@gmail.com');
   const [password, setPassword] = useState('password1');
+  
+  // Error states
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  
+  // Loading states
+  const [isSignInLoading, setIsSignInLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGuestLoading, setIsGuestLoading] = useState(false);
+  
+  // Animation refs for error ringing
+  const emailRingAnimation = useRef(new Animated.Value(1)).current;
+  const passwordRingAnimation = useRef(new Animated.Value(1)).current;
 
   const background = useAppThemeColor('background');
   const textColor = useAppThemeColor('text');
   const linkColor = useAppThemeColor('linkText');
   const greyText = useAppThemeColor('grey');
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string): boolean => {
+    // At least 4 characters, contains lowercase and number
+    const passwordRegex = /^(?=.*[a-z])(?=.*\d)[a-zA-Z\d@$!%*?&]{4,}$/;
+    return passwordRegex.test(password);
+  };
+
+  // Clear all errors
+  const clearErrors = () => {
+    setEmailError('');
+    setPasswordError('');
+  };
+
+  // Ring animation function
+  const ringInput = (animation: Animated.Value) => {
+    Animated.sequence([
+      Animated.timing(animation, {
+        toValue: 1.1,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(animation, {
+        toValue: 1.1,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
 
 
 
@@ -41,35 +100,135 @@ export default function SignInScreen() {
   };
 
   const handleSignIn = async () => {
+    
+    // Clear previous errors
+    clearErrors();
+
+    let hasErrors = false;
+
+    // Required fields validation
+    if (!email.trim()) {
+      setEmailError('Email is required');
+      hasErrors = true;
+    }
+    if (!password) {
+      setPasswordError('Password is required');
+      hasErrors = true;
+    }
+
+    // Email format validation (only if email is not empty)
+    if (email.trim() && !validateEmail(email)) {
+      setEmailError('ERROR! PLEASE, CHECK YOUR EMAIL');
+      hasErrors = true;
+    }
+
+    // Password validation (only if password is not empty)
+    if (password && !validatePassword(password)) {
+      setPasswordError('Password must be at least 4 characters with lowercase and number');
+      hasErrors = true;
+    }
+
+    // If there are validation errors, ring the error inputs and don't proceed
+    if (hasErrors) {
+      if (!email.trim() || (email.trim() && !validateEmail(email))) {
+        ringInput(emailRingAnimation);
+      }
+      if (!password || (password && !validatePassword(password))) {
+        ringInput(passwordRingAnimation);
+      }
+      return;
+    }
+
+    // Start loading
+    setIsSignInLoading(true);
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim().toLowerCase(),
         password,
       });
 
-      console.log(data);
-      if (data.user) {
+      if (error) {
+        // Handle different types of errors
+        if (error.message.includes('Invalid login credentials')) {
+          setEmailError('Invalid email or password');
+          setPasswordError('Invalid email or password');
+          ringInput(emailRingAnimation);
+          ringInput(passwordRingAnimation);
+        } else if (error.message.includes('Email not confirmed')) {
+          setEmailError('Please confirm your email address');
+          ringInput(emailRingAnimation);
+        } else {
+          setEmailError('Sign in failed. Please try again.');
+          ringInput(emailRingAnimation);
+        }
+      } else if (data.user) {
+        Toast.show({
+          type: "bottom",
+          text1: "Welcome back!",
+          text2: "Successfully signed in",
+          position: "bottom",
+          visibilityTime: 2500,
+        });
         router.push('/ageGate');
       }
-
-      if (error) {
-        console.error(error);
-        return;
-      }
-    } catch (error) {
-      console.error('Error fetching todos:', error);
+    } catch (err: any) {
+      setEmailError('Network error. Please check your connection.');
+      ringInput(emailRingAnimation);
+    } finally {
+      // Stop loading
+      setIsSignInLoading(false);
     }
   };
 
-  const handleGoogleSignIn = () => {
-    // Handle Google sign in logic and navigate to relationship page
-    router.push('/userInfo');
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      const result = await googleAuthService.signInWithGoogle();
+      
+      if (result.success && result.user) {
+        Toast.show({
+          type: "success",
+          text1: "Welcome! 🎉",
+          text2: "Successfully signed in with Google",
+          position: "bottom",
+          visibilityTime: 2500,
+        });
+        router.push('/ageGate');
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Google Sign-In Failed",
+          text2: result.error || "Please try again",
+          position: "bottom",
+          visibilityTime: 3000,
+        });
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Google Sign-In Failed",
+        text2: "Network error. Please try again.",
+        position: "bottom",
+        visibilityTime: 3000,
+      });
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
-  const handleGuestPlay = () => {
-    // Handle guest play logic and navigate to relationship page
-    router.push('/ageGate');
+  const handleGuestPlay = async () => {
+    setIsGuestLoading(true);
+    try {
+      // Handle guest play logic and navigate to relationship page
+      router.push('/ageGate');
+    } finally {
+      setIsGuestLoading(false);
+    }
   };
+
+  // Check if any button is loading
+  const isAnyButtonLoading = isSignInLoading || isGoogleLoading || isGuestLoading;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: background }]}>
@@ -80,6 +239,8 @@ export default function SignInScreen() {
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          scrollEnabled={!isAnyButtonLoading}
+          pointerEvents={isAnyButtonLoading ? 'none' : 'auto'}
         >
           {/* Logo */}
           <View style={styles.logoContainer}>
@@ -91,26 +252,45 @@ export default function SignInScreen() {
 
           {/* Input Fields */}
           <View style={styles.inputContainer}>
-            <CustomInput
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-
-            <View style={styles.passwordContainer}>
+            <Animated.View style={{ transform: [{ scale: emailRingAnimation }] }}>
               <CustomInput
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Password"
-                secureTextEntry
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Email"
+                keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
+                error={!!emailError}
+                editable={!isAnyButtonLoading}
               />
+            </Animated.View>
+            {emailError ? (
+              <Text style={styles.errorText}>{emailError}</Text>
+            ) : null}
 
-              <TouchableOpacity onPress={handleForgotPassword}>
+            <View style={styles.passwordContainer}>
+              <Animated.View style={{ transform: [{ scale: passwordRingAnimation }] }}>
+                <CustomInput
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Password"
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  error={!!passwordError}
+                  showPasswordToggle={true}
+                  editable={!isAnyButtonLoading}
+                />
+              </Animated.View>
+              {passwordError ? (
+                <Text style={styles.errorText}>{passwordError}</Text>
+              ) : null}
+
+              <TouchableOpacity 
+                onPress={handleForgotPassword}
+                disabled={isAnyButtonLoading}
+                style={{ opacity: isAnyButtonLoading ? 0.5 : 1 }}
+              >
                 <Text style={[styles.forgotPassword]}>
                   FORGOT PASSWORD?
                 </Text>
@@ -126,6 +306,8 @@ export default function SignInScreen() {
               variant="primary"
               backgroundImage={IMAGES.IMAGES.buttonBg3}
               color='#33358F'
+              loading={isSignInLoading}
+              disabled={isAnyButtonLoading}
             />
             <ActionButton
               title="SIGN IN WITH GOOGLE"
@@ -133,6 +315,8 @@ export default function SignInScreen() {
               variant="primary"
               backgroundImage={IMAGES.IMAGES.buttonBg2}
               color='#5556A3'
+              loading={isGoogleLoading}
+              disabled={isAnyButtonLoading}
             />
             <ActionButton
               title="PLAY AS GUEST"
@@ -140,6 +324,8 @@ export default function SignInScreen() {
               onPress={handleGuestPlay}
               variant="primary"
               backgroundImage={IMAGES.IMAGES.buttonBg1}
+              loading={isGuestLoading}
+              disabled={isAnyButtonLoading}
             />
           </View>
 
@@ -150,19 +336,27 @@ export default function SignInScreen() {
             </Text>
 
             <View style={styles.footerLinks}>
-              <TouchableOpacity onPress={handleCreateAccount}>
-                <Text style={[styles.footerLink, { color: '#7E80F4' }]}>
-                  CREATE ACCOUNT
-                </Text>
-              </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={handleCreateAccount}
+              disabled={isAnyButtonLoading}
+              style={{ opacity: isAnyButtonLoading ? 0.5 : 1 }}
+            >
+              <Text style={[styles.footerLink, { color: '#7E80F4' }]}>
+                CREATE ACCOUNT
+              </Text>
+            </TouchableOpacity>
 
-              <Text style={[styles.footerSeparator, { color: greyText }]}> • </Text>
+            <Text style={[styles.footerSeparator, { color: greyText }]}> • </Text>
 
-              <TouchableOpacity onPress={handleAccountBenefits}>
-                <Text style={[styles.footerLink, { color: '#7E80F4' }]}>
-                  ACCOUNT BENEFITS
-                </Text>
-              </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={handleAccountBenefits}
+              disabled={isAnyButtonLoading}
+              style={{ opacity: isAnyButtonLoading ? 0.5 : 1 }}
+            >
+              <Text style={[styles.footerLink, { color: '#7E80F4' }]}>
+                ACCOUNT BENEFITS
+              </Text>
+            </TouchableOpacity>
             </View>
           </View>
         </ScrollView>
@@ -241,5 +435,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginHorizontal: 12, // Better spacing
     fontWeight: '500',
+  },
+  errorText: {
+    color: '#FF4444',
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop: 4,
+    marginBottom: 8,
   },
 });

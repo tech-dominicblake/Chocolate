@@ -1,4 +1,5 @@
-import { ActivityIndicator, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { ActivityIndicator, Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // import { useSoundEffects } from '../../hooks/useSoundEffects'; // Temporarily disabled
 
 interface ActionButtonProps {
@@ -24,8 +25,66 @@ export default function ActionButton({
 }: ActionButtonProps) {
     // const { playCorkPop } = useSoundEffects(); // Temporarily disabled
     
+    // Animation values
+    const pulseAnim = useRef(new Animated.Value(1)).current;
+    const shimmerAnim = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+    
+    // Pulse animation for loading state
+    useEffect(() => {
+        if (loading) {
+            const pulseAnimation = Animated.loop(
+                Animated.sequence([
+                    Animated.timing(pulseAnim, {
+                        toValue: 1.05,
+                        duration: 800,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(pulseAnim, {
+                        toValue: 1,
+                        duration: 800,
+                        useNativeDriver: true,
+                    }),
+                ])
+            );
+            pulseAnimation.start();
+            
+            // Shimmer effect
+            const shimmerAnimation = Animated.loop(
+                Animated.timing(shimmerAnim, {
+                    toValue: 1,
+                    duration: 1500,
+                    useNativeDriver: true,
+                })
+            );
+            shimmerAnimation.start();
+            
+            return () => {
+                pulseAnimation.stop();
+                shimmerAnimation.stop();
+            };
+        } else {
+            pulseAnim.setValue(1);
+            shimmerAnim.setValue(0);
+        }
+    }, [loading]);
+    
     const handlePress = () => {
         if (loading || disabled) return;
+        
+        // Button press animation
+        Animated.sequence([
+            Animated.timing(scaleAnim, {
+                toValue: 0.95,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1,
+                duration: 100,
+                useNativeDriver: true,
+            }),
+        ]).start();
         
         // Play cork pop sound effect - temporarily disabled
         // playCorkPop();
@@ -55,11 +114,18 @@ export default function ActionButton({
                     imageStyle={styles.buttonImage}
                     resizeMode="stretch"
                 >
-                    <View style={styles.buttonContent}>
+                    <Animated.View style={[styles.buttonContent, { transform: [{ scale: scaleAnim }] }]}>
                         {loading ? (
                             <View style={styles.loadingContainer}>
-                                <ActivityIndicator size="small" color={color || '#FFFFFF'} />
-                                <Text style={[styles.buttonText, {color: `${color}`, marginLeft: 8}]}>
+                                <View style={styles.spinnerContainer}>
+                                    <ActivityIndicator 
+                                        size="small" 
+                                        color={color || '#FFFFFF'} 
+                                        style={styles.spinner}
+                                    />
+                                    <View style={[styles.spinnerRing, { borderColor: `${color}20` }]} />
+                                </View>
+                                <Text style={[styles.buttonText, {color: `${color}`, marginLeft: 12}]}>
                                     {title}
                                 </Text>
                             </View>
@@ -68,34 +134,63 @@ export default function ActionButton({
                                 {title}
                             </Text>
                         )}
-                    </View>
+                    </Animated.View>
                 </ImageBackground>
             </TouchableOpacity>
         );
     }
 
     return (
-        <TouchableOpacity
-            style={[
-                styles.button, 
-                variant === 'primary' ? styles.primaryButton : styles.secondaryButton,
-                (loading || disabled) && styles.disabledButton
-            ]}
-            onPress={handlePress}
-            activeOpacity={loading || disabled ? 1 : 0.8}
-            disabled={loading || disabled}
-        >
-            <View style={styles.buttonContent}>
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="small" color="#FFFFFF" />
-                        <Text style={[styles.buttonText, {marginLeft: 8}]}>{title}</Text>
-                    </View>
-                ) : (
-                    <Text style={styles.buttonText}>{title}</Text>
+        <Animated.View style={{ transform: [{ scale: loading ? pulseAnim : scaleAnim }] }}>
+            <TouchableOpacity
+                style={[
+                    styles.button, 
+                    variant === 'primary' ? styles.primaryButton : styles.secondaryButton,
+                    (loading || disabled) && styles.disabledButton,
+                    loading && styles.loadingButton
+                ]}
+                onPress={handlePress}
+                activeOpacity={loading || disabled ? 1 : 0.8}
+                disabled={loading || disabled}
+            >
+                <View style={styles.buttonContent}>
+                    {loading ? (
+                        <View style={styles.loadingContainer}>
+                            <View style={styles.spinnerContainer}>
+                                <ActivityIndicator 
+                                    size="small" 
+                                    color="#FFFFFF" 
+                                    style={styles.spinner}
+                                />
+                                <View style={styles.spinnerRing} />
+                            </View>
+                            <Text style={[styles.buttonText, {marginLeft: 12}]}>{title}</Text>
+                        </View>
+                    ) : (
+                        <Text style={styles.buttonText}>{title}</Text>
+                    )}
+                </View>
+                {loading && (
+                    <Animated.View 
+                        style={[
+                            styles.shimmerOverlay,
+                            {
+                                opacity: shimmerAnim.interpolate({
+                                    inputRange: [0, 0.5, 1],
+                                    outputRange: [0, 0.3, 0],
+                                }),
+                                transform: [{
+                                    translateX: shimmerAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [-100, 100],
+                                    })
+                                }]
+                            }
+                        ]} 
+                    />
                 )}
-            </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+        </Animated.View>
     );
 }
 
@@ -119,51 +214,78 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    spinnerContainer: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    spinner: {
+        zIndex: 2,
+    },
+    spinnerRing: {
+        position: 'absolute',
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: '#FFFFFF20',
+        zIndex: 1,
+    },
+    loadingButton: {
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 8,
+    },
+    shimmerOverlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: 12,
+    },
     buttonImage: {
         width: '100%',
         height: '100%',
     },
     primaryButton: {
         backgroundColor: '#FF6B9D', // Pink color
-        // paddingVertical: 16,
         paddingHorizontal: 24,
-        borderRadius: 12,
+        borderRadius: 16,
         marginHorizontal: 16,
-        // marginVertical: 8,
         alignItems: 'center',
         justifyContent: 'center',
-        // Add explicit border for production
         borderWidth: 1,
         borderColor: '#E91E63', // Slightly darker pink for border
-        shadowColor: '#000',
+        shadowColor: '#FF6B9D',
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 4,
         },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-        elevation: 4,
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 6,
     },
     secondaryButton: {
         backgroundColor: '#FF4757', // Red color
         paddingVertical: 16,
         paddingHorizontal: 24,
-        borderRadius: 12,
+        borderRadius: 16,
         marginHorizontal: 16,
         marginVertical: 8,
         alignItems: 'center',
         justifyContent: 'center',
-        // Add explicit border for production
         borderWidth: 1,
         borderColor: '#E53E3E', // Slightly darker red for border
-        shadowColor: '#000',
+        shadowColor: '#FF4757',
         shadowOffset: {
             width: 0,
-            height: 2,
+            height: 4,
         },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-        elevation: 4,
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 6,
     },
     buttonText: {
         fontSize: 18,

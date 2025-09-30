@@ -135,7 +135,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
             >
                 <View style={styles.centerContainer}>
                     {/* Title */}
-                    <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>Game statistics</Text>
+                    <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>Game B statistics</Text>
 
                     {/* Player Comparison Card */}
                     <View style={[styles.playerCard, {

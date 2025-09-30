@@ -44,7 +44,6 @@ interface GameState {
   selectedMessy: boolean; // Track if user has selected messy
   activeTooltip: boolean; // Track if user has selected messy
   showBtns: boolean;
-  buttonLoading: boolean;
   herChoco: number;
   himChoco: number;
   consumedChocoInB: number[];
@@ -80,7 +79,6 @@ interface GameState {
   setActiveTooltip: (value: boolean) => void;
   setRoundStarted: (value: boolean) => void;
   setShowBtns: (value: boolean) => void;
-  setButtonLoading: (value: boolean) => void;
   clearState: () => void;
   clearAllStates: () => void;
   setPlayerAvatar: (player: 'her' | 'him', avatar: string) => void;
@@ -115,7 +113,6 @@ const initialState = {
   activeTooltip: true,
   roundStarted: false,
   showBtns: true,
-  buttonLoading: false,
   playerAvatar: { her: '', him: '' },
   herChoco: 1,
   himChoco: 7,
@@ -395,8 +392,6 @@ export const useGameStore = create<GameState>((set) => ({
   setRoundStarted: (value: boolean) => set({ roundStarted: value }),
 
   setShowBtns: (value: boolean) => set({ showBtns: value }),
-
-  setButtonLoading: (value: boolean) => set({ buttonLoading: value }),
 
   setPlayerAvatar: (player: 'her' | 'him', avatar: string) => set((state) => ({
     playerAvatar: {

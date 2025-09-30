@@ -235,16 +235,13 @@ export default function PromptB() {
         setConsumedChocolatesEachCount,
         setFailSurvivedTask,
         setHimTimePerLevel,
-        setHerTimePerLevel,
-        buttonLoading,
-        setButtonLoading
+        setHerTimePerLevel
     } = useGameStore();
     const { queue, enqueue, clear } = useMessages();
 
     // Enqueue game info messages when component mounts
     useEffect(() => {
         const initializeGame = async () => {
-            setButtonLoading(true);
             setActiveTooltip(true);
 
             // Enqueue messages without waiting
@@ -254,7 +251,6 @@ export default function PromptB() {
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             setActiveTooltip(false);
-            setButtonLoading(false);
         };
 
         initializeGame();
@@ -301,7 +297,6 @@ export default function PromptB() {
     };
 
     const handlePlayerChoice = async (choice: string, buttonType: 'success' | 'fail') => {
-        setButtonLoading(true);
         if (buttonType === 'success') {
             enqueue({
                 kind: 'userchoice' as const,
@@ -311,8 +306,8 @@ export default function PromptB() {
             });
             const { data: prompt, error } = await supabase
                 .from('content_items')
-                .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
-                .ilike('category', `%${categoryTypes.taskComplete}%`);
+                .select('*')
+                .ilike('category', `${categoryTypes.taskComplete}`);
             // .eq('challenges.name', `${genderTypes[currentTurn as keyof typeof genderTypes]}${Math.round(level / 2)}`);
 
             console.log('task complete prompt:', prompt);
@@ -335,8 +330,8 @@ export default function PromptB() {
                 const { data: dareData } = await supabase
                     .from('content_items')
                     .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
-                    .ilike('category', `%${categoryTypes.fail}%`)
-                // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
+                    // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
+                    .ilike('category', `${categoryTypes.fail}`);
                 // .eq('metadata->>gameType', `Game ${mode}`)
                 // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)
 
@@ -356,7 +351,7 @@ export default function PromptB() {
                 const { data: failData } = await supabase
                     .from('content_items')
                     .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
-                    .ilike('category', `%${categoryTypes.postFail}%`)
+                    .contains('metadata->tags', [`${categoryTypes.postFail}`]);
                 // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
                 // .eq('metadata->>gameType', `Game ${mode}`)
                 // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)
@@ -381,11 +376,9 @@ export default function PromptB() {
                 router.push('/(game)/b/chocoStats');
             }
         }
-        setButtonLoading(false);
     }
 
     const handleContinue = (gameState: ProcessingState) => {
-        setButtonLoading(true);
 
         // Save time for both players when level completes
         if (startTime) {
@@ -443,7 +436,6 @@ export default function PromptB() {
             // enqueueGameInfoMessages();
             router.push('/(game)/b/chocoStats');
         }
-        setButtonLoading(false);
     };
 
     // Render messages from the queue using MessageItem component
@@ -540,7 +532,6 @@ export default function PromptB() {
                     />
                 </View>
                 <ButtonContainer
-                    loading={buttonLoading}
                     onPlayerChoice={handlePlayerChoice}
                     onContinue={handleContinue}
                 />

@@ -17,8 +17,8 @@ interface ButtonContainerProps {
 }
 
 export default function ButtonContainer({ onPlayerChoice, onContinue, loading = false, isGamePaused = false }: ButtonContainerProps) {
-    const { round, currentTurn, level, sheFailedTwice,mode, clearState,setFailSurvivedTask, consumeChocolate, setSheFailedTwice, getMockMessageByKind, setDidFinal, hasFailedOnce, setHasFailedOnce, buttonLoading, setButtonLoading } = useGameStore();
-    const { clear, enqueue } = useMessages();
+    const { round, currentTurn, level, sheFailedTwice, mode, clearState, setFailSurvivedTask, consumeChocolate, setSheFailedTwice, getMockMessageByKind, setDidFinal, hasFailedOnce, setHasFailedOnce } = useGameStore();
+    const { clear, enqueue, isProcessing } = useMessages();
     const { isDark } = useThemeToggle();
     const [blinkStage, setBlinkStage] = useState(1);
     const [userState, setUserState] = useState<UserState>({
@@ -40,6 +40,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     // Loading states for buttons
     const [isSuccessLoading, setIsSuccessLoading] = useState(false);
     const [isFailLoading, setIsFailLoading] = useState(false);
+    const [buttonLoading, setButtonLoading] = useState(false);
 
     const handleLetsGetMessy = async () => {
         // setButtonLoading(true);
@@ -158,11 +159,8 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     };
 
     const handleNahIBail = async (buttonText: string) => {
-        console.log(currentTurn, level );
-        setButtonLoading(true);
         if (buttonText === 'End Game' || buttonText === 'No') {
-            router.push('/(game)/a/statsA');
-           
+            mode === 'A' ? router.push('/(game)/a/statsA') : router.push('/(game)/b/statsB');
             return;
         }
 
@@ -170,7 +168,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
             consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6, round);
             if (round === 3) {
                 await enqueue(getMockMessageByKind('fail'));
-                router.push('/(game)/a/statsA');
+                mode === 'A' ? router.push('/(game)/a/statsA') : router.push('/(game)/b/statsB');
                 return;
             }
             if (mode === 'A' && level === 12) {
@@ -183,8 +181,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
             setUserState({ ...userState, secondFail: true });
             currentTurn === 'her' && setSheFailedTwice(true)
             if (currentTurn === 'him' && sheFailedTwice.state && sheFailedTwice.level === (level - 1)) {
-                router.push('/(game)/a/statsA');
-              
+                mode === 'A' ? router.push('/(game)/a/statsA') : router.push('/(game)/b/statsB');
                 return;
             }
             onPlayerChoice?.('I can\'t hang', 'fail');
@@ -241,8 +238,8 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                                 ? require('@/assets/images/buttonBg3.png')  // Different background for him
                                 : require('@/assets/images/btn-bg1.png')  // Default background for her
                     }
-                    loading={buttonLoading || loading}
-                    disabled={buttonLoading || loading}
+                    loading={isProcessing}
+                    disabled={isProcessing}
                 />
                 {/* Only show the second button when game is not paused */}
                 <ActionButton
@@ -251,8 +248,8 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     variant="secondary"
                     color='#7A1818'
                     backgroundImage={require('@/assets/images/btn-bg2.png')}
-                    // loading={buttonLoading || loading}
-                    // disabled={buttonLoading || loading}
+                    loading={isProcessing}
+                    disabled={isProcessing}
                     hide={hideButton()}
                 />
             </View>

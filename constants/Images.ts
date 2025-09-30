@@ -35,6 +35,8 @@ const IMAGES = {
     grid: require('../assets/images/01.png'),
     moon: require('../assets/images/moon.png'),
     sun: require('../assets/images/sun.png'),
+    messageBox: require('../assets/images/messageBox.png'),
+    verify_success: require('../assets/images/verify_success.png'),
     avatarGirl1: require('../assets/images/avatar/avatar_g_1.png'),
     avatarGirl2: require('../assets/images/avatar/avatar_g_4.png'),
     avatarGirl3: require('../assets/images/avatar/avatar_g_2.png'),

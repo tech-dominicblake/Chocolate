@@ -35,7 +35,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
 
     // Background music - using existing music file
     const backgroundMusic = require('../../../assets/images/audio/background-music.mpeg');
-    
+
     // Use background music hook
     useBackgroundMusic({
         musicFile: backgroundMusic,
@@ -47,7 +47,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     // Handle page visibility and navigation
     useEffect(() => {
         setIsPageVisible(true);
-        
+
         return () => {
             // Stop music when component unmounts (navigation away)
             setIsPageVisible(false);
@@ -76,7 +76,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const getHimAverageTime = () => {
         const timeValues = Object.values(himTimePerLevel);
         if (timeValues.length === 0) return '—';
-        
+
         const totalTime = timeValues.reduce((sum, time) => sum + time, 0);
         const averageTime = totalTime / timeValues.length;
         return `${Math.round(averageTime / 1000)} sec`;
@@ -85,7 +85,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const getHerAverageTime = () => {
         const timeValues = Object.values(herTimePerLevel);
         if (timeValues.length === 0) return '—';
-        
+
         const totalTime = timeValues.reduce((sum, time) => sum + time, 0);
         const averageTime = totalTime / timeValues.length;
         return `${Math.round(averageTime / 1000)} sec`;
@@ -105,22 +105,19 @@ export default function StatsScreen({ route }: StatsScreenProps) {
 
     const handleContinue = async () => {
         if (isNavigating) return; // Prevent multiple presses
-        
+
         try {
             setIsNavigating(true);
-            
+
             // Stop background music immediately when continuing
             setIsPageVisible(false);
-            
+            clearAllStates();
+            clear();
             // Navigate first to show the stats
             router.push('/startPage');
-            
+
             // Clear ALL global states after navigation (in background)
-            setTimeout(() => {
-                clearAllStates();
-                clear();
-            }, 100);
-            
+
         } catch (error) {
             console.error('Error in handleContinue:', error);
             // Fallback: just navigate even if clearing fails
@@ -138,7 +135,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
             >
                 <View style={styles.centerContainer}>
                     {/* Title */}
-                    <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>Game statistics</Text>
+                    <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>Game A statistics</Text>
 
                     {/* Player Comparison Card */}
                     <View style={[styles.playerCard, {
