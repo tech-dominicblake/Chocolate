@@ -34,6 +34,7 @@ export default function SignUpScreen() {
   
   // Google sign-up loading state
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const { promptAsync } = googleAuth.useGoogleAuth();
   
   // Error states
   const [emailError, setEmailError] = useState('');
@@ -95,6 +96,44 @@ export default function SignUpScreen() {
         useNativeDriver: true,
       }),
     ]).start();
+  };
+
+  const handleGoogleSignUp = async () => {
+    setIsGoogleLoading(true);
+    try {
+      const response = await promptAsync();
+      
+      if (response?.type === 'success') {
+        const { data, error } = await googleAuth.signInWithGoogle(response);
+        
+        if (error) throw error;
+        
+        if (data?.user) {
+          Toast.show({
+            type: 'success',
+            text1: 'Welcome! 🎉',
+            text2: 'Successfully registered with Google',
+            position: 'bottom',
+            visibilityTime: 2500,
+          });
+          // Navigate to age gate after successful registration
+          router.push('/ageGate');
+        }
+      } else {
+        throw new Error('Google sign in was cancelled or failed');
+      }
+    } catch (error: any) {
+      console.error('Google Registration Error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Failed',
+        text2: error?.message || 'Network error. Please try again.',
+        position: 'bottom',
+        visibilityTime: 3000,
+      });
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   const handleSignUp = async () => {
@@ -270,53 +309,6 @@ export default function SignUpScreen() {
     setIsVerifyingEmail(false);
   };
 
-    // Get Google Auth hook
-  const { request, response, promptAsync } = googleAuth.useGoogleAuth();
-
-  const handleGoogleSignUp = async () => {
-    setIsGoogleLoading(true);
-    try {
-      // First, prompt the user to sign in with Google
-      await promptAsync();
-      
-      if (response?.type === 'success') {
-        // Then sign in with Supabase using the Google token
-        const { data, error } = await googleAuth.signInWithGoogle(response);
-        
-        if (error) {
-          Toast.show({
-            type: "error",
-            text1: "Google Sign Up Failed",
-            text2: error,
-            position: "bottom",
-            visibilityTime: 3000,
-          });
-          return;
-        }
-
-        if (data) {
-          Toast.show({
-            type: "success",
-            text1: "Welcome!",
-            text2: "Successfully signed up with Google",
-            position: "bottom",
-            visibilityTime: 2500,
-          });
-          router.push('/(tabs)/home');
-        }
-      }
-    } catch (err: any) {
-      Toast.show({
-        type: "error",
-        text1: "Sign Up Failed",
-        text2: "An unexpected error occurred",
-        position: "bottom",
-        visibilityTime: 3000,
-      });
-    } finally {
-      setIsGoogleLoading(false);
-    }
-  };
 
   const handleBackToSignIn = () => {
     router.push('/(auth)/sign-in');

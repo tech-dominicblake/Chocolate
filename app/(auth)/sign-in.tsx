@@ -187,18 +187,25 @@ export default function SignInScreen() {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      // First, prompt the user to sign in with Google
-      await promptAsync();
+      console.log('Starting Google Sign In...');
       
-      if (response?.type === 'success') {
+      // First, prompt the user to sign in with Google
+      const result = await promptAsync();
+      console.log('Prompt Result:', result);
+      
+      if (result?.type === 'success') {
+        console.log('Google auth successful, exchanging token with Supabase...');
+        
         // Then sign in with Supabase using the Google token
-        const { data, error } = await googleAuth.signInWithGoogle(response);
+        const { data, error } = await googleAuth.signInWithGoogle(result);
+        console.log('Supabase auth result:', { data, error });
         
         if (error) {
+          console.error('Supabase auth error:', error);
           Toast.show({
             type: "error",
             text1: "Google Sign In Failed",
-            text2: error,
+            text2: error.message,
             position: "bottom",
             visibilityTime: 3000,
           });
@@ -206,6 +213,7 @@ export default function SignInScreen() {
         }
 
         if (data) {
+          console.log('Successfully signed in with Google');
           Toast.show({
             type: "success",
             text1: "Welcome back!",
@@ -215,12 +223,22 @@ export default function SignInScreen() {
           });
           router.push('/ageGate');
         }
+      } else {
+        console.log('Google auth was cancelled or failed:', result);
+        Toast.show({
+          type: "error",
+          text1: "Sign In Cancelled",
+          text2: "Google sign in was cancelled or failed",
+          position: "bottom",
+          visibilityTime: 3000,
+        });
       }
     } catch (err: any) {
+      console.error('Unexpected error during Google sign in:', err);
       Toast.show({
         type: "error",
         text1: "Sign In Failed",
-        text2: "An unexpected error occurred",
+        text2: err.message || "An unexpected error occurred",
         position: "bottom",
         visibilityTime: 3000,
       });
