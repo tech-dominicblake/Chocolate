@@ -1,5 +1,5 @@
 import { IMAGES } from '@/constants';
-import { expoGoogleAuthService as googleAuthService } from '@/lib/api/expoGoogleAuth';
+import { googleAuth } from '@/lib/api/expoGoogleAuth';
 import { supabase } from '@/utils/supabase';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -181,34 +181,46 @@ export default function SignInScreen() {
     }
   };
 
+    // Get Google Auth hook
+  const { request, response, promptAsync } = googleAuth.useGoogleAuth();
+
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      const result = await googleAuthService.signInWithGoogle();
+      // First, prompt the user to sign in with Google
+      await promptAsync();
       
-      if (result.success && result.user) {
-        Toast.show({
-          type: "success",
-          text1: "Welcome! 🎉",
-          text2: "Successfully signed in with Google",
-          position: "bottom",
-          visibilityTime: 2500,
-        });
-        router.push('/ageGate');
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Google Sign-In Failed",
-          text2: result.error || "Please try again",
-          position: "bottom",
-          visibilityTime: 3000,
-        });
+      if (response?.type === 'success') {
+        // Then sign in with Supabase using the Google token
+        const { data, error } = await googleAuth.signInWithGoogle(response);
+        
+        if (error) {
+          Toast.show({
+            type: "error",
+            text1: "Google Sign In Failed",
+            text2: error,
+            position: "bottom",
+            visibilityTime: 3000,
+          });
+          return;
+        }
+
+        if (data) {
+          Toast.show({
+            type: "success",
+            text1: "Welcome back!",
+            text2: "Successfully signed in with Google",
+            position: "bottom",
+            visibilityTime: 2500,
+          });
+          router.push('/ageGate');
+        }
       }
-    } catch (error: any) {
+    } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Google Sign-In Failed",
-        text2: "Network error. Please try again.",
+        text1: "Sign In Failed",
+        text2: "An unexpected error occurred",
         position: "bottom",
         visibilityTime: 3000,
       });

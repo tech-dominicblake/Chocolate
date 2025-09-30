@@ -3,15 +3,15 @@ export const CONFIG = {
   // Google OAuth Configuration
   // You need to set these in your environment variables or replace with actual values
   GOOGLE: {
-    WEB_CLIENT_ID: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || 'your_google_web_client_id_here',
-    IOS_CLIENT_ID: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || 'your_google_ios_client_id_here',
-    ANDROID_CLIENT_ID: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || 'your_google_android_client_id_here',
+    WEB_CLIENT_ID: '93589731689-0rr3hvthf2q60hvofrtm42soe19kh0n8.apps.googleusercontent.com',
+    IOS_CLIENT_ID: '93589731689-m1rrvngpj0abv5d2ipakqhnh0trmq0j9.apps.googleusercontent.com',
+    ANDROID_CLIENT_ID: '93589731689-tr858pu0ie04g9bmvu819c9goffqsbpc.apps.googleusercontent.com',
   },
   
   // Supabase Configuration
   SUPABASE: {
-    URL: process.env.EXPO_PUBLIC_SUPABASE_URL || 'your_supabase_url_here',
-    ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || 'your_supabase_anon_key_here',
+    URL: 'https://kommsuzfzgeszvreydwk.supabase.co',
+    ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtvbW1zdXpmemdlc3p2cmV5ZHdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM5OTM3NTgsImV4cCI6MjA2OTU2OTc1OH0.ktFrkhuuMMQRsP8Ims8GhtHXlLLgXvpdMLPzZ2ebjIo',
   }
 };
 

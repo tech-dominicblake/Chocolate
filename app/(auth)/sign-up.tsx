@@ -1,6 +1,6 @@
 import { CustomInput } from '@/components/ui/CustomInput';
 import { IMAGES } from '@/constants';
-import { expoGoogleAuthService as googleAuthService } from '@/lib/api/expoGoogleAuth';
+import { googleAuth } from '@/lib/api/expoGoogleAuth';
 import { emailVerificationService } from '@/lib/api/supabase';
 import { supabase } from '@/utils/supabase';
 import { router } from 'expo-router';
@@ -270,34 +270,46 @@ export default function SignUpScreen() {
     setIsVerifyingEmail(false);
   };
 
+    // Get Google Auth hook
+  const { request, response, promptAsync } = googleAuth.useGoogleAuth();
+
   const handleGoogleSignUp = async () => {
     setIsGoogleLoading(true);
     try {
-      const result = await googleAuthService.signUpWithGoogle();
+      // First, prompt the user to sign in with Google
+      await promptAsync();
       
-      if (result.success && result.user) {
-        Toast.show({
-          type: "success",
-          text1: "Welcome! 🎉",
-          text2: "Successfully registered with Google",
-          position: "bottom",
-          visibilityTime: 2500,
-        });
-        router.push('/ageGate');
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Google Registration Failed",
-          text2: result.error || "Please try again",
-          position: "bottom",
-          visibilityTime: 3000,
-        });
+      if (response?.type === 'success') {
+        // Then sign in with Supabase using the Google token
+        const { data, error } = await googleAuth.signInWithGoogle(response);
+        
+        if (error) {
+          Toast.show({
+            type: "error",
+            text1: "Google Sign Up Failed",
+            text2: error,
+            position: "bottom",
+            visibilityTime: 3000,
+          });
+          return;
+        }
+
+        if (data) {
+          Toast.show({
+            type: "success",
+            text1: "Welcome!",
+            text2: "Successfully signed up with Google",
+            position: "bottom",
+            visibilityTime: 2500,
+          });
+          router.push('/(tabs)/home');
+        }
       }
-    } catch (error: any) {
+    } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Google Registration Failed",
-        text2: "Network error. Please try again.",
+        text1: "Sign Up Failed",
+        text2: "An unexpected error occurred",
         position: "bottom",
         visibilityTime: 3000,
       });
