@@ -26,10 +26,10 @@ export const googleAuth = {
     useGoogleAuth: () => {
         const [request, response, promptAsync] = Google.useAuthRequest({
             clientId: GOOGLE_CLIENT_ID.web,
-            androidClientId: GOOGLE_CLIENT_ID.android,
-            iosClientId: "93589731689-m1rrvngpj0abv5d2ipakqhnh0trmq0j9.apps.googleusercontent.com",
+            androidClientId: GOOGLE_CLIENT_ID.web,
+            iosClientId: GOOGLE_CLIENT_ID.web,
             webClientId: GOOGLE_CLIENT_ID.web,
-            redirectUri: "https://kommsuzfzgeszvreydwk.supabase.co/auth/v1/callback",
+            redirectUri: GOOGLE_CLIENT_ID.redirectUri,
             responseType: "id_token", // ✅ this avoids needing clientSecret
             scopes: ["openid", "profile", "email"],
             extraParams: {
