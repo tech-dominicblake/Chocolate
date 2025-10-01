@@ -19,18 +19,18 @@ const GOOGLE_CLIENT_ID = {
     ios: CONFIG.GOOGLE.IOS_CLIENT_ID,
     android: CONFIG.GOOGLE.ANDROID_CLIENT_ID,
     web: CONFIG.GOOGLE.WEB_CLIENT_ID,
-    redirectUri: "https://auth.expo.io/@hasanqzuyer/chocolate"
+    redirectUri: "https://kommsuzfzgeszvreydwk.supabase.co/auth/v1/callback"
 };
 
 export const googleAuth = {
     useGoogleAuth: () => {
         const [request, response, promptAsync] = Google.useAuthRequest({
-            clientId: "93589731689-0rr3hvthf2q60hvofrtm42soe19kh0n8.apps.googleusercontent.com",
-            androidClientId: "93589731689-0rr3hvthf2q60hvofrtm42soe19kh0n8.apps.googleusercontent.com",
+            clientId: GOOGLE_CLIENT_ID.web,
+            androidClientId: GOOGLE_CLIENT_ID.android,
             iosClientId: "93589731689-m1rrvngpj0abv5d2ipakqhnh0trmq0j9.apps.googleusercontent.com",
-            webClientId: "93589731689-0rr3hvthf2q60hvofrtm42soe19kh0n8.apps.googleusercontent.com",
-            redirectUri: "https://auth.expo.io/@hasanqzuyer/chocolate",
-            // responseType: "id_token", // ✅ this avoids needing clientSecret
+            webClientId: GOOGLE_CLIENT_ID.web,
+            redirectUri: "https://kommsuzfzgeszvreydwk.supabase.co/auth/v1/callback",
+            responseType: "id_token", // ✅ this avoids needing clientSecret
             scopes: ["openid", "profile", "email"],
             extraParams: {
                 access_type: 'offline',
