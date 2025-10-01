@@ -12,6 +12,7 @@ const redirectUri = makeRedirectUri({
     // ✅ use the proxy for Expo Go
     // (works in development, not production)
     useProxy: true,
+    scheme: "chocolate",
 } as any); // 👈 cast to any to silence TS, safe here
 
 // These will come from your Google Cloud Console
@@ -19,7 +20,7 @@ const GOOGLE_CLIENT_ID = {
     ios: CONFIG.GOOGLE.IOS_CLIENT_ID,
     android: CONFIG.GOOGLE.ANDROID_CLIENT_ID,
     web: CONFIG.GOOGLE.WEB_CLIENT_ID,
-    redirectUri: "https://kommsuzfzgeszvreydwk.supabase.co/auth/v1/callback"
+    redirectUri,
 };
 
 export const googleAuth = {
@@ -45,7 +46,7 @@ export const googleAuth = {
                 android: GOOGLE_CLIENT_ID.android,
                 ios: GOOGLE_CLIENT_ID.ios,
                 web: GOOGLE_CLIENT_ID.web,
-                redirectUri: GOOGLE_CLIENT_ID.redirectUri
+                redirectUri: redirectUri
             }
         });
 
@@ -55,6 +56,10 @@ export const googleAuth = {
             promptAsync,
         };
     },
+
+    getRedirectUri: () => makeRedirectUri({
+        scheme: "chocolate", // must match what you set in app.json
+    }),
 
     signInWithGoogle: async (response: any) => {
         const idToken = response?.params?.id_token;
