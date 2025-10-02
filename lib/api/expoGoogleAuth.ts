@@ -13,6 +13,7 @@ const redirectUri = makeRedirectUri({
     // (works in development, not production)
     useProxy: true,
     scheme: "chocolate",
+    path: "auth/callback"
 } as any); // 👈 cast to any to silence TS, safe here
 
 // These will come from your Google Cloud Console
@@ -20,7 +21,7 @@ const GOOGLE_CLIENT_ID = {
     ios: CONFIG.GOOGLE.IOS_CLIENT_ID,
     android: CONFIG.GOOGLE.ANDROID_CLIENT_ID,
     web: CONFIG.GOOGLE.WEB_CLIENT_ID,
-    redirectUri: 'chocolate://auth/callback',
+    redirectUri: redirectUri, // Use the same redirectUri created above
 };
 
 export const googleAuth = {
@@ -59,6 +60,7 @@ export const googleAuth = {
 
     getRedirectUri: () => makeRedirectUri({
         scheme: "chocolate", // must match what you set in app.json
+        path: "auth/callback"
     }),
 
     signInWithGoogle: async (response: any) => {
