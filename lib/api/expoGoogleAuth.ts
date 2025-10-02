@@ -20,7 +20,7 @@ const GOOGLE_CLIENT_ID = {
     ios: CONFIG.GOOGLE.IOS_CLIENT_ID,
     android: CONFIG.GOOGLE.ANDROID_CLIENT_ID,
     web: CONFIG.GOOGLE.WEB_CLIENT_ID,
-    redirectUri,
+    redirectUri: 'https://auth.expo.io/@hasanqzuyer/chocolate',
 };
 
 export const googleAuth = {
@@ -46,7 +46,7 @@ export const googleAuth = {
                 android: GOOGLE_CLIENT_ID.android,
                 ios: GOOGLE_CLIENT_ID.ios,
                 web: GOOGLE_CLIENT_ID.web,
-                redirectUri: redirectUri
+                redirectUri: GOOGLE_CLIENT_ID.redirectUri
             }
         });
 
