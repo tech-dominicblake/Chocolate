@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./icon.png",
     "scheme": "chocolate",
+    "owner": "hushhexperience",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
@@ -50,8 +51,14 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "e820e276-c43d-4974-8d9b-da0e68898211"
+        "projectId": "3fcc89b2-f1fe-48a5-bad2-944943d34388"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/3fcc89b2-f1fe-48a5-bad2-944943d34388"
     }
   }
 }
