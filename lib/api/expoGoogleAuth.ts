@@ -2,6 +2,7 @@ import { CONFIG } from '@/constants/Config';
 import { supabase } from '@/utils/supabase';
 import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
+import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 
 // Required for web browser-based auth
@@ -25,13 +26,17 @@ const GOOGLE_CLIENT_ID = {
 };
 
 export const googleAuth = {
+    redirectTo: Linking.createURL('/auth/callback', {
+        scheme: "chocolate",
+    }),
+
     useGoogleAuth: () => {
         const [request, response, promptAsync] = Google.useAuthRequest({
             clientId: GOOGLE_CLIENT_ID.web,
             androidClientId: GOOGLE_CLIENT_ID.android,
             iosClientId: GOOGLE_CLIENT_ID.ios,
             webClientId: GOOGLE_CLIENT_ID.web,
-            redirectUri: GOOGLE_CLIENT_ID.redirectUri,
+            redirectUri: googleAuth.redirectTo,
             responseType: "id_token", // ✅ this avoids needing clientSecret
             scopes: ["openid", "profile", "email"],
             extraParams: {
@@ -73,6 +78,9 @@ export const googleAuth = {
         const { data, error } = await supabase.auth.signInWithIdToken({
             provider: "google",
             token: idToken,
+            options: {
+                redirectTo: googleAuth.redirectTo,
+            } as any
         });
 
         return { data, error };
