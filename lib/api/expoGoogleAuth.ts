@@ -28,8 +28,8 @@ export const googleAuth = {
     useGoogleAuth: () => {
         const [request, response, promptAsync] = Google.useAuthRequest({
             clientId: GOOGLE_CLIENT_ID.web,
-            androidClientId: GOOGLE_CLIENT_ID.web,
-            iosClientId: GOOGLE_CLIENT_ID.web,
+            androidClientId: GOOGLE_CLIENT_ID.android,
+            iosClientId: GOOGLE_CLIENT_ID.ios,
             webClientId: GOOGLE_CLIENT_ID.web,
             redirectUri: GOOGLE_CLIENT_ID.redirectUri,
             responseType: "id_token", // ✅ this avoids needing clientSecret
