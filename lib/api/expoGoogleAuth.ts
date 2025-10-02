@@ -20,15 +20,15 @@ const GOOGLE_CLIENT_ID = {
     ios: CONFIG.GOOGLE.IOS_CLIENT_ID,
     android: CONFIG.GOOGLE.ANDROID_CLIENT_ID,
     web: CONFIG.GOOGLE.WEB_CLIENT_ID,
-    redirectUri: 'https://auth.expo.io/@hasanqzuyer/chocolate',
+    redirectUri: 'chocolate://auth/callback',
 };
 
 export const googleAuth = {
     useGoogleAuth: () => {
         const [request, response, promptAsync] = Google.useAuthRequest({
             clientId: GOOGLE_CLIENT_ID.web,
-            androidClientId: GOOGLE_CLIENT_ID.android,
-            iosClientId: GOOGLE_CLIENT_ID.ios,
+            androidClientId: GOOGLE_CLIENT_ID.web,
+            iosClientId: GOOGLE_CLIENT_ID.web,
             webClientId: GOOGLE_CLIENT_ID.web,
             redirectUri: GOOGLE_CLIENT_ID.redirectUri,
             responseType: "id_token", // ✅ this avoids needing clientSecret
