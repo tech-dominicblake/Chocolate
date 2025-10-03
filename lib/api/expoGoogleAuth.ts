@@ -44,18 +44,6 @@ export const googleAuth = {
                 prompt: 'consent'
             }
         });
-
-        console.warn('=============================> Google Auth State:', {
-            request,
-            response,
-            clientIds: {
-                android: GOOGLE_CLIENT_ID.android,
-                ios: GOOGLE_CLIENT_ID.ios,
-                web: GOOGLE_CLIENT_ID.web,
-                redirectUri: GOOGLE_CLIENT_ID.redirectUri
-            }
-        });
-
         return {
             request,
             response,

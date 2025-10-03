@@ -1,3 +1,4 @@
+import Auth from '@/components/Auth';
 import { IMAGES } from '@/constants';
 import { googleAuth } from '@/lib/api/expoGoogleAuth';
 import { supabase } from '@/utils/supabase';
@@ -339,7 +340,10 @@ export default function SignInScreen() {
               loading={isSignInLoading}
               disabled={isAnyButtonLoading}
             />
-            <ActionButton
+
+            <Auth />
+
+            {/* <ActionButton
               title="SIGN IN WITH GOOGLE"
               onPress={handleGoogleSignIn}
               variant="primary"
@@ -347,7 +351,7 @@ export default function SignInScreen() {
               color='#5556A3'
               loading={isGoogleLoading}
               disabled={isAnyButtonLoading}
-            />
+            /> */}
             <ActionButton
               title="PLAY AS GUEST"
               color='#5556A3'

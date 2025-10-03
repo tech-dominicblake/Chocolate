@@ -3,9 +3,9 @@ export const CONFIG = {
   // Google OAuth Configuration
   // You need to set these in your environment variables or replace with actual values
   GOOGLE: {
-    WEB_CLIENT_ID: '93589731689-0rr3hvthf2q60hvofrtm42soe19kh0n8.apps.googleusercontent.com',
-    IOS_CLIENT_ID: '93589731689-m1rrvngpj0abv5d2ipakqhnh0trmq0j9.apps.googleusercontent.com',
-    ANDROID_CLIENT_ID: '93589731689-tr858pu0ie04g9bmvu819c9goffqsbpc.apps.googleusercontent.com',
+    WEB_CLIENT_ID: '479407816447-kcfcj9lbegfgf3p1tea7hm7442fq4egi.apps.googleusercontent.com',
+    IOS_CLIENT_ID: '479407816447-aa3frtdkhnoqoem3vf9t9eqelpmnvumv.apps.googleusercontent.com',
+    ANDROID_CLIENT_ID: '479407816447-fa2qjkgmh254mg87bmes4r5drcnq4kbn.apps.googleusercontent.com',
   },
   
   // Supabase Configuration

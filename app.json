@@ -10,10 +10,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.chocolate"
+      "bundleIdentifier": "com.chocolate"
     },
     "android": {
-      "package": "com.yourcompany.chocolate",
+      "package": "com.chocolate",
       "adaptiveIcon": {
         "foregroundImage": "./icon.png",
         "backgroundColor": "#ffffff"
@@ -40,7 +40,7 @@
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrlScheme": "com.googleusercontent.apps.93589731689-m1rrvngpj0abv5d2ipakqhnh0trmq0j9"
+          "iosUrlScheme": "com.googleusercontent.apps.479407816447-aa3frtdkhnoqoem3vf9t9eqelpmnvumv"
         }
       ],
       "expo-web-browser"
