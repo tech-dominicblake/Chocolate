@@ -164,13 +164,6 @@ export default function SignInScreen() {
           ringInput(emailRingAnimation);
         }
       } else if (data.user) {
-        Toast.show({
-          type: "bottom",
-          text1: "Welcome back!",
-          text2: "Successfully signed in",
-          position: "bottom",
-          visibilityTime: 2500,
-        });
         router.push('/ageGate');
       }
     } catch (err: any) {
@@ -203,46 +196,18 @@ export default function SignInScreen() {
         
         if (error) {
           console.error('Supabase auth error:', error);
-          Toast.show({
-            type: "error",
-            text1: "Google Sign In Failed",
-            text2: error.message,
-            position: "bottom",
-            visibilityTime: 3000,
-          });
           return;
         }
 
         if (data) {
           console.log('Successfully signed in with Google');
-          Toast.show({
-            type: "success",
-            text1: "Welcome back!",
-            text2: "Successfully signed in with Google",
-            position: "bottom",
-            visibilityTime: 2500,
-          });
           router.push('/ageGate');
         }
       } else {
         console.log('Google auth was cancelled or failed:', result);
-        Toast.show({
-          type: "error",
-          text1: "Sign In Cancelled",
-          text2: "Google sign in was cancelled or failed",
-          position: "bottom",
-          visibilityTime: 3000,
-        });
       }
     } catch (err: any) {
       console.error('Unexpected error during Google sign in:', err);
-      Toast.show({
-        type: "error",
-        text1: "Sign In Failed",
-        text2: err.message || "An unexpected error occurred",
-        position: "bottom",
-        visibilityTime: 3000,
-      });
     } finally {
       setIsGoogleLoading(false);
     }

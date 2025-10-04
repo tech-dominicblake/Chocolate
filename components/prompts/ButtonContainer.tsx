@@ -60,6 +60,8 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     };
 
     const handleContinue = async () => {
+        console.log('handleContinue');
+        console.log('gameState', gameState,level,mode,round);
         consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6, round);
         // setButtonLoading(true);
         if (round === 3) {
@@ -72,16 +74,16 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
         if (mode === 'A' && level === 12) {
             if (round === 1) {
                 if (blinkStage === 1) {
-                    const { data: levelUpPrompt, error } = await supabase
-                        .from('content_items')
-                        .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
-                        .ilike('category', `%${categoryTypes.levelUp}%`);
-                    if (levelUpPrompt) {
-                        const messages = getPrompt(levelUpPrompt?.[0], 'prompt');
-                        for (const message of messages) {
-                            await enqueue(message as Message);
-                        }
-                    }
+                    // const { data: levelUpPrompt, error } = await supabase
+                    //     .from('content_items')
+                    //     .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
+                    //     .ilike('category', `%${categoryTypes.levelUp}%`);
+                    // if (level===12) {
+                    //     const messages = getPrompt(levelUpPrompt?.[0], 'prompt');
+                    //     for (const message of messages) {
+                    //         await enqueue(message as Message);
+                    //     }
+                    // }
                     enqueue(
                         {
                             kind: 'prompt',

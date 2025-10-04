@@ -109,13 +109,7 @@ export default function SignUpScreen() {
         if (error) throw error;
         
         if (data?.user) {
-          Toast.show({
-            type: 'success',
-            text1: 'Welcome! 🎉',
-            text2: 'Successfully registered with Google',
-            position: 'bottom',
-            visibilityTime: 2500,
-          });
+        
           // Navigate to age gate after successful registration
           router.push('/ageGate');
         }
@@ -124,13 +118,7 @@ export default function SignUpScreen() {
       }
     } catch (error: any) {
       console.error('Google Registration Error:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Registration Failed',
-        text2: error?.message || 'Network error. Please try again.',
-        position: 'bottom',
-        visibilityTime: 3000,
-      });
+     
     } finally {
       setIsGoogleLoading(false);
     }
@@ -205,13 +193,7 @@ export default function SignUpScreen() {
       if (result.success) {
         
         setShowEmailVerification(true);
-        Toast.show({
-          type: "success",
-          text1: "Verification code sent",
-          text2: "Check your email for the code",
-          position: "bottom",
-          visibilityTime: 2000,
-        });
+      
       } else {
         setEmailError(result.error || 'Failed to send verification code');
         ringInput(emailRingAnimation);
@@ -231,13 +213,7 @@ export default function SignUpScreen() {
       const verificationResult = await emailVerificationService.verifyCode(email, verificationCode);
       
       if (!verificationResult.success) {
-        Toast.show({
-          type: "error",
-          text1: "Verification Failed",
-          text2: verificationResult.error || "Invalid verification code",
-          position: "bottom",
-          visibilityTime: 3000,
-        });
+      
         return;
       }
 
@@ -258,13 +234,7 @@ export default function SignUpScreen() {
       setShowVerificationSuccess(true);
       
     } catch (err: any) {
-      Toast.show({
-        type: "error",
-        text1: "Verification Failed",
-        text2: "Network error. Please try again.",
-        position: "bottom",
-        visibilityTime: 3000,
-      });
+    
       setShowEmailVerification(false);
       setIsVerifyingEmail(false);
     }
@@ -276,30 +246,12 @@ export default function SignUpScreen() {
       const result = await emailVerificationService.sendVerificationCode(email);
       
       if (result.success) {
-        Toast.show({
-          type: "success",
-          text1: "New verification code sent",
-          text2: "Check your email for the new code",
-          position: "bottom",
-          visibilityTime: 2000,
-        });
+      
       } else {
-        Toast.show({
-          type: "error",
-          text1: "Failed to send code",
-          text2: result.error || "Please try again",
-          position: "bottom",
-          visibilityTime: 3000,
-        });
+        
       }
     } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Failed to send code",
-        text2: "Please try again",
-        position: "bottom",
-        visibilityTime: 3000,
-      });
+     
     }
   };
 

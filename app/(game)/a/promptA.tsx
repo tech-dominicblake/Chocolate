@@ -144,8 +144,10 @@ export default function Prompt() {
             // .eq('challenges.name', `${genderTypes[currentTurn as keyof typeof genderTypes]}${Math.round(level / 2)}`);
 
             console.log('task complete prompt:', prompt);
-            if (prompt) {
-                const messages = getPrompt(prompt?.[0], 'prompt');
+            if (prompt && prompt.length > 0) {
+                // Get a random index within the array length
+                const randomIndex = Math.floor(Math.random() * prompt.length);
+                const messages = getPrompt(prompt[randomIndex], 'prompt');
                 for (const message of messages) {
                     await enqueue(message as Message);
                 }
@@ -169,8 +171,9 @@ export default function Prompt() {
                 // .eq('metadata->>gameType', `Game ${mode}`)
                 // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)
 
-                if (dareData?.[0]?.['content']) {
-                    const messages = getPrompt(dareData?.[0], 'dare');
+                if (dareData && dareData.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * dareData.length);
+                    const messages = getPrompt(dareData[randomIndex], 'dare');
                     for (const message of messages) {
                         await enqueue(message as Message);
                     }
@@ -183,8 +186,9 @@ export default function Prompt() {
                 // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
                 // .eq('metadata->>gameType', `Game ${mode}`)
                 // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)
-                if (failData?.[0]?.['content']) {
-                    const messages = getPrompt(failData?.[0], 'fail');
+                if (failData && failData.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * failData.length);
+                    const messages = getPrompt(failData[randomIndex], 'fail');
                     for (const message of messages) {
                         await enqueue(message as Message);
                     }

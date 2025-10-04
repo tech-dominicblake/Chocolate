@@ -3,6 +3,7 @@ import {
   GoogleSignin,
   statusCodes
 } from '@react-native-google-signin/google-signin'
+import { router } from 'expo-router'
 import { useState } from 'react'
 import { supabase } from '../utils/supabase'
 import ActionButton from './prompts/ActionButton'
@@ -40,6 +41,11 @@ export default function () {
               token: userInfo.data.idToken,
             })
             console.log(error, data)
+            
+            if (!error && data) {
+              // Navigate to ageGate after successful sign in
+              router.push('/ageGate')
+            }
           } else {
             throw new Error('no ID token present!')
           }

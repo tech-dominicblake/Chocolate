@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import Toast, { BaseToastProps } from 'react-native-toast-message';
 
 import { CustomToast } from '@/components/ui/CustomToast';
 import { ThemeProvider } from '@/providers/ThemeProvider';
@@ -56,11 +55,11 @@ export default function RootLayout() {
             <Stack.Screen name="experienceNoteB" options={{ headerShown: false }} />
           </Stack>
           <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-          <Toast
+          {/* <Toast
             config={{
               center: (props: BaseToastProps) => <CustomToast {...props} />,
             }}
-          />
+          /> */}
         </QueryProvider>
       </ThemeProvider>
     </SafeAreaProvider>

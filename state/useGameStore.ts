@@ -331,9 +331,9 @@ export const useGameStore = create<GameState>((set) => ({
           content_4_time,
           content_5_time,
           challenges!inner (id,name)`)
-        .ilike('category', `%${categoryTypes.promptA}%`)
+        .ilike('category', `%${state.mode === 'A' ? categoryTypes.promptA : categoryTypes.promptB}%`)
         .eq('metadata->>round', state.round === 1 ? 'Round One' : 'Round Two')
-        .eq('metadata->>gameType', `Game ${state.mode}`)
+        // .eq('metadata->>gameType', `Game ${state.mode}`)
         .eq('challenges.name', `${genderTypes[state.currentTurn]}${Math.round(state.level / 2)}`)
         .order('subContent_1', { ascending: true });
         // .limit(1);
@@ -355,11 +355,23 @@ export const useGameStore = create<GameState>((set) => ({
       for (const message of presetMessages) {
         await enqueue(message);
       }
-      if (prompt?.[0]) {
-      const promptMessage = getPrompt(prompt?.[0], 'prompt' as const);
+      if (prompt && prompt.length > 0) {
+        // Get a random index within the array length
+        const randomIndex = Math.floor(Math.random() * prompt.length);
+        const promptMessage = getPrompt(prompt[0], 'prompt' as const);
         if (promptMessage) {
           for (const message of promptMessage) {
-            await enqueue(message as Message);
+            // Split the message body by #end and filter out empty strings
+            const sentences = message.body.split('#end').filter(sentence => sentence.trim());
+            
+            // Enqueue each sentence as a separate message
+            for (const sentence of sentences) {
+              await enqueue({
+                ...message,
+                body: sentence.trim(),
+                durationMs: 2000,
+              } as Message);
+            }
           }
         }
       }
