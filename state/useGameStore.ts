@@ -358,7 +358,7 @@ export const useGameStore = create<GameState>((set) => ({
       if (prompt && prompt.length > 0) {
         // Get a random index within the array length
         const randomIndex = Math.floor(Math.random() * prompt.length);
-        const promptMessage = getPrompt(prompt[0], 'prompt' as const);
+        const promptMessage = getPrompt(prompt[randomIndex], 'prompt' as const);
         if (promptMessage) {
           for (const message of promptMessage) {
             // Split the message body by #end and filter out empty strings

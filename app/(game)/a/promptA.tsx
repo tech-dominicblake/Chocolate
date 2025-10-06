@@ -174,11 +174,29 @@ export default function Prompt() {
                 if (dareData && dareData.length > 0) {
                     const randomIndex = Math.floor(Math.random() * dareData.length);
                     const messages = getPrompt(dareData[randomIndex], 'dare');
-                    for (const message of messages) {
-                        await enqueue(message as Message);
-                    }
+                    if (messages) {
+                        for (const message of messages) {
+                          // Split the message body by #end and filter out empty strings
+                          const sentences = message.body.split('#end').filter(sentence => sentence.trim());
+                          
+                          // Enqueue each sentence as a separate message
+                          for (const sentence of sentences) {
+                            await enqueue({
+                              ...message,
+                              body: sentence.trim(),
+                              durationMs: 2000,
+                            } as Message);
+                          }
+                        }
+                      }
                 }
             } else {
+                enqueue({
+                    kind: 'userchoice' as const,
+                    body: 'I can\'t hang.',
+                    group: 'game_result' as const,
+                    durationMs: 2000,
+                });
                 const { data: failData } = await supabase
                     .from('content_items')
                     .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')

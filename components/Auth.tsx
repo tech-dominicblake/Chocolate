@@ -8,7 +8,11 @@ import { useState } from 'react'
 import { supabase } from '../utils/supabase'
 import ActionButton from './prompts/ActionButton'
 
-export default function () {
+interface AuthProps {
+  buttonText: string;
+}
+
+export default function ({ buttonText }: AuthProps) {
   GoogleSignin.configure({
     // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
     offlineAccess: true,
@@ -22,7 +26,7 @@ export default function () {
     <ActionButton
       // size={GoogleSigninButton.Size.Wide}
       // color={GoogleSigninButton.Color.Dark}
-      title="SIGN IN WITH GOOGLE"
+      title={buttonText}
       variant="primary"
       backgroundImage={IMAGES.IMAGES.buttonBg2}
       color='#5556A3'

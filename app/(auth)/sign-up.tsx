@@ -374,7 +374,7 @@ export default function SignUpScreen() {
                   <Text style={styles.orText}>OR</Text>
                 </View>
 
-                <Auth />
+                <Auth buttonText="SIGN UP WITH GOOGLE" />
               </View>
 
               {/* Footer Links */}

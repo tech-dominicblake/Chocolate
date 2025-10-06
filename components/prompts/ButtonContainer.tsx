@@ -61,7 +61,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
 
     const handleContinue = async () => {
         console.log('handleContinue');
-        console.log('gameState', gameState,level,mode,round);
+        console.log('gameState', gameState, level, mode, round);
         consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6, round);
         // setButtonLoading(true);
         if (round === 3) {
@@ -169,13 +169,53 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
         if (userState.firstFail) {
             consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6, round);
             if (round === 3) {
-                await enqueue(getMockMessageByKind('fail'));
+                const { data: failData, error } = await supabase.from('content_items').select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )').ilike('category', `${categoryTypes.fail}`);
+                if (failData && failData.length > 0) {
+                    // Get a random index within the array length
+                    const randomIndex = Math.floor(Math.random() * failData.length);
+                    const messages = getPrompt(failData[randomIndex], 'fail');
+                    if (messages) {
+                        for (const message of messages) {
+                          // Split the message body by #end and filter out empty strings
+                          const sentences = message.body.split('#end').filter(sentence => sentence.trim());
+                          
+                          // Enqueue each sentence as a separate message
+                          for (const sentence of sentences) {
+                            await enqueue({
+                              ...message,
+                              body: sentence.trim(),
+                              durationMs: 2000,
+                            } as Message);
+                          }
+                        }
+                      }
+                }
                 mode === 'A' ? router.push('/(game)/a/statsA') : router.push('/(game)/b/statsB');
                 return;
             }
             if (mode === 'A' && level === 12) {
                 setGameState({ ...gameState, gamePaused: true, gameFailed: true, gameNewLevelStarted: true });
-                enqueue(getMockMessageByKind('fail'));
+                const { data: failData, error } = await supabase.from('content_items').select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )').ilike('category', `${categoryTypes.fail}`);
+                if (failData && failData.length > 0) {
+                    // Get a random index within the array length
+                    const randomIndex = Math.floor(Math.random() * failData.length);
+                    const messages = getPrompt(failData[randomIndex], 'fail');
+                    if (messages) {
+                        for (const message of messages) {
+                            // Split the message body by #end and filter out empty strings
+                            const sentences = message.body.split('#end').filter(sentence => sentence.trim());
+
+                            // Enqueue each sentence as a separate message
+                            for (const sentence of sentences) {
+                                await enqueue({
+                                    ...message,
+                                    body: sentence.trim(),
+                                    durationMs: 2000,
+                                } as Message);
+                            }
+                        }
+                    }
+                }
                 return;
             }
 

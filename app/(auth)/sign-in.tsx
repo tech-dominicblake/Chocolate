@@ -306,7 +306,7 @@ export default function SignInScreen() {
               disabled={isAnyButtonLoading}
             />
 
-            <Auth />
+            <Auth buttonText="SIGN IN WITH GOOGLE" />
 
             {/* <ActionButton
               title="SIGN IN WITH GOOGLE"
