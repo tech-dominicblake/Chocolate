@@ -327,6 +327,11 @@ export default function PromptB() {
                     group: 'game_result' as const,
                     durationMs: 1000,
                 });
+                enqueue({
+                    ...getMockMessageByKind('dare'),
+                    group: 'game_result' as const,
+                    durationMs: 1000,
+                });
                 const { data: dareData } = await supabase
                     .from('content_items')
                     .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')

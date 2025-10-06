@@ -48,8 +48,9 @@ export default function Prompt() {
         setDidFinal,
         setHimTimePerLevel,
         setHerTimePerLevel,
+        
     } = useGameStore();
-    const { queue, enqueue, clear } = useMessages();
+    const { queue, enqueue, clear, } = useMessages();
 
     useEffect(() => {
         const initializeGame = async () => {
@@ -159,6 +160,11 @@ export default function Prompt() {
                 enqueue({
                     kind: 'userchoice' as const,
                     body: 'Nah, I bail.',
+                    group: 'game_result' as const,
+                    durationMs: 1000,
+                });
+                enqueue({
+                    ...getMockMessageByKind('dare'),
                     group: 'game_result' as const,
                     durationMs: 1000,
                 });
