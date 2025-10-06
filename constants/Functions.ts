@@ -79,7 +79,7 @@ export function getPrompt(row: PromptRow, kind: MessageKind): MessageItem[] {
       kind: 'prompt',
       body: row.content,
       group: '',
-      durationMs: row.content_1_time ?? 0, // or set a default
+      durationMs: 2000, // or set a default
     },
   ];
 }

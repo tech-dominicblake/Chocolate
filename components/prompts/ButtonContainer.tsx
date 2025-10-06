@@ -92,16 +92,18 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     );
                     setBlinkStage(2);
                 } else if (blinkStage === 2) {
-                    enqueue(
+                    await enqueue(
                         {
                             kind: 'userchoice',
                             body: 'Continue',
+                            durationMs: 2000,
                         }
                     );
-                    enqueue(
+                    await enqueue(
                         {
                             kind: 'prompt',
                             body: 'I’m in, let’s see what the hype’s about...',
+                            durationMs: 2000,
                         }
                     );
                     setBlinkStage(3);
@@ -129,10 +131,11 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     );
                     setBlinkStage(2);
                 } else if (blinkStage === 2) {
-                    enqueue(
+                    await enqueue(
                         {
                             kind: 'userchoice',
                             body: 'Yes',
+                            durationMs: 2000,
                         }
                     );
                     await enqueue(

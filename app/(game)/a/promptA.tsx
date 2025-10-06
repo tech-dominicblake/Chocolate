@@ -129,11 +129,12 @@ export default function Prompt() {
         setButtonLoading(true);
         if (buttonType === 'success') {
 
-            enqueue({
+            await enqueue({
                 kind: 'userchoice' as const,
                 body: choice,
                 group: 'user_action' as const,
-                meta: { buttonType } // Store the button type in meta for future use
+                meta: { buttonType },
+                durationMs: 2000, // Store the button type in meta for future use
             });
 
 
@@ -157,16 +158,16 @@ export default function Prompt() {
         if (buttonType === 'fail') {
             if (!hasFailedOnce) {
                 setHasFailedOnce(true);
-                enqueue({
+                await enqueue({
                     kind: 'userchoice' as const,
                     body: 'Nah, I bail.',
                     group: 'game_result' as const,
-                    durationMs: 1000,
+                    durationMs: 2000,
                 });
-                enqueue({
+                await enqueue({
                     ...getMockMessageByKind('dare'),
                     group: 'game_result' as const,
-                    durationMs: 1000,
+                    durationMs: 2000,
                 });
 
                 const { data: dareData } = await supabase
@@ -197,7 +198,7 @@ export default function Prompt() {
                       }
                 }
             } else {
-                enqueue({
+                await enqueue({
                     kind: 'userchoice' as const,
                     body: 'I can\'t hang.',
                     group: 'game_result' as const,

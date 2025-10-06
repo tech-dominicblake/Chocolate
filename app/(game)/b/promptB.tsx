@@ -298,11 +298,12 @@ export default function PromptB() {
 
     const handlePlayerChoice = async (choice: string, buttonType: 'success' | 'fail') => {
         if (buttonType === 'success') {
-            enqueue({
+            await enqueue({
                 kind: 'userchoice' as const,
                 body: choice,
                 group: 'user_action' as const,
-                meta: { buttonType } // Store the button type in meta for future use
+                meta: { buttonType },
+                durationMs: 2000, // Store the button type in meta for future use
             });
             const { data: prompt, error } = await supabase
                 .from('content_items')
@@ -325,12 +326,12 @@ export default function PromptB() {
                     kind: 'userchoice' as const,
                     body: 'Nah, I bail.',
                     group: 'game_result' as const,
-                    durationMs: 1000,
+                    durationMs: 2000,
                 });
                 enqueue({
                     ...getMockMessageByKind('dare'),
                     group: 'game_result' as const,
-                    durationMs: 1000,
+                    durationMs: 2000,
                 });
                 const { data: dareData } = await supabase
                     .from('content_items')
@@ -364,7 +365,7 @@ export default function PromptB() {
                     kind: 'userchoice' as const,
                     body: 'I can\'t hang.',
                     group: 'game_result' as const,
-                    durationMs: 1000,
+                    durationMs: 2000,
                 });
                 const { data: failData } = await supabase
                     .from('content_items')
