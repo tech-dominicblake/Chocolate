@@ -5,7 +5,7 @@ export const CONFIG = {
   GOOGLE: {
     WEB_CLIENT_ID: '479407816447-kcfcj9lbegfgf3p1tea7hm7442fq4egi.apps.googleusercontent.com',
     IOS_CLIENT_ID: '479407816447-aa3frtdkhnoqoem3vf9t9eqelpmnvumv.apps.googleusercontent.com',
-    ANDROID_CLIENT_ID: '479407816447-fa2qjkgmh254mg87bmes4r5drcnq4kbn.apps.googleusercontent.com',
+    ANDROID_CLIENT_ID: '479407816447-ec7i3o1ajnb22o7ntkvoji7471ikvn14.apps.googleusercontent.com'
   },
   
   // Supabase Configuration

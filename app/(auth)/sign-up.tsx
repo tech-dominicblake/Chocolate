@@ -1,3 +1,4 @@
+import Auth from '@/components/Auth';
 import { CustomInput } from '@/components/ui/CustomInput';
 import { IMAGES } from '@/constants';
 import { googleAuth } from '@/lib/api/expoGoogleAuth';
@@ -16,7 +17,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Toast from 'react-native-toast-message';
 import ActionButton from '../../components/prompts/ActionButton';
 import { useAppThemeColor } from '../../hooks/useAppTheme';
 import EmailVerification from '../emailVerification';
@@ -26,22 +26,22 @@ export default function SignUpScreen() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   // Email verification state
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [isVerifyingEmail, setIsVerifyingEmail] = useState(false);
   const [showVerificationSuccess, setShowVerificationSuccess] = useState(false);
-  
+
   // Google sign-up loading state
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const { promptAsync } = googleAuth.useGoogleAuth();
-  
+
   // Error states
   const [emailError, setEmailError] = useState('');
   const [nameError, setNameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
-  
+
   // Animation refs for error ringing
   const emailRingAnimation = useRef(new Animated.Value(1)).current;
   const nameRingAnimation = useRef(new Animated.Value(1)).current;
@@ -102,14 +102,14 @@ export default function SignUpScreen() {
     setIsGoogleLoading(true);
     try {
       const response = await promptAsync();
-      
+
       if (response?.type === 'success') {
         const { data, error } = await googleAuth.signInWithGoogle(response);
-        
+
         if (error) throw error;
-        
+
         if (data?.user) {
-        
+
           // Navigate to age gate after successful registration
           router.push('/ageGate');
         }
@@ -118,7 +118,7 @@ export default function SignUpScreen() {
       }
     } catch (error: any) {
       console.error('Google Registration Error:', error);
-     
+
     } finally {
       setIsGoogleLoading(false);
     }
@@ -185,15 +185,15 @@ export default function SignUpScreen() {
 
     // If validation passes, show email verification
     setIsVerifyingEmail(true);
-    
+
     // Send verification code to email
     try {
       const result = await emailVerificationService.sendVerificationCode(email.trim());
-      
+
       if (result.success) {
-        
+
         setShowEmailVerification(true);
-      
+
       } else {
         setEmailError(result.error || 'Failed to send verification code');
         ringInput(emailRingAnimation);
@@ -211,15 +211,15 @@ export default function SignUpScreen() {
     try {
       // Verify the OTP code
       const verificationResult = await emailVerificationService.verifyCode(email, verificationCode);
-      
+
       if (!verificationResult.success) {
-      
+
         return;
       }
 
       // If verification is successful, update user profile with name
       const { error: updateError } = await supabase.auth.updateUser({
-        data: { 
+        data: {
           name: name.trim()
         }
       });
@@ -232,9 +232,9 @@ export default function SignUpScreen() {
       // User is now automatically signed in after successful verification
       // Show success page
       setShowVerificationSuccess(true);
-      
+
     } catch (err: any) {
-    
+
       setShowEmailVerification(false);
       setIsVerifyingEmail(false);
     }
@@ -244,14 +244,14 @@ export default function SignUpScreen() {
   const handleResendVerificationCode = async () => {
     try {
       const result = await emailVerificationService.sendVerificationCode(email);
-      
+
       if (result.success) {
-      
+
       } else {
-        
+
       }
     } catch (error) {
-     
+
     }
   };
 
@@ -374,15 +374,7 @@ export default function SignUpScreen() {
                   <Text style={styles.orText}>OR</Text>
                 </View>
 
-                <ActionButton
-                  title="REGISTER WITH GOOGLE"
-                  onPress={handleGoogleSignUp}
-                  variant="primary"
-                  backgroundImage={IMAGES.IMAGES.buttonBg2}
-                  color='#5556A3'
-                  loading={isGoogleLoading}
-                  disabled={isGoogleLoading || isVerifyingEmail}
-                />
+                <Auth />
               </View>
 
               {/* Footer Links */}

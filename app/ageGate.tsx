@@ -1,6 +1,8 @@
+import { MenuButton } from '@/components/MenuButton';
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
-import { useThemeToggle } from '@/hooks/useAppTheme';
+import { useAppThemeColor, useThemeToggle } from '@/hooks/useAppTheme';
+import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -18,6 +20,8 @@ export default function AgeGate() {
   const [nsfwMode, setNsfwMode] = useState(true);
   const [agreed, setAgreed] = useState(false);
   const { isDark } = useThemeToggle();
+  const barGrey = useAppThemeColor('bar');
+
 
 
   const handleProceed = () => {
@@ -32,9 +36,26 @@ export default function AgeGate() {
     router.back();
   };
 
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleMenu = () => {
+    router.push('/menu');
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#27282A' : '#EDEFF2' }]}>
       <StatusBar barStyle="dark-content" />
+
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <Ionicons name="chevron-back" size={24} color='#79828F' />
+          <Text style={[styles.backText, { color: barGrey }]}> BACK</Text>
+        </TouchableOpacity>
+
+        <MenuButton onPress={handleMenu} />
+      </View>
 
       <ScrollView
         style={styles.scrollView}
@@ -235,5 +256,23 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  backButton: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  backText: {
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 76,
+    paddingBottom: 30,
   },
 });
