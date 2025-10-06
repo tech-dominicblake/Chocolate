@@ -2,6 +2,7 @@ import Auth from '@/components/Auth';
 import { IMAGES } from '@/constants';
 import { googleAuth } from '@/lib/api/expoGoogleAuth';
 import { supabase } from '@/utils/supabase';
+import { storeUserData } from '@/utils/userStorage';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
@@ -15,7 +16,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Toast from 'react-native-toast-message';
 import { Logo } from '../../components/Logo';
 import ActionButton from '../../components/prompts/ActionButton';
 import { CustomInput } from '../../components/ui/CustomInput';
@@ -148,6 +148,9 @@ export default function SignInScreen() {
         email: email.trim().toLowerCase(),
         password,
       });
+      if (data) {
+        console.log('SignIndata',data)
+      }
 
       if (error) {
         // Handle different types of errors
@@ -164,6 +167,13 @@ export default function SignInScreen() {
           ringInput(emailRingAnimation);
         }
       } else if (data.user) {
+        // Store user data with 2-day expiration
+        await storeUserData({
+          id: data.user.id,
+          email: data.user.email!,
+          created_at: data.user.created_at,
+          // Add any other user fields you want to store
+        });
         router.push('/ageGate');
       }
     } catch (err: any) {

@@ -1,4 +1,5 @@
 import { IMAGES } from '@/constants'
+import { storeUserData } from '@/utils/userStorage'
 import {
   GoogleSignin,
   statusCodes
@@ -46,7 +47,13 @@ export default function ({ buttonText }: AuthProps) {
             })
             console.log(error, data)
             
-            if (!error && data) {
+            if (!error && data.user) {
+              // Store user data with 2-day expiration
+              await storeUserData({
+                id: data.user.id,
+                email: data.user.email!,
+                created_at: data.user.created_at,
+              });
               // Navigate to ageGate after successful sign in
               router.push('/ageGate')
             }

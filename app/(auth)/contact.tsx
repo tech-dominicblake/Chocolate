@@ -1,5 +1,4 @@
 import { IMAGES } from '@/constants';
-import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   Image,
@@ -32,7 +31,7 @@ export default function ContactScreen() {
 
   const handleSendMessage = () => {
     // Handle send message logic
-    router.push('/(game)/play');
+    // router.push('/(game)/play');
   };
 
   const handleWhatsApp = () => {

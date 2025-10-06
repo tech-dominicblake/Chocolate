@@ -5,7 +5,6 @@ import { useColorScheme } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { CustomToast } from '@/components/ui/CustomToast';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { QueryProvider } from '../providers/QueryProvider';
 
