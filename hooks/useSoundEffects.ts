@@ -1,48 +1,40 @@
 import { Audio } from 'expo-av';
-import { useRef } from 'react';
+import { Platform } from 'react-native';
+
+// Simple global flag
+let isPlaying = false;
 
 export const useSoundEffects = () => {
-  const soundRef = useRef<Audio.Sound | null>(null);
-
   const playCorkPop = async () => {
+    // Simple check - if already playing, just return
+    if (isPlaying) {
+      return;
+    }
+    
+    isPlaying = true;
+    
     try {
-      // Unload previous sound if exists
-      if (soundRef.current) {
-        await soundRef.current.unloadAsync();
-        soundRef.current = null;
-      }
-
-      // Create a wine cork pop sound effect using the existing background music file
-      // This will play a short burst of the background music as a "pop" sound
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/images/audio/background-music.mpeg'),
+        require('../assets/images/audio/wine-cork-pop.mpeg'),
         { 
           shouldPlay: true, 
           isLooping: false,
-          volume: 0.3, // Lower volume for the pop effect
-          positionMillis: 0 // Start from beginning
+          volume: 0.8,
+          ...(Platform.OS === 'android' && {
+            androidImplementation: 'MediaPlayer',
+          }),
         }
       );
       
-      soundRef.current = sound;
-      
-      // Stop the sound after 500ms to create a short pop effect
-      setTimeout(async () => {
-        if (soundRef.current) {
-          await soundRef.current.stopAsync();
-        }
-      }, 500);
-      
-      // Clean up after sound finishes playing
+      // Reset flag when sound finishes
       sound.setOnPlaybackStatusUpdate((status) => {
         if (status.isLoaded && status.didJustFinish) {
-          sound.unloadAsync();
-          soundRef.current = null;
+          isPlaying = false;
         }
       });
       
     } catch (error) {
-      console.error('Error playing cork pop sound:', error);
+      isPlaying = false;
     }
   };
 

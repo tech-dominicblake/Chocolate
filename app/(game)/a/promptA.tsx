@@ -6,6 +6,7 @@ import { getPrompt } from "@/constants/Functions";
 import { categoryTypes } from "@/constants/Prompts";
 import { Message, ProcessingState } from "@/constants/Types";
 import { useThemeToggle } from "@/hooks/useAppTheme";
+import { useHeartbeatSound } from "@/hooks/useHeartbeatSound";
 import { useGameStore, useMessages } from "@/state/useGameStore";
 import { supabase } from "@/utils/supabase";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -25,6 +26,7 @@ export default function Prompt() {
     const [elapsedTime, setElapsedTime] = useState(0);
 
     const { isDark } = useThemeToggle();
+    const { startHeartbeat, stopHeartbeat } = useHeartbeatSound();
     const scrollViewRef = useRef<ScrollView>(null);
 
     const hasFailedOnce = useGameStore.getState().hasFailedOnce;
@@ -50,7 +52,21 @@ export default function Prompt() {
         setHerTimePerLevel,
         
     } = useGameStore();
-    const { queue, enqueue, clear, } = useMessages();
+    const { queue, enqueue, clear, isProcessing } = useMessages();
+
+    // Heartbeat sound logic: start when not processing and last message is prompt
+    useEffect(() => {
+        if (!isProcessing && queue.length > 0) {
+            const lastMessage = queue[queue.length - 1];
+            if (lastMessage.kind === 'prompt') {
+                startHeartbeat();
+            } else {
+                stopHeartbeat();
+            }
+        } else if (isProcessing) {
+            stopHeartbeat();
+        }
+    }, [queue, isProcessing, startHeartbeat, stopHeartbeat]);
 
     useEffect(() => {
         const initializeGame = async () => {
@@ -149,7 +165,7 @@ export default function Prompt() {
             if (prompt && prompt.length > 0) {
                 // Get a random index within the array length
                 const randomIndex = Math.floor(Math.random() * prompt.length);
-                const messages = getPrompt(prompt[randomIndex], 'prompt');
+                const messages = getPrompt(prompt[randomIndex], 'success');
                 for (const message of messages) {
                     await enqueue(message as Message);
                 }
@@ -368,7 +384,7 @@ export default function Prompt() {
             flex: 1,
             backgroundColor: isDark ? '#27282A' : '#151718',
         }}>
-            <GameAHeader />
+            <GameAHeader onIconClick={stopHeartbeat} />
             <View style={{
                 flex: 1,
                 backgroundColor: isDark ? '#27282A' : '#EDEFF2',
@@ -401,6 +417,7 @@ export default function Prompt() {
                     onContinue={handleContinue}
                     isGamePaused={isGamePaused}
                     loading={buttonLoading}
+                    onButtonClick={stopHeartbeat}
                 />}
             </View>
             {showCongrats && (

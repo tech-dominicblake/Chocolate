@@ -14,9 +14,10 @@ interface ButtonContainerProps {
     onContinue?: (gameState: ProcessingState) => void;
     isGamePaused?: boolean;
     loading?: boolean;
+    onButtonClick?: () => void; // Callback for when any button is clicked (to stop heartbeat)
 }
 
-export default function ButtonContainer({ onPlayerChoice, onContinue, loading = false, isGamePaused = false }: ButtonContainerProps) {
+export default function ButtonContainer({ onPlayerChoice, onContinue, loading = false, isGamePaused = false, onButtonClick }: ButtonContainerProps) {
     const { round, currentTurn, level, sheFailedTwice, mode, clearState, setFailSurvivedTask, consumeChocolate, setSheFailedTwice, getMockMessageByKind, setDidFinal, hasFailedOnce, setHasFailedOnce } = useGameStore();
     const { clear, enqueue, isProcessing } = useMessages();
     const { isDark } = useThemeToggle();
@@ -140,7 +141,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     );
                     await enqueue(
                         {
-                            kind: 'prompt',
+                            kind: 'success',
                             body: ' Final round, final piece. We’re ready. Let it ruin us beautifully.',
                             group: 'question',
                             durationMs: 2000,
@@ -285,6 +286,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     }
                     loading={isProcessing}
                     disabled={isProcessing}
+                    onButtonClick={onButtonClick}
                 />
                 {/* Only show the second button when game is not paused */}
                 <ActionButton
@@ -296,6 +298,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     loading={isProcessing}
                     disabled={isProcessing}
                     hide={hideButton()}
+                    onButtonClick={onButtonClick}
                 />
             </View>
         </View>

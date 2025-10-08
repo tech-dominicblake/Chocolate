@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { ActivityIndicator, Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-// import { useSoundEffects } from '../../hooks/useSoundEffects'; // Temporarily disabled
+import { useSoundEffects } from '../../hooks/useSoundEffects';
 
 interface ActionButtonProps {
     title: string;
@@ -11,6 +11,7 @@ interface ActionButtonProps {
     loading?: boolean;
     disabled?: boolean;
     hide?: boolean;
+    onButtonClick?: () => void; // Callback for when button is clicked (to stop heartbeat)
 }
 
 export default function ActionButton({ 
@@ -21,9 +22,10 @@ export default function ActionButton({
     backgroundImage, 
     loading = false, 
     disabled = false,
-    hide = false
+    hide = false,
+    onButtonClick
 }: ActionButtonProps) {
-    // const { playCorkPop } = useSoundEffects(); // Temporarily disabled
+    const { playCorkPop } = useSoundEffects();
     
     // Animation values
     const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -72,6 +74,9 @@ export default function ActionButton({
     const handlePress = () => {
         if (loading || disabled) return;
         
+        // Stop heartbeat sound when button is clicked
+        onButtonClick?.();
+        
         // Button press animation
         Animated.sequence([
             Animated.timing(scaleAnim, {
@@ -86,8 +91,8 @@ export default function ActionButton({
             }),
         ]).start();
         
-        // Play cork pop sound effect - temporarily disabled
-        // playCorkPop();
+        // Play cork pop sound effect
+        playCorkPop();
         
         // Execute the original onPress function
         onPress();

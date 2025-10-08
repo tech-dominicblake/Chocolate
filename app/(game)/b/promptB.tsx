@@ -6,6 +6,7 @@ import { getPrompt } from "@/constants/Functions";
 import { categoryTypes } from "@/constants/Prompts";
 import { Message, ProcessingState } from "@/constants/Types";
 import { useThemeToggle } from "@/hooks/useAppTheme";
+import { useHeartbeatSound } from "@/hooks/useHeartbeatSound";
 import { useGameStore, useMessages } from "@/state/useGameStore";
 import { supabase } from "@/utils/supabase";
 import { Ionicons } from '@expo/vector-icons';
@@ -53,7 +54,7 @@ const chocolateQueue = [
 ];
 
 // Header component with chocolate queue
-const GameHeader = () => {
+const GameHeader = ({ onIconClick }: { onIconClick?: () => void } = {}) => {
     const { round, level, currentTurn, playerNames, selectedChocoIndex, herChoco, himChoco, consumedChocoInB, consumedChocolates, activeTooltip, playerAvatar } = useGameStore();
     const { isDark } = useThemeToggle();
 
@@ -115,18 +116,24 @@ const GameHeader = () => {
 
                 {/* Right side - Action icons */}
                 <View style={styles.rightSection}>
-                    <TouchableOpacity style={styles.iconButton}>
+                    <TouchableOpacity style={styles.iconButton} onPress={onIconClick}>
                         <Ionicons name="map-outline" size={24} color="#9BA1A6" />
                     </TouchableOpacity>
 
                     <View >
-                        <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/(game)/b/chocoStats')}>
+                        <TouchableOpacity style={styles.iconButton} onPress={() => {
+                            onIconClick?.();
+                            router.push('/(game)/b/chocoStats');
+                        }}>
                             <Ionicons name="cube-outline" size={24} color={activeTooltip ? '#7E80F4' : '#9BA1A6'} />
                         </TouchableOpacity>
                         {activeTooltip && <View style={styles.speechBubbleTail} />}
                     </View>
 
-                    <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/menu')}>
+                    <TouchableOpacity style={styles.iconButton} onPress={() => {
+                        onIconClick?.();
+                        router.push('/menu');
+                    }}>
                         <Ionicons name="menu-outline" size={24} color="#9BA1A6" />
                     </TouchableOpacity>
                 </View>
@@ -211,6 +218,7 @@ export default function PromptB() {
     const [startTime, setStartTime] = useState<number | null>(null);
     const [elapsedTime, setElapsedTime] = useState(0);
     const { isDark } = useThemeToggle();
+    const { startHeartbeat, stopHeartbeat } = useHeartbeatSound();
 
     const {
         setTaskCompleted,
@@ -237,7 +245,21 @@ export default function PromptB() {
         setHimTimePerLevel,
         setHerTimePerLevel
     } = useGameStore();
-    const { queue, enqueue, clear } = useMessages();
+    const { queue, enqueue, clear, isProcessing } = useMessages();
+
+    // Heartbeat sound logic: start when not processing and last message is prompt
+    useEffect(() => {
+        if (!isProcessing && queue.length > 0) {
+            const lastMessage = queue[queue.length - 1];
+            if (lastMessage.kind === 'prompt') {
+                startHeartbeat();
+            } else {
+                stopHeartbeat();
+            }
+        } else if (isProcessing) {
+            stopHeartbeat();
+        }
+    }, [queue, isProcessing, startHeartbeat, stopHeartbeat]);
 
     // Enqueue game info messages when component mounts
     useEffect(() => {
@@ -523,7 +545,7 @@ export default function PromptB() {
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#2D2F33' : '#FFFFFF' }]}>
-            <GameHeader />
+            <GameHeader onIconClick={stopHeartbeat} />
             <View style={{
                 flex: 1,
                 backgroundColor: isDark ? '#27282A' : '#EDEFF2',
@@ -554,6 +576,7 @@ export default function PromptB() {
                 <ButtonContainer
                     onPlayerChoice={handlePlayerChoice}
                     onContinue={handleContinue}
+                    onButtonClick={stopHeartbeat}
                 />
             </View>
             {showCongrats && (

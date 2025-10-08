@@ -5,8 +5,12 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeToggle } from '../../hooks/useAppTheme';
 import { useGameStore } from '../../state/useGameStore';
 
+interface GameAHeaderProps {
+    onIconClick?: () => void; // Callback for when any header icon is clicked (to stop heartbeat)
+}
+
 // Header component for game pages
-const GameAHeader = () => {
+const GameAHeader = ({ onIconClick }: GameAHeaderProps = {}) => {
     const { round, level, currentTurn, playerNames, playerAvatar, activeTooltip } = useGameStore();
     const { isDark } = useThemeToggle();
 
@@ -50,19 +54,25 @@ const GameAHeader = () => {
 
             {/* Right side - Action icons */}
             <View style={styles.rightSection}>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton} onPress={onIconClick}>
                     <Ionicons name="map-outline" size={24} color="#9BA1A6" />
                 </TouchableOpacity>
 
                 <View>
                     <TouchableOpacity style={styles.iconButton}
-                        onPress={() => router.push('/(game)/a/chocoStatsRound1')}
+                        onPress={() => {
+                            onIconClick?.();
+                            router.push('/(game)/a/chocoStatsRound1');
+                        }}
                     >
                         <Ionicons name="cube-outline" size={24} color={activeTooltip ? '#7E80F4' : '#9BA1A6'} />
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.iconButton} onPress={() => router.push('/menu')}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => {
+                    onIconClick?.();
+                    router.push('/menu');
+                }}>
                     <Ionicons name="menu-outline" size={24} color="#9BA1A6" />
                 </TouchableOpacity>
             </View>

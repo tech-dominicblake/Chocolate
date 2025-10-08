@@ -18,19 +18,11 @@ export function herChocoLevel(n: number) {
   return Math.min(6, (n + 2) >> 1);
 }
 
-// quick check
-for (let i = 1; i <= 12; i++) {
-}
-
 export function himChocoLevel(n: number) {
   if (!Number.isInteger(n) || n < 1 || n > 12) {
     throw new Error("Input must be an integer between 1 and 12");
   }
   return (n + 1) >> 1;
-}
-
-// quick check
-for (let i = 1; i <= 12; i++) {
 }
 
 type PromptRow = {
