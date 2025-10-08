@@ -5,6 +5,8 @@ import { getPrompt } from '@/constants/Functions';
 import { categoryTypes, genderTypes } from '@/constants/Prompts';
 import type { Message } from '@/constants/Types';
 import { supabase } from '@/utils/supabase';
+import { Audio } from 'expo-av';
+import { Platform } from 'react-native';
 import { useSessionStore } from './useSessionStore';
 
 interface GameState {
@@ -450,6 +452,43 @@ export const useGameStore = create<GameState>((set) => ({
 // Message queue
 const mkId = () => Math.random().toString(36).slice(2) + Date.now();
 
+// Global flag for chat message sound
+let isChatMessagePlaying = false;
+
+// Function to play chat message sound
+const playChatMessage = async () => {
+  // Simple check - if already playing, just return
+  if (isChatMessagePlaying) {
+    return;
+  }
+  
+  isChatMessagePlaying = true;
+  
+  try {
+    const { sound } = await Audio.Sound.createAsync(
+      require('../assets/images/audio/chat-message.mpeg'),
+      { 
+        shouldPlay: true, 
+        isLooping: false,
+        volume: 0.6,
+        ...(Platform.OS === 'android' && {
+          androidImplementation: 'MediaPlayer',
+        }),
+      }
+    );
+    
+    // Reset flag when sound finishes
+    sound.setOnPlaybackStatusUpdate((status) => {
+      if (status.isLoaded && status.didJustFinish) {
+        isChatMessagePlaying = false;
+      }
+    });
+    
+  } catch (error) {
+    isChatMessagePlaying = false;
+  }
+};
+
 interface MessageState {
   queue: Message[];
   isProcessing: boolean; // Add lock to prevent concurrent enqueuing
@@ -483,12 +522,16 @@ export const useMessages = create<MessageState>((set, get) => ({
       // Add message to queue immediately
       set(s => ({ queue: [...s.queue, withId] }));
 
+      // Play chat message sound when message is added to queue
+      playChatMessage();
+
       // If message has duration, lock the queue and wait
       if (msg.durationMs && msg.durationMs > 0) {
         set(s => ({ isProcessing: true }));
         await new Promise(resolve => setTimeout(resolve, msg.durationMs));
         set(s => ({ isProcessing: false }));
       }
+      
     } catch (error) {
       console.error('Error in message enqueue:', error);
       set(s => ({ isProcessing: false }));
