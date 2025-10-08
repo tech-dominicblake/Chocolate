@@ -2,6 +2,7 @@ import { getPrompt } from '@/constants/Functions';
 import { categoryTypes } from '@/constants/Prompts';
 import { Message, ProcessingState, UserState } from '@/constants/Types';
 import { useThemeToggle } from '@/hooks/useAppTheme';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { useGameStore, useMessages } from '@/state/useGameStore';
 import { supabase } from '@/utils/supabase';
 import { router } from 'expo-router';
@@ -20,6 +21,7 @@ interface ButtonContainerProps {
 export default function ButtonContainer({ onPlayerChoice, onContinue, loading = false, isGamePaused = false, onButtonClick }: ButtonContainerProps) {
     const { round, currentTurn, level, sheFailedTwice, mode, clearState, setFailSurvivedTask, consumeChocolate, setSheFailedTwice, getMockMessageByKind, setDidFinal, hasFailedOnce, setHasFailedOnce } = useGameStore();
     const { clear, enqueue, isProcessing } = useMessages();
+    const { playCorkPop } = useSoundEffects();
     const { isDark } = useThemeToggle();
     const [blinkStage, setBlinkStage] = useState(1);
     const [userState, setUserState] = useState<UserState>({
@@ -44,6 +46,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     const [buttonLoading, setButtonLoading] = useState(false);
 
     const handleLetsGetMessy = async () => {
+        playCorkPop();
         // setButtonLoading(true);
         if (userState.firstFail) {
             setGameState({ ...gameState, gameSurvived: true, gamePaused: true });
@@ -61,6 +64,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     };
 
     const handleContinue = async () => {
+        playCorkPop();
         console.log('handleContinue');
         console.log('gameState', gameState, level, mode, round);
         consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6, round);
@@ -165,6 +169,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     };
 
     const handleNahIBail = async (buttonText: string) => {
+        playCorkPop();
         if (buttonText === 'End Game' || buttonText === 'No') {
             mode === 'A' ? router.push('/(game)/a/statsA') : router.push('/(game)/b/statsB');
             return;
@@ -180,19 +185,19 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     const messages = getPrompt(failData[randomIndex], 'fail');
                     if (messages) {
                         for (const message of messages) {
-                          // Split the message body by #end and filter out empty strings
-                          const sentences = message.body.split('#end').filter(sentence => sentence.trim());
-                          
-                          // Enqueue each sentence as a separate message
-                          for (const sentence of sentences) {
-                            await enqueue({
-                              ...message,
-                              body: sentence.trim(),
-                              durationMs: 2000,
-                            } as Message);
-                          }
+                            // Split the message body by #end and filter out empty strings
+                            const sentences = message.body.split('#end').filter(sentence => sentence.trim());
+
+                            // Enqueue each sentence as a separate message
+                            for (const sentence of sentences) {
+                                await enqueue({
+                                    ...message,
+                                    body: sentence.trim(),
+                                    durationMs: 2000,
+                                } as Message);
+                            }
                         }
-                      }
+                    }
                 }
                 mode === 'A' ? router.push('/(game)/a/statsA') : router.push('/(game)/b/statsB');
                 return;

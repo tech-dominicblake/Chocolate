@@ -72,7 +72,11 @@ export default function ActionButton({
     }, [loading]);
     
     const handlePress = () => {
-        if (loading || disabled) return;
+        console.log('ActionButton handlePress called - title:', title);
+        if (loading || disabled) {
+            console.log('Button is loading or disabled, ignoring press');
+            return;
+        }
         
         // Stop heartbeat sound when button is clicked
         onButtonClick?.();
@@ -92,7 +96,8 @@ export default function ActionButton({
         ]).start();
         
         // Play cork pop sound effect
-        playCorkPop();
+        console.log('Calling playCorkPop from button:', title);
+        // playCorkPop();
         
         // Execute the original onPress function
         onPress();
