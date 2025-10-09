@@ -1,0 +1,174 @@
+{
+  "common": {
+    "back": "BACK",
+    "continue": "Continue",
+    "confirm": "Confirm & Continue",
+    "start": "Start",
+    "next": "Next",
+    "skip": "Skip",
+    "done": "Done",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No",
+    "menu": "Menu"
+  },
+  "languageSelection": {
+    "title": "Language",
+    "english": "English",
+    "russian": "Russian",
+    "indonesian": "Bahasa Indonesia"
+  },
+  "ageGate": {
+    "mainQuestion": "Are you 18+ and ready for chaos, chocolate, and questionable choices?",
+    "disclaimer": "This game includes mature themes and emotional content. By proceeding, you agree to play responsibly and take breaks if needed.",
+    "checkboxLabel": "I understand and agree to the content warnings and rules of this game",
+    "primaryButton": "BORN TO SLAY. LET'S GO 👆❤️",
+    "secondaryButton": "NAH, I'M BABY FR 👶🍫"
+  },
+  "userInfo": {
+    "title": "Tell us about yourselves",
+    "player1": "Player 1",
+    "player2": "Player 2",
+    "her": "Her",
+    "him": "Him",
+    "herName": "Her Name",
+    "himName": "His Name",
+    "firstNamePlaceholder": "First Name",
+    "agePlaceholder": "Age",
+    "herNamePlaceholder": "Enter her name",
+    "himNamePlaceholder": "Enter his name"
+  },
+  "relationship": {
+    "title": "Relationship stage",
+    "stage1Number": "Nº1",
+    "stage1Title": "Recently Met",
+    "stage1Description": "Dating for less than 3 months — flirty, fresh, still pretending to be normal.",
+    "stage2Number": "Nº2",
+    "stage2Title": "Getting Serious",
+    "stage2Description": "Dating or in a relationship for 3 to 12 months — feelings are real, chaos is rising.",
+    "stage3Number": "Nº3",
+    "stage3Title": "We Hate Each Other",
+    "stage3Description": "Together for 1+ year — love is strong, patience is thin."
+  },
+  "avatarSelection": {
+    "title": "Choose avatar",
+    "user1": "PLAYER 1 • HER",
+    "user2": "PLAYER 2 • HIM"
+  },
+  "gameSelection": {
+    "title": "Game Selection",
+    "modeA": "hushh. Experience",
+    "modeB": "hushh. Mayhem",
+    "unleashButton": "UNLEASH THE DRAMA",
+    "notReadyText": "Not ready to commit to one just yet?",
+    "peekRulesLink": "PEEK AT THE RULES FIRST"
+  },
+  "gameRules": {
+    "title": "Game Rules",
+    "rulesTitle": "How to Play"
+  },
+  "startPage": {
+    "startButton": "START GAME",
+    "storyButton": "WHAT IS HUSHH?",
+    "restartButton": "RESTART GAME",
+    "continueButton": "CONTINUE PLAYING"
+  },
+  "game": {
+    "round": "Round",
+    "level": "Level",
+    "truth": "Truth",
+    "dare": "Dare",
+    "task": "Task",
+    "skip": "Skip",
+    "complete": "Complete",
+    "failed": "Failed",
+    "success": "Success",
+    "yourTurn": "Your Turn",
+    "selectChocolate": "Select a Chocolate"
+  },
+  "menu": {
+    "title": "Menu",
+    "home": "HOME",
+    "gameRules": "GAME RULES",
+    "reviewApp": "REVIEW APP",
+    "shareFeedback": "SHARE YOUR FEEDBACK",
+    "contactSupport": "CONTACT SUPPORT",
+    "becomeAffiliate": "BECOME AN AFFILIATE",
+    "buyChocolate": "BUY HUSHH CHOCOLATE",
+    "errorWhatsAppNotInstalled": "WhatsApp is not installed on this device",
+    "errorWhatsAppFailed": "Failed to open WhatsApp",
+    "errorCannotOpenLink": "Cannot open this link on your device",
+    "errorOpenLinkFailed": "Failed to open the link",
+    "errorTitle": "Error"
+  },
+  "about": {
+    "title": "About",
+    "description 1": "once upon a time...",
+    "description 2": "Just kidding. We don't do fairy tales here.",
+    "description 3": "Hushh. was born out of late-night confessions, chaotic relationships, and the kind of laughter that makes your abs sore.",
+    "subTitle" : "The Idea",
+    "description 4": "We've all been there — stuck between craving connection and being too cool to talk about feelings.",
+    "description 5": "So we thought:",
+    "description 6": "What if chocolate wasn't just a snack… but a spark?",
+    "subTitle 2": "The Game",
+    "description 7": "We created a game where couples stop scrolling and start experiencing.",
+    "description 8": "Where the tension simmers, the dares get personal, and the fails? Unhinged, delicious chaos.",
+    "description 9": "Every chocolate holds a challenge.",
+    "description 10": "Every challenge peels back a layer.",
+    "description 11": "Every fail becomes a memory (or a reason to laugh for hours).",
+    "subTitle 3": "The Experience",
+    "description 12": "This isn't about being perfect.",
+    "description 13": "It's about being real, raw, and a little unhinged.",
+    "description 14": "For the lovers, the fighters, the situationships, and the soulmates —",
+    "description 15": "the hushh. Experience is for you.",
+    "subTitle 4": "Now let the games begin 🍫"
+  },
+  "endPage": {
+    "gameChallenge": "Challenge",
+    "question": "Still standing or emotionally  wrecked?",
+    "bringChocolate": "BRING THE CHOCOLATE",
+    "bail": "I BAIL"
+  },
+  "final": {
+    "message": "Next time, bring more\nheat... or more chocolate"
+  },
+  "congrats": {
+    "title": "Congrats!",
+    "taskCompleted": "Task Completed",
+    "line1": "This is the energy we need.",
+    "line2": "One task down. A whole lot",
+    "line3": "of tension to go 😈"
+  },
+  "experienceNote": {
+    "title": "Experience Note",
+    "subtitle": "Reflect on your experience"
+  },
+  "verification": {
+    "title": "Verify your email",
+    "instructions": "Please enter the 6 digit code sent to",
+    "confirm": "CONFIRM",
+    "didntGetCode": "Didn't get a code?",
+    "resendCode": "RESEND CODE",
+    "changeEmail": "CHANGE EMAIL",
+    "incompleteCode": "Incomplete Code",
+    "enterAllDigits": "Please enter all 6 digits",
+    "codeResent": "Code Resent",
+    "codeResentMessage": "A new verification code has been sent to your email",
+    "changeEmailTitle": "Change Email",
+    "redirectingMessage": "Redirecting to email change page..."
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signInWithGoogle": "Sign in with Google",
+    "signUpWithGoogle": "Sign up with Google",
+    "or": "OR"
+  }
+}
+

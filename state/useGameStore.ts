@@ -317,7 +317,7 @@ export const useGameStore = create<GameState>((set) => ({
       ];
 
       // Get the first prompt message from mock data
-
+      const lan = state.language === 'english' ? 'English' : state.language === 'russian' ? 'Russian' : 'Indonesian';
       const { data: prompt, error } = await supabase
         .from('content_items')
         .select(`id,
@@ -337,8 +337,9 @@ export const useGameStore = create<GameState>((set) => ({
         .eq('metadata->>round', state.round === 1 ? 'Round One' : 'Round Two')
         // .eq('metadata->>gameType', `Game ${state.mode}`)
         .eq('challenges.name', `${genderTypes[state.currentTurn]}${Math.round(state.level / 2)}`)
+        .eq('metadata->>lang', lan)
         .order('subContent_1', { ascending: true });
-        // .limit(1);
+      // .limit(1);
 
 
       console.warn("filtered prompt", prompt);
@@ -365,7 +366,7 @@ export const useGameStore = create<GameState>((set) => ({
           for (const message of promptMessage) {
             // Split the message body by #end and filter out empty strings
             const sentences = message.body.split('#end').filter(sentence => sentence.trim());
-            
+
             // Enqueue each sentence as a separate message
             for (const sentence of sentences) {
               await enqueue({
@@ -461,14 +462,14 @@ const playChatMessage = async () => {
   if (isChatMessagePlaying) {
     return;
   }
-  
+
   isChatMessagePlaying = true;
-  
+
   try {
     const { sound } = await Audio.Sound.createAsync(
       require('../assets/images/audio/chat-message.mpeg'),
-      { 
-        shouldPlay: true, 
+      {
+        shouldPlay: true,
         isLooping: false,
         volume: 0.6,
         ...(Platform.OS === 'android' && {
@@ -476,14 +477,14 @@ const playChatMessage = async () => {
         }),
       }
     );
-    
+
     // Reset flag when sound finishes
     sound.setOnPlaybackStatusUpdate((status) => {
       if (status.isLoaded && status.didJustFinish) {
         isChatMessagePlaying = false;
       }
     });
-    
+
   } catch (error) {
     isChatMessagePlaying = false;
   }
@@ -531,7 +532,7 @@ export const useMessages = create<MessageState>((set, get) => ({
         await new Promise(resolve => setTimeout(resolve, msg.durationMs));
         set(s => ({ isProcessing: false }));
       }
-      
+
     } catch (error) {
       console.error('Error in message enqueue:', error);
       set(s => ({ isProcessing: false }));

@@ -3,8 +3,7 @@ import { useAppThemeColor } from '@/hooks/useAppTheme';
 import { useThemeContext } from '@/providers/ThemeProvider';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     StyleSheet,
     Text,
@@ -13,6 +12,7 @@ import {
 
 export default function CongratsPage() {
     const { isDark } = useThemeContext();
+    const { t } = useTranslation();
 
     if (isDark) {
         return (
@@ -30,13 +30,13 @@ export default function CongratsPage() {
                         <Image source={Images.IMAGES.image1} style={styles.partyPopperHeader} />
                         {/* Congratulatory Text */}
                         <View style={styles.textContainer}>
-                            <Text style={[styles.congratsText, { color: useAppThemeColor('text') }]}>Congrats!</Text>
-                            <Text style={[styles.taskCompletedText, { color: useAppThemeColor('text') }]}>Task Completed</Text>
+                            <Text style={[styles.congratsText, { color: useAppThemeColor('text') }]}>{t('congrats.title')}</Text>
+                            <Text style={[styles.taskCompletedText, { color: useAppThemeColor('text') }]}>{t('congrats.taskCompleted')}</Text>
 
                             <View style={styles.subTextContainer}>
-                                <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>This is the energy we need.</Text>
-                                <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>One task down. A whole lot</Text>
-                                <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>of tension to go <Text style={styles.emoji}>😈</Text></Text>
+                                <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>{t('congrats.line1')}</Text>
+                                <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>{t('congrats.line2')}</Text>
+                                <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>{t('congrats.line3')}</Text>
                             </View>
                         </View>
                     </View>
@@ -54,13 +54,13 @@ export default function CongratsPage() {
                 <Image source={Images.IMAGES.image1} style={styles.partyPopperHeader} />
                 {/* Congratulatory Text */}
                 <View style={styles.textContainer}>
-                    <Text style={[styles.congratsText, { color: useAppThemeColor('text') }]}>Congrats!</Text>
-                    <Text style={[styles.taskCompletedText, { color: useAppThemeColor('text') }]}>Task Completed</Text>
+                    <Text style={[styles.congratsText, { color: useAppThemeColor('text') }]}>{t('congrats.title')}</Text>
+                    <Text style={[styles.taskCompletedText, { color: useAppThemeColor('text') }]}>{t('congrats.taskCompleted')}</Text>
 
                     <View style={styles.subTextContainer}>
-                        <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>This is the energy we need.</Text>
-                        <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>One task down. A whole lot</Text>
-                        <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>of tension to go <Text style={styles.emoji}>😈</Text></Text>
+                        <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>{t('congrats.line1')}</Text>
+                        <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>{t('congrats.line2')}</Text>
+                        <Text style={[styles.subText, { color: useAppThemeColor('text') }]}>{t('congrats.line3')}</Text>
                     </View>
                 </View>
             </View>

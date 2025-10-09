@@ -1,19 +1,28 @@
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ThemeProvider } from '@/providers/ThemeProvider';
+import { useSettingsStore } from '@/state/useSettingsStore';
+import '../i18n'; // Initialize i18n
 import { QueryProvider } from '../providers/QueryProvider';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const { loadLanguage } = useSettingsStore();
 
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+
+  useEffect(() => {
+    // Load saved language on app start
+    loadLanguage();
+  }, []);
 
   if (!loaded) {
     return null;

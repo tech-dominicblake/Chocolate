@@ -5,6 +5,7 @@ import { IMAGES } from "@/constants";
 import { useAppThemeColor } from "@/hooks/useAppTheme";
 import { useGameStore, useMessages } from "@/state/useGameStore";
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from "react-native";
 
 
@@ -14,6 +15,7 @@ export default function StartPage() {
     const { mode } = useGameStore();
     const { clear } = useMessages();
     const { clearState } = useGameStore();
+    const { t } = useTranslation();
 
     const handleRestartGame = () => {
         clear();
@@ -38,14 +40,14 @@ export default function StartPage() {
                 {queue.length !== 0 ?
                     <>
                         <ActionButton
-                            title="CONTINUE PLAYING"
+                            title={t('startPage.continueButton')}
                             onPress={() => { router.push(mode === 'A' ? '/(game)/a/promptA' : '/(game)/b/promptB') }}
                             variant="primary"
                             backgroundImage={IMAGES.IMAGES.buttonBg3}
                             color='#33358F'
                         />
                         <ActionButton
-                            title="RESTART GAME"
+                            title={t('startPage.restartButton')}
                             onPress={() => { handleRestartGame() }}
                             variant="primary"
                             backgroundImage={IMAGES.IMAGES.buttonBg2}
@@ -53,7 +55,7 @@ export default function StartPage() {
 
                         />
                         <ActionButton
-                            title="WHAT IS HUSHH?"
+                            title={t('startPage.storyButton')}
                             onPress={() => { router.push('/gameRules') }}
                             variant="primary"
                             backgroundImage={IMAGES.IMAGES.buttonBg1}
@@ -63,14 +65,14 @@ export default function StartPage() {
                     :
                     <>
                         <ActionButton
-                            title="START GAME"
+                            title={t('startPage.startButton')}
                             onPress={() => { router.push('/languageSelection') }}
                             variant="primary"
                             backgroundImage={IMAGES.IMAGES.buttonBg3}
                             color='#33358F'
                         />
                         <ActionButton
-                            title="WHAT IS HUSHH?"
+                            title={t('startPage.storyButton')}
                             onPress={() => router.push('/aboutPage')}
                             variant="primary"
                             backgroundImage={IMAGES.IMAGES.buttonBg2}

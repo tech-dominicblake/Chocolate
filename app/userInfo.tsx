@@ -6,6 +6,7 @@ import { useGameStore } from '@/state/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function UserInfo() {
@@ -17,6 +18,7 @@ export default function UserInfo() {
     const { setPlayerNames, setRoundLevel } = useGameStore();
     const barGrey = useAppThemeColor('bar');
     const textColor = useAppThemeColor('text');
+    const { t } = useTranslation();
 
 
 
@@ -59,7 +61,7 @@ export default function UserInfo() {
                 <View style={styles.header}>
                     <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                         <Ionicons name="chevron-back" size={24} color='#79828F' />
-                        <Text style={[styles.backText, { color: barGrey }]}> BACK</Text>
+                        <Text style={[styles.backText, { color: barGrey }]}> {t('common.back')}</Text>
                     </TouchableOpacity>
 
                     <MenuButton onPress={handleMenu} />
@@ -70,9 +72,9 @@ export default function UserInfo() {
                         backgroundColor: isDark ? '#2D2F33' : '#FFFFFF' // Dark theme: #374151, Light theme: original white
                     }]}>
                         <View style={styles.playerTitle}>
-                            <Text style={[styles.playerNumber, { color: isDark ? '#FFFFFF' : '#333' }]}>Player 1</Text>
+                            <Text style={[styles.playerNumber, { color: isDark ? '#FFFFFF' : '#333' }]}>{t('userInfo.player1')}</Text>
                             <Text style={[styles.playerDot, { color: isDark ? '#9CA3AF' : '#999' }]}> • </Text>
-                            <Text style={[styles.playerGender, { color: isDark ? '#FF6B9D' : '#FF6B9D' }]}>Her</Text>
+                            <Text style={[styles.playerGender, { color: isDark ? '#FF6B9D' : '#FF6B9D' }]}>{t('userInfo.her')}</Text>
                         </View>
                         <View style={styles.inputCardWraper} >
                             <View style={styles.inputContainer}>
@@ -88,7 +90,7 @@ export default function UserInfo() {
                                     ]}
                                     value={player1Name}
                                     onChangeText={setPlayer1Name}
-                                    placeholder="First Name"
+                                    placeholder={t('userInfo.firstNamePlaceholder')}
                                     placeholderTextColor={isDark ? '#9CA3AF' : '#999'} // Dark theme: #9CA3AF, Light theme: original #999
                                     onFocus={() => setFocusedInput('player1Name')}
                                     onBlur={() => setFocusedInput(null)}
@@ -108,7 +110,7 @@ export default function UserInfo() {
                                     ]}
                                     value={player1Age}
                                     onChangeText={setPlayer1Age}
-                                    placeholder="Age"
+                                    placeholder={t('userInfo.agePlaceholder')}
                                     placeholderTextColor={isDark ? '#9CA3AF' : '#999'} // Dark theme: #9CA3AF, Light theme: original #999
                                     keyboardType="numeric"
                                     maxLength={2}
@@ -124,9 +126,9 @@ export default function UserInfo() {
                         backgroundColor: isDark ? '#2D2F33' : '#FFFFFF' // Dark theme: #374151, Light theme: original white
                     }]}>
                         <View style={styles.playerTitle}>
-                            <Text style={[styles.playerNumber, { color: isDark ? '#FFFFFF' : '#333' }]}>Player 2</Text>
+                            <Text style={[styles.playerNumber, { color: isDark ? '#FFFFFF' : '#333' }]}>{t('userInfo.player2')}</Text>
                             <Text style={[styles.playerDot, { color: isDark ? '#9CA3AF' : '#999' }]}> • </Text>
-                            <Text style={[styles.playerGenderHim, { color: isDark ? '#8B5CF6' : '#8B5CF6' }]}>Him</Text>
+                            <Text style={[styles.playerGenderHim, { color: isDark ? '#8B5CF6' : '#8B5CF6' }]}>{t('userInfo.him')}</Text>
                         </View>
 
                         <View style={styles.inputContainer}>
@@ -142,7 +144,7 @@ export default function UserInfo() {
                                 ]}
                                 value={player2Name}
                                 onChangeText={setPlayer2Name}
-                                placeholder="First Name"
+                                placeholder={t('userInfo.firstNamePlaceholder')}
                                 placeholderTextColor={isDark ? '#9CA3AF' : '#999'} // Dark theme: #9CA3AF, Light theme: original #999
                                 onFocus={() => setFocusedInput('player2Name')}
                                 onBlur={() => setFocusedInput(null)}
@@ -162,7 +164,7 @@ export default function UserInfo() {
                                 ]}
                                 value={player2Age}
                                 onChangeText={setPlayer2Age}
-                                placeholder="Age"
+                                placeholder={t('userInfo.agePlaceholder')}
                                 placeholderTextColor={isDark ? '#9CA3AF' : '#999'} // Dark theme: #9CA3AF, Light theme: original #999
                                 keyboardType="numeric"
                                 maxLength={2}
@@ -176,7 +178,7 @@ export default function UserInfo() {
                 {/* Continue Button */}
                 <View style={styles.buttonContainer}>
                     <ActionButton
-                        title='CONTINUE'
+                        title={t('common.continue').toUpperCase()}
                         onPress={handleContinue}
                         variant='primary'
                         backgroundImage={IMAGES.IMAGES.btnBg1}
@@ -236,6 +238,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 20,
+        overflow: 'hidden',
     },
     playerNumber: {
         fontSize: 28.25,

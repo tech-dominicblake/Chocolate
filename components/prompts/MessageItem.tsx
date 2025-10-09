@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 interface MessageItemProps {
     text: string;
@@ -14,10 +15,38 @@ export default function MessageItem({ text, style, textStyle = 'normal', isDark,
     const isUserChoice = kind === 'userchoice';
     const isSeparator = kind === 'separator';
     
+    // Animation values
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const slideAnim = useRef(new Animated.Value(isUserChoice ? 50 : -50)).current;
+    
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.spring(slideAnim, {
+                toValue: 0,
+                speed: 9,
+                bounciness: 8,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    }, []);
+    
     // Special handling for separator messages
     if (isSeparator) {
         return (
-            <View style={styles.separatorContainer}>
+            <Animated.View 
+                style={[
+                    styles.separatorContainer,
+                    {
+                        opacity: fadeAnim,
+                        transform: [{ translateX: slideAnim }]
+                    }
+                ]}
+            >
                 <View style={[
                     styles.separatorLine,
                     { backgroundColor: isDark ? '#444444' : '#E0E0E0' }
@@ -32,23 +61,27 @@ export default function MessageItem({ text, style, textStyle = 'normal', isDark,
                     styles.separatorLine,
                     { backgroundColor: isDark ? '#444444' : '#E0E0E0' }
                 ]} />
-            </View>
+            </Animated.View>
         );
     }
     
     return (
-        <View style={[
-            styles.messageBubble, 
-            { 
-                backgroundColor: isUserChoice 
-                    ? '#FFB6C1' // Light pink for user choice messages
-                    : (isDark ? '#454952' : '#F5F5F5'), // Dark theme: #454952, Light theme: original #F5F5F5
-                borderBottomLeftRadius: kind === 'prompt' ? 4 : 20, // Small radius for prompt tail
-                borderBottomRightRadius: isUserChoice ? 4 : 20, // Small radius for user choice messages
-                alignSelf: isUserChoice ? 'flex-end' : 'flex-start', // Right align user choice, left align others
-            },
-            style // This will override the default background if a custom one is provided
-        ]}>
+        <Animated.View 
+            style={[
+                styles.messageBubble, 
+                { 
+                    backgroundColor: isUserChoice 
+                        ? '#FFB6C1' // Light pink for user choice messages
+                        : (isDark ? '#454952' : '#F5F5F5'), // Dark theme: #454952, Light theme: original #F5F5F5
+                    borderBottomLeftRadius: kind === 'prompt' ? 4 : 20, // Small radius for prompt tail
+                    borderBottomRightRadius: isUserChoice ? 4 : 20, // Small radius for user choice messages
+                    alignSelf: isUserChoice ? 'flex-end' : 'flex-start', // Right align user choice, left align others
+                    opacity: fadeAnim,
+                    transform: [{ translateX: slideAnim }]
+                },
+                style // This will override the default background if a custom one is provided
+            ]}
+        >
             <Text style={[
                 styles.text, 
                 { color: isUserChoice ? '#000000' : (isDark ? '#FFFFFF' : '#000000') }, // Black text for user choice, conditional for others
@@ -77,7 +110,7 @@ export default function MessageItem({ text, style, textStyle = 'normal', isDark,
                     }
                 ]} />
             )}
-        </View>
+        </Animated.View>
     );
 }
 

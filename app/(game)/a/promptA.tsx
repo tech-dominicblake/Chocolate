@@ -167,7 +167,15 @@ export default function Prompt() {
                 const randomIndex = Math.floor(Math.random() * prompt.length);
                 const messages = getPrompt(prompt[randomIndex], 'success');
                 for (const message of messages) {
-                    await enqueue(message as Message);
+                    const sentences = message.body.split('#end').filter(sentence => sentence.trim());
+                    for (const sentence of sentences) {
+                        await enqueue({
+                            kind: 'success' as const,
+                            body: sentence.trim(),
+                            group: 'game_result' as const,
+                            durationMs: 2000,
+                        });
+                    }
                 }
             }
         }

@@ -6,6 +6,7 @@ import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Dimensions,
     SafeAreaView,
@@ -27,41 +28,42 @@ interface RelationshipStage {
     buttonColor: string;
 }
 
-const relationshipStages: RelationshipStage[] = [
-    {
-        id: 1,
-        number: "Nº1",
-        title: "Recently Met",
-        description: "Dating for less than 3 months — flirty, fresh, still pretending to be normal.",
-        icon: "💋",
-        headerColor: "#FF6B9D",
-        buttonColor: "#8B2756"
-    },
-    {
-        id: 2,
-        number: "Nº2",
-        title: "Getting Serious",
-        description: "Dating or in a relationship for 3 to 12 months — feelings are real, chaos is rising.",
-        icon: "🔥",
-        headerColor: "#8B5CF6",
-        buttonColor: "#33358F"
-    },
-    {
-        id: 3,
-        number: "Nº3",
-        title: "We Hate Each Other",
-        description: "Together for 1+ year — love is strong, patience is thin.",
-        icon: "❤️‍🔥",
-        headerColor: "#EF4444",
-        buttonColor: "#7A1818"
-    }
-];
-
 export default function RelationshipPage() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const scrollViewRef = useRef<ScrollView>(null);
     const { isDark } = useThemeToggle()
     const { setStage } = useGameStore();
+    const { t } = useTranslation();
+
+    const relationshipStages: RelationshipStage[] = [
+        {
+            id: 1,
+            number: t('relationship.stage1Number'),
+            title: t('relationship.stage1Title'),
+            description: t('relationship.stage1Description'),
+            icon: "💋",
+            headerColor: "#FF6B9D",
+            buttonColor: "#8B2756"
+        },
+        {
+            id: 2,
+            number: t('relationship.stage2Number'),
+            title: t('relationship.stage2Title'),
+            description: t('relationship.stage2Description'),
+            icon: "🔥",
+            headerColor: "#8B5CF6",
+            buttonColor: "#33358F"
+        },
+        {
+            id: 3,
+            number: t('relationship.stage3Number'),
+            title: t('relationship.stage3Title'),
+            description: t('relationship.stage3Description'),
+            icon: "❤️‍🔥",
+            headerColor: "#EF4444",
+            buttonColor: "#7A1818"
+        }
+    ];
 
     const handleScroll = (event: any) => {
         const contentOffset = event.nativeEvent.contentOffset.x;
@@ -117,7 +119,7 @@ export default function RelationshipPage() {
                     <MenuButton onPress={handleMenu} />
                 </View>
                 {/* Header Title */}
-                <Text style={[styles.headerTitle, { color: useAppThemeColor('primaryText') }]}>Relationship stage</Text>
+                <Text style={[styles.headerTitle, { color: useAppThemeColor('primaryText') }]}>{t('relationship.title')}</Text>
 
                 {/* Swipable Cards */}
                 <View style={styles.cardsContainer}>
@@ -158,7 +160,7 @@ export default function RelationshipPage() {
                 {/* Continue Button */}
                 <View style={styles.continueButtonContainer}>
                     <ActionButton
-                        title="CONTINUE"
+                        title={t('common.continue').toUpperCase()}
                         onPress={handleContinue}
                         variant="primary"
                         backgroundImage={currentIndex === 1 ?

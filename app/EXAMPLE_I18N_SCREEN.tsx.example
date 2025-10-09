@@ -1,0 +1,217 @@
+/**
+ * EXAMPLE: How to use i18n in your screens
+ * 
+ * This is a reference example showing different ways to use translations.
+ * You can copy patterns from this file into your actual screens.
+ * 
+ * Remove the .example extension and import this screen if you want to test it.
+ */
+
+import React from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+} from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useI18n } from '@/hooks/useI18n';
+import { router } from 'expo-router';
+
+export default function ExampleI18nScreen() {
+  // Method 1: Using useTranslation (basic)
+  const { t } = useTranslation();
+  
+  // Method 2: Using custom useI18n hook (recommended)
+  const { 
+    t: translate,              // translation function
+    currentLanguage,           // current language code
+    changeLanguage,            // function to change language
+    isLanguage,                // check if language is active
+  } = useI18n();
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Example 1: Basic Translation */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Basic Translation:</Text>
+        <Text>{t('common.back')}</Text>
+        <Text>{t('common.continue')}</Text>
+      </View>
+
+      {/* Example 2: Display Current Language */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Current Language:</Text>
+        <Text>Language Code: {currentLanguage}</Text>
+      </View>
+
+      {/* Example 3: Language Switcher Buttons */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Switch Language:</Text>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[
+              styles.langButton,
+              isLanguage('en') && styles.activeButton,
+            ]}
+            onPress={() => changeLanguage('en')}
+          >
+            <Text style={styles.langText}>🇺🇸 English</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.langButton,
+              isLanguage('ru') && styles.activeButton,
+            ]}
+            onPress={() => changeLanguage('ru')}
+          >
+            <Text style={styles.langText}>🇷🇺 Russian</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.langButton,
+              isLanguage('id') && styles.activeButton,
+            ]}
+            onPress={() => changeLanguage('id')}
+          >
+            <Text style={styles.langText}>🇮🇩 Indonesian</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Example 4: Translated UI Elements */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Translated UI:</Text>
+        
+        {/* Auth translations */}
+        <Text>• {t('auth.signIn')}</Text>
+        <Text>• {t('auth.signUp')}</Text>
+        <Text>• {t('auth.email')}</Text>
+        
+        {/* Game translations */}
+        <Text>• {t('game.level')}</Text>
+        <Text>• {t('game.round')}</Text>
+        <Text>• {t('game.yourTurn')}</Text>
+      </View>
+
+      {/* Example 5: Dynamic Translation with Variables */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Dynamic Content:</Text>
+        {/* 
+          To use this, add to your translation files:
+          "game": {
+            "playerTurn": "It's {{name}}'s turn!"
+          }
+        */}
+        {/* <Text>{t('game.playerTurn', { name: 'Alice' })}</Text> */}
+        <Text style={styles.note}>
+          Note: Add interpolated strings to translation files
+        </Text>
+      </View>
+
+      {/* Example 6: Navigation with Translation */}
+      <TouchableOpacity
+        style={styles.navButton}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.navButtonText}>{t('common.back')}</Text>
+      </TouchableOpacity>
+
+      {/* Example 7: Conditional Translation */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Conditional Translation:</Text>
+        <Text>
+          {currentLanguage === 'en' && 'You are viewing in English'}
+          {currentLanguage === 'ru' && 'Вы просматриваете на русском'}
+          {currentLanguage === 'id' && 'Anda melihat dalam bahasa Indonesia'}
+        </Text>
+      </View>
+
+      {/* Tips Section */}
+      <View style={styles.tips}>
+        <Text style={styles.tipsTitle}>💡 Quick Tips:</Text>
+        <Text style={styles.tip}>1. Use t('section.key') for translations</Text>
+        <Text style={styles.tip}>2. Language auto-saves to AsyncStorage</Text>
+        <Text style={styles.tip}>3. Add keys to all 3 JSON files (en, ru, id)</Text>
+        <Text style={styles.tip}>4. Use useI18n hook for advanced features</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  section: {
+    marginBottom: 24,
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#333',
+  },
+  buttonRow: {
+    flexDirection: 'column',
+    gap: 8,
+  },
+  langButton: {
+    padding: 12,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  activeButton: {
+    backgroundColor: '#8B2756',
+  },
+  langText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  note: {
+    fontStyle: 'italic',
+    color: '#666',
+    fontSize: 12,
+  },
+  navButton: {
+    backgroundColor: '#8B2756',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 16,
+  },
+  navButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  tips: {
+    marginTop: 20,
+    padding: 16,
+    backgroundColor: '#fff3cd',
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ffc107',
+  },
+  tipsTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#856404',
+  },
+  tip: {
+    fontSize: 14,
+    color: '#856404',
+    marginBottom: 4,
+  },
+});
+

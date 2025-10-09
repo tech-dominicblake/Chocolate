@@ -9,6 +9,7 @@ import { useGameStore } from "@/state/useGameStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function GameSelectionPage() {
@@ -17,6 +18,7 @@ export default function GameSelectionPage() {
     const backgroundColor = useAppThemeColor('background');
     const { setMode } = useGameStore();
     const barGrey = useAppThemeColor('bar');
+    const { t } = useTranslation();
 
     const handleUnleashDrama = () => {
         // Navigate to the selected game
@@ -52,7 +54,7 @@ export default function GameSelectionPage() {
                 <View style={styles.header}>
                     <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                         <Ionicons name="chevron-back" size={24} color='#79828F' />
-                        <Text style={[styles.backText, { color: barGrey }]}> BACK</Text>
+                        <Text style={[styles.backText, { color: barGrey }]}> {t('common.back')}</Text>
                     </TouchableOpacity>
 
                     <MenuButton onPress={handleMenu} />
@@ -62,16 +64,16 @@ export default function GameSelectionPage() {
                         <Text style={[
                             styles.pageTitle,
                             { color: useAppThemeColor('text') }
-                        ]}>Game Selection</Text>
+                        ]}>{t('gameSelection.title')}</Text>
                         {/* Game Mode Selection */}
                         <View style={styles.selectionContainer}>
                             <SelectOptionButton
-                                title="hushh. Experience"
+                                title={t('gameSelection.modeA')}
                                 isSelected={selectedGame === 'A'}
                                 onPress={() => setSelectedGame('A')}
                             />
                             <SelectOptionButton
-                                title="hushh. Mayhem"
+                                title={t('gameSelection.modeB')}
                                 isSelected={selectedGame === 'B'}
                                 onPress={() => setSelectedGame('B')}
                             />
@@ -81,7 +83,7 @@ export default function GameSelectionPage() {
                         {/* Action Button */}
                         <View style={styles.actionButtonContainer}>
                             <ActionButton
-                                title="UNLEASH THE DRAMA"
+                                title={t('gameSelection.unleashButton')}
                                 onPress={handleUnleashDrama}
                                 variant="primary"
                                 backgroundImage={IMAGES.IMAGES.btnBg1}
@@ -95,13 +97,13 @@ export default function GameSelectionPage() {
                                 styles.rulesText,
                                 { color: isDark ? '#B0B0B0' : '#9E9E9E' }
                             ]}>
-                                Not ready to commit to one just yet?
+                                {t('gameSelection.notReadyText')}
                             </Text>
                             <TouchableOpacity onPress={handlePeekRules}>
                                 <Text style={[
                                     styles.rulesLink,
                                     { color: isDark ? '#8383C6' : '#5C6BC0' }
-                                ]}>PEEK AT THE RULES FIRST</Text>
+                                ]}>{t('gameSelection.peekRulesLink')}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

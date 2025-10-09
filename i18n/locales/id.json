@@ -1,0 +1,174 @@
+{
+  "common": {
+    "back": "KEMBALI",
+    "continue": "Lanjutkan",
+    "confirm": "Konfirmasi & Lanjutkan",
+    "start": "Mulai",
+    "next": "Berikutnya",
+    "skip": "Lewati",
+    "done": "Selesai",
+    "cancel": "Batal",
+    "yes": "Ya",
+    "no": "Tidak",
+    "menu": "Menu"
+  },
+  "languageSelection": {
+    "title": "Bahasa",
+    "english": "English",
+    "russian": "Russian",
+    "indonesian": "Bahasa Indonesia"
+  },
+  "ageGate": {
+    "mainQuestion": "Apakah Anda 18+ dan siap untuk kekacauan, cokelat, dan pilihan yang menantang?",
+    "disclaimer": "Permainan ini termasuk tema matang dan konten emosional. Dengan melanjutkan, Anda setuju untuk bermain dengan berhati-hati dan mengambil istirahat jika diperlukan.",
+    "checkboxLabel": "Saya mengerti dan setuju dengan peringatan konten dan aturan permainan ini",
+    "primaryButton": "LAHIR UNTUK MENANG. AYO PERGI 👆❤️",
+    "secondaryButton": "TIDAK, SAYA MASIH BAYI 👶🍫"
+  },
+  "userInfo": {
+    "title": "Ceritakan tentang diri Anda",
+    "player1": "Pemain 1",
+    "player2": "Pemain 2",
+    "her": "Dia (Perempuan)",
+    "him": "Dia (Laki-laki)",
+    "herName": "Nama Dia (Perempuan)",
+    "himName": "Nama Dia (Laki-laki)",
+    "firstNamePlaceholder": "Nama Depan",
+    "agePlaceholder": "Umur",
+    "herNamePlaceholder": "Masukkan namanya",
+    "himNamePlaceholder": "Masukkan namanya"
+  },
+  "relationship": {
+    "title": "Tahap hubungan",
+    "stage1Number": "Nº1",
+    "stage1Title": "Baru Bertemu",
+    "stage1Description": "Kencan kurang dari 3 bulan — menggoda, segar, masih berpura-pura normal.",
+    "stage2Number": "Nº2",
+    "stage2Title": "Menjadi Serius",
+    "stage2Description": "Kencan atau dalam hubungan 3-12 bulan — perasaan nyata, kekacauan meningkat.",
+    "stage3Number": "Nº3",
+    "stage3Title": "Kita Benci Satu Sama Lain",
+    "stage3Description": "Bersama lebih dari 1 tahun — cinta kuat, kesabaran menipis."
+  },
+  "avatarSelection": {
+    "title": "PILIH Avatar",
+    "user1": "PEMAIN 1 • Dia (Perempuan)",
+    "user2": "PEMAIN 2 • Dia (Laki-laki)"
+  },
+  "gameSelection": {
+    "title": "Pilihan Permainan",
+    "modeA": "hushh. Pengalaman",
+    "modeB": "hushh. Kekacauan",
+    "unleashButton": "MULAI DRAMA",
+    "notReadyText": "Belum siap memilih satu?",
+    "peekRulesLink": "LIHAT ATURAN DULU"
+  },
+  "gameRules": {
+    "title": "Aturan Permainan",
+    "rulesTitle": "Cara Bermain"
+  },
+  "startPage": {
+    "startButton": "MULAI PERMAINAN",
+    "storyButton": "APA ITU HUSHH?",
+    "restartButton": "MULAI ULANG",
+    "continueButton": "LANJUTKAN BERMAIN"
+  },
+  "game": {
+    "round": "Putaran",
+    "level": "Level",
+    "truth": "Kebenaran",
+    "dare": "Tantangan",
+    "task": "Tugas",
+    "skip": "Lewati",
+    "complete": "Selesai",
+    "failed": "Gagal",
+    "success": "Berhasil",
+    "yourTurn": "Giliran Anda",
+    "selectChocolate": "Pilih Cokelat"
+  },
+  "menu": {
+    "title": "Menu",
+    "home": "BERANDA",
+    "gameRules": "ATURAN PERMAINAN",
+    "reviewApp": "ULASAN APLIKASI",
+    "shareFeedback": "BAGIKAN MASUKAN ANDA",
+    "contactSupport": "HUBUNGI DUKUNGAN",
+    "becomeAffiliate": "JADI AFILIASI",
+    "buyChocolate": "BELI HUSHH COKELAT",
+    "errorWhatsAppNotInstalled": "WhatsApp tidak terpasang di perangkat ini",
+    "errorWhatsAppFailed": "Gagal membuka WhatsApp",
+    "errorCannotOpenLink": "Tidak dapat membuka tautan ini di perangkat Anda",
+    "errorOpenLinkFailed": "Gagal membuka tautan",
+    "errorTitle": "Kesalahan"
+  },
+  "about": {
+    "title": "Tentang",
+    "description 1": "sekali lagi...",
+    "description 2": "Hanya sebuah kebohongan. Kami tidak membuat cerita kisah.",
+    "description 3": "Hushh. lahir dari kata-kata malam, hubungan yang rambutnya rambut, dan tawa yang membuat perut Anda sakit.",
+    "subTitle" : "Ide",
+    "description 4": "Kami semua pernah di sana — terjebak antara keinginan untuk terhubung dan terlalu keren untuk berbicara tentang perasaan.",
+    "description 5": "Jadi kami pikir:",
+    "description 6": "Apa jika cokelat tidak hanya makanan ringan… tapi api?",
+    "subTitle 2": "Permainan",
+    "description 7": "Kami membuat permainan di mana pasangan berhenti menjelajahi dan mulai merasakan.",
+    "description 8": "Di mana tekanan bertambah, tantangan menjadi personal, dan gagal? Hancur, nikmat hancuran.",
+    "description 9": "Setiap cokelat berisi tantangan.",
+    "description 10": "Setiap tantangan membebaskan satu lapisan.",
+    "description 11": "Setiap gagal menjadi kenangan (atau alasan tawa untuk jam-jam).",
+    "subTitle 3": "Pengalaman",
+    "description 12": "Ini bukan tentang menjadi sempurna.",
+    "description 13": "Ini tentang menjadi nyata, mentah, dan sedikit tidak seimbang.",
+    "description 14": "Untuk cinta, perang, hubungan situasional, dan pacar —",
+    "description 15": "Hushh. Pengalaman untuk Anda.",
+    "subTitle 4": "Sekarang mari permainan dimulai 🍫"
+  },
+  "endPage": {
+    "gameChallenge": "Tantangan",
+    "question": "Masih berdiri atau hancur emosional?",
+    "bringChocolate": "BAWA COKELATNYA",
+    "bail": "SAYA KELUAR"
+  },
+  "final": {
+    "message": "Lain kali, bawa lebih banyak\npanas... atau lebih banyak cokelat"
+  },
+  "congrats": {
+    "title": "Selamat!",
+    "taskCompleted": "Tugas Selesai",
+    "line1": "Ini energi yang kita butuhkan.",
+    "line2": "Satu tugas selesai. Masih banyak",
+    "line3": "ketegangan yang menanti 😈"
+  },
+  "experienceNote": {
+    "title": "Catatan Pengalaman",
+    "subtitle": "Renungkan pengalaman Anda"
+  },
+  "verification": {
+    "title": "Verifikasi email Anda",
+    "instructions": "Silakan masukkan kode 6 digit yang dikirim ke",
+    "confirm": "KONFIRMASI",
+    "didntGetCode": "Tidak menerima kode?",
+    "resendCode": "KIRIM ULANG KODE",
+    "changeEmail": "UBAH EMAIL",
+    "incompleteCode": "Kode Tidak Lengkap",
+    "enterAllDigits": "Silakan masukkan semua 6 digit",
+    "codeResent": "Kode Terkirim Ulang",
+    "codeResentMessage": "Kode verifikasi baru telah dikirim ke email Anda",
+    "changeEmailTitle": "Ubah Email",
+    "redirectingMessage": "Mengarahkan ke halaman ubah email..."
+  },
+  "auth": {
+    "signIn": "Masuk",
+    "signUp": "Daftar",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "confirmPassword": "Konfirmasi Kata Sandi",
+    "forgotPassword": "Lupa Kata Sandi?",
+    "noAccount": "Tidak punya akun?",
+    "hasAccount": "Sudah punya akun?",
+    "signInWithGoogle": "Masuk dengan Google",
+    "signUpWithGoogle": "Daftar dengan Google",
+    "or": "ATAU"
+  }
+}
+

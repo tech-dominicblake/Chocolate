@@ -5,6 +5,7 @@ import { useAppThemeColor } from '@/hooks/useAppTheme';
 import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function EndPage() {
@@ -16,6 +17,7 @@ export default function EndPage() {
     const borderColor = useAppThemeColor('border');
     const primaryColor = useAppThemeColor('primary');
     const { mode, currentTurn, playerAvatar, playerNames } = useGameStore();
+    const { t } = useTranslation();
 
     const handleBringChocolate = () => {
         // // Handle bring chocolate action
@@ -50,7 +52,7 @@ export default function EndPage() {
                 </View>
                 {/* Top Section - Game Info and Player Profile */}
                 <View style={[styles.topCard, { backgroundColor: useAppThemeColor('cardBackground') }]}>
-                    <Text style={[styles.gameInfo, { color: '#8994A3' }]}>{`GAME ${mode} • Challenge 1`}</Text>
+                    <Text style={[styles.gameInfo, { color: '#8994A3' }]}>{`GAME ${mode} • ${t('endPage.gameChallenge')} 1`}</Text>
                     <View style={[styles.avatar, { backgroundColor, borderColor: primaryColor }]}>
                         {currentTurn === 'her' ? <Image source={playerAvatar.her} style={styles.avatarImage} /> : <Image source={playerAvatar.him} style={styles.avatarImage} />}
                     </View>
@@ -60,18 +62,18 @@ export default function EndPage() {
                 <View style={styles.actionContainer}>
                     <View style={styles.messageContainer}>
                         <View style={[styles.speechBubble, { backgroundColor: cardBackground }]}>
-                            <Text style={[styles.questionText, { color: textColor }]}>Still standing or emotionally  wrecked?</Text>
+                            <Text style={[styles.questionText, { color: textColor }]}>{t('endPage.question')}</Text>
                             <View style={[styles.bubbleTail, { borderRightColor: cardBackground }]} />
                         </View>
                     </View>
                     <ActionButton
-                        title="BRING THE CHOCOLATE"
+                        title={t('endPage.bringChocolate')}
                         onPress={handleBringChocolate}
                         variant="primary"
                         backgroundImage={IMAGES.IMAGES.buttonBg3}
                     />
                     <ActionButton
-                        title="I BAIL"
+                        title={t('endPage.bail')}
                         onPress={handleIBail}
                         variant="secondary"
                         backgroundImage={IMAGES.IMAGES.btnBg2}

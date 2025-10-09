@@ -5,6 +5,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     StyleSheet,
     Text,
@@ -14,6 +15,7 @@ import {
 export default function CongratsChocoPage() {
     const { isDark } = useThemeContext();
     const textColor = useAppThemeColor('text');
+    const { t } = useTranslation();
 
     useEffect(() => {
         // Navigate to congratsChoco page after 2 seconds
@@ -40,13 +42,13 @@ export default function CongratsChocoPage() {
                     <Image source={Images.IMAGES.choco12} style={styles.partyPopperHeader} />
                     {/* Congratulatory Text */}
                     <View style={styles.textContainer}>
-                        <Text style={[styles.congratsText, { color: textColor }]}>Congrats!</Text>
-                        <Text style={[styles.taskCompletedText, { color: textColor }]}>Task Completed</Text>
+                        <Text style={[styles.congratsText, { color: textColor }]}>{t('congrats.title')}</Text>
+                        <Text style={[styles.taskCompletedText, { color: textColor }]}>{t('congrats.taskCompleted')}</Text>
 
                         <View style={styles.subTextContainer}>
-                            <Text style={[styles.subText, { color: textColor }]}>This is the energy we need.</Text>
-                            <Text style={[styles.subText, { color: textColor }]}>One task down. A whole lot</Text>
-                            <Text style={[styles.subText, { color: textColor }]}>of tension to go <Text style={styles.emoji}>😈</Text></Text>
+                            <Text style={[styles.subText, { color: textColor }]}>{t('congrats.line1')}</Text>
+                            <Text style={[styles.subText, { color: textColor }]}>{t('congrats.line2')}</Text>
+                            <Text style={[styles.subText, { color: textColor }]}>{t('congrats.line3')}</Text>
                         </View>
                     </View>
                 </View>
@@ -63,13 +65,13 @@ export default function CongratsChocoPage() {
                 <Image source={Images.IMAGES.choco12} style={styles.partyPopperHeader} />
                 {/* Congratulatory Text */}
                 <View style={styles.textContainer}>
-                    <Text style={styles.congratsText}>Congrats!</Text>
-                    <Text style={styles.taskCompletedText}>Task Completed</Text>
+                    <Text style={styles.congratsText}>{t('congrats.title')}</Text>
+                    <Text style={styles.taskCompletedText}>{t('congrats.taskCompleted')}</Text>
 
                     <View style={styles.subTextContainer}>
-                        <Text style={styles.subText}>This is the energy we need.</Text>
-                        <Text style={styles.subText}>One task down. A whole lot</Text>
-                        <Text style={styles.subText}>of tension to go <Text style={styles.emoji}>😈</Text></Text>
+                        <Text style={styles.subText}>{t('congrats.line1')}</Text>
+                        <Text style={styles.subText}>{t('congrats.line2')}</Text>
+                        <Text style={styles.subText}>{t('congrats.line3')}</Text>
                     </View>
                 </View>
             </View>

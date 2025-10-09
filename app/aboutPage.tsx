@@ -4,10 +4,12 @@ import { useThemeToggle } from '@/hooks/useAppTheme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function ExperienceNoteA() {
     const { isDark } = useThemeToggle();
-    
+    const { t } = useTranslation();
+
     const handleBack = () => {
         router.back();
     };
@@ -26,7 +28,7 @@ export default function ExperienceNoteA() {
                 </TouchableOpacity>
                 <View style={styles.titleContainer}>
                     <View style={styles.titleRow}>
-                        <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#333' }]}>Our Story</Text>
+                        <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#333' }]}> {t('about.title')}</Text>
                     </View>
                 </View>
             </View>
@@ -36,22 +38,22 @@ export default function ExperienceNoteA() {
                 {/* Game Categories Section */}
                 <View style={styles.section}>
                     <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
-                        Once upon a time…
+                        {t('about.description 1')}
                     </Text>
                     <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
-                        Just kidding. We don't do fairy tales here.
+                        {t('about.description 2')}
                     </Text>
 
                     <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
-                        Hushh. was born out of late-night confessions, chaotic relationships, and the kind of laughter that makes your abs sore.
+                        {t('about.description 3')}
                     </Text>
                 </View>
 
                 {/* How to Play Section */}
                 <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>The Idea</Text>
+                    <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>{t('about.subTitle')}</Text>
                     <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
-                        We've all been there — stuck between craving connection and being too cool to talk about feelings.
+                       
                     </Text>
                     <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         So we thought:

@@ -5,6 +5,7 @@ import { useGameStore } from '@/state/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Image,
     SafeAreaView,
@@ -37,6 +38,7 @@ const BoyAVATARS = [
 export default function BoyAvatarSelection() {
     const [selectedAvatar, setSelectedAvatar] = useState<number>(1);
     const { isDark } = useThemeToggle();
+    const { t } = useTranslation();
     const { playerNames, setPlayerAvatar } = useGameStore();
 
     const handleAvatarSelect = (avatarId: number) => {
@@ -67,7 +69,7 @@ export default function BoyAvatarSelection() {
                 
                 <View style={styles.headerCenter}>
                     <Text style={[styles.playerText, { color: '#7E80F4' }]}>
-                        PLAYER 2 • HIM
+                        {t('avatarSelection.user2')}
                     </Text>
                     <Text style={[styles.nameText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
                         {playerNames?.him}
@@ -82,7 +84,7 @@ export default function BoyAvatarSelection() {
             {/* Title */}
             <View style={styles.titleContainer}>
                 <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-                    Choose avatar
+                    {t('avatarSelection.title')}
                 </Text>
             </View>
 
@@ -128,7 +130,7 @@ export default function BoyAvatarSelection() {
             {/* Continue Button */}
             <View style={styles.buttonContainer}>
                 <ActionButton
-                    title="CONTINUE"
+                    title={t('common.continue').toUpperCase()}
                     onPress={handleContinue}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg3}

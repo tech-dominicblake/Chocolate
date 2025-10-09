@@ -1,10 +1,11 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
+import { useSettingsStore } from '@/state/useSettingsStore';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Alert,
     Linking,
@@ -16,7 +17,13 @@ import {
 } from 'react-native';
 
 export default function MenuPage() {
-    const [selectedLanguage, setSelectedLanguage] = useState<'ENG' | 'RUS' | 'ID'>('ENG');
+    const { language, setLanguage } = useSettingsStore();
+    const { t } = useTranslation();
+    
+    // Map i18n codes to menu display
+    const langToDisplay = { en: 'ENG', ru: 'RUS', id: 'ID' } as const;
+    const displayToLang = { ENG: 'en', RUS: 'ru', ID: 'id' } as const;
+    const selectedLanguage = langToDisplay[language];
     
     // Use global theme context
     const { themeMode, setThemeMode, isDark } = useThemeToggle();
@@ -25,8 +32,9 @@ export default function MenuPage() {
         router.back();
     };
 
-    const handleLanguageSelect = (language: 'ENG' | 'RUS' | 'ID') => {
-        setSelectedLanguage(language);
+    const handleLanguageSelect = async (displayLang: 'ENG' | 'RUS' | 'ID') => {
+        const langCode = displayToLang[displayLang];
+        await setLanguage(langCode);
     };
 
     const handleThemeToggle = (mode: 'light' | 'dark') => {
@@ -52,10 +60,10 @@ export default function MenuPage() {
             if (supported) {
                 await Linking.openURL(whatsappUrl);
             } else {
-                Alert.alert('Error', 'WhatsApp is not installed on this device');
+                Alert.alert(t('menu.errorTitle'), t('menu.errorWhatsAppNotInstalled'));
             }
         } catch (error) {
-            Alert.alert('Error', 'Failed to open WhatsApp');
+            Alert.alert(t('menu.errorTitle'), t('menu.errorWhatsAppFailed'));
         }
     };
 
@@ -66,24 +74,24 @@ export default function MenuPage() {
             if (supported) {
                 await Linking.openURL(whatsappUrl);
             } else {
-                Alert.alert('Error', 'WhatsApp is not installed on this device');
+                Alert.alert(t('menu.errorTitle'), t('menu.errorWhatsAppNotInstalled'));
             }
         } catch (error) {
-            Alert.alert('Error', 'Failed to open WhatsApp');
+            Alert.alert(t('menu.errorTitle'), t('menu.errorWhatsAppFailed'));
         }
     };
 
     const handleWhatsAppBuy = async () => {
-        const whatsappUrl = 'https://wa.me/6282342431740?text=Hi! I want to buy Hushh Chocolate.';
+        const hushhWebsiteUrl = 'https://hushh.asia/product/hushh/';
         try {
-            const supported = await Linking.canOpenURL(whatsappUrl);
+            const supported = await Linking.canOpenURL(hushhWebsiteUrl);
             if (supported) {
-                await Linking.openURL(whatsappUrl);
+                await Linking.openURL(hushhWebsiteUrl);
             } else {
-                Alert.alert('Error', 'WhatsApp is not installed on this device');
+                Alert.alert(t('menu.errorTitle'), t('menu.errorCannotOpenLink'));
             }
         } catch (error) {
-            Alert.alert('Error', 'Failed to open WhatsApp');
+            Alert.alert(t('menu.errorTitle'), t('menu.errorOpenLinkFailed'));
         }
     };
 
@@ -113,7 +121,7 @@ export default function MenuPage() {
                 </View>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>Menu</Text>
+                <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#000000' }]}>{t('menu.title')}</Text>
             </View>
 
             {/* Controls Section */}
@@ -174,49 +182,49 @@ export default function MenuPage() {
             {/* Menu Buttons */}
             <View style={styles.menuButtons}>
                 <ActionButton
-                    title='HOME'
+                    title={t('menu.home')}
                     onPress={handleHomeBtn}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg1}
                     color='#33358F'
                 />
                 <ActionButton
-                    title='GAME RULES'
+                    title={t('menu.gameRules')}
                     onPress={handleGameRules}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg2}
                     color='#33358F'
                 />
                 <ActionButton
-                    title='REVIEW APP'
+                    title={t('menu.reviewApp')}
                     onPress={handleReviewApp}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg1}
                     color='#33358F'
                 />
                 <ActionButton
-                    title='SHARE YOUR FEEDBACK'
+                    title={t('menu.shareFeedback')}
                     onPress={() => {}}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg2}
                     color='#33358F'
                 />
                 <ActionButton
-                    title='CONTACT SUPPORT'
+                    title={t('menu.contactSupport')}
                     onPress={handleWhatsAppContact}
                     variant="secondary"
                     backgroundImage={IMAGES.IMAGES.buttonBg1}
                     color='#33358F'
                 />
                 <ActionButton
-                    title='BECOME AN AFFILIATE'
+                    title={t('menu.becomeAffiliate')}
                     onPress={handleWhatsAppAffiliate}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg2}
                     color= '#33358F'
                 />
                 <ActionButton
-                    title='BUY HUSHH CHOCOLATE'
+                    title={t('menu.buyChocolate')}
                     onPress={handleWhatsAppBuy}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg3}

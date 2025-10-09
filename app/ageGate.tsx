@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   SafeAreaView,
   ScrollView,
@@ -21,6 +22,7 @@ export default function AgeGate() {
   const [agreed, setAgreed] = useState(false);
   const { isDark } = useThemeToggle();
   const barGrey = useAppThemeColor('bar');
+  const { t } = useTranslation();
 
 
 
@@ -51,7 +53,7 @@ export default function AgeGate() {
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color='#79828F' />
-          <Text style={[styles.backText, { color: barGrey }]}> BACK</Text>
+          <Text style={[styles.backText, { color: barGrey }]}> {t('common.back')}</Text>
         </TouchableOpacity>
 
         <MenuButton onPress={handleMenu} />
@@ -69,7 +71,7 @@ export default function AgeGate() {
           <Image source={IMAGES.IMAGES.image3} style={styles.devilEmoji} />
           {/* Main Question */}
           <Text style={[styles.mainQuestion, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-            Are you 18+ and ready for chaos, chocolate, and questionable choices?
+            {t('ageGate.mainQuestion')}
           </Text>
 
           {/* Divider Line */}
@@ -77,7 +79,7 @@ export default function AgeGate() {
 
           {/* Disclaimer */}
           <Text style={styles.disclaimer}>
-            This game includes mature themes and emotional content. By proceeding, you agree to play responsibly and take breaks if needed.
+            {t('ageGate.disclaimer')}
           </Text>
 
           {/* Agreement Checkbox */}
@@ -90,7 +92,7 @@ export default function AgeGate() {
               {agreed && <Text style={[styles.checkmark, { color: isDark ? '#FFFFFF' : '#4A5568' }]}>✓</Text>}
             </View>
             <Text style={[styles.checkboxLabel, { color: isDark ? '#FFFFFF' : '#191919' }]}>
-              I understand and agree to the content warnings and rules of this game
+              {t('ageGate.checkboxLabel')}
             </Text>
           </TouchableOpacity>
 
@@ -274,5 +276,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 76,
     paddingBottom: 30,
+    paddingHorizontal: 14,
   },
 });

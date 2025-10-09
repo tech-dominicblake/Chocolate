@@ -2,6 +2,7 @@ import Images from '@/constants/Images';
 import { useThemeContext } from '@/providers/ThemeProvider';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 import {
     Dimensions,
     StyleSheet,
@@ -13,6 +14,7 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
 export default function FinalPage() {
     const { isDark } = useThemeContext();
+    const { t } = useTranslation();
     // useEffect(() => {
     //     const timer = setTimeout(() => {
     //         router.push('/startPage');
@@ -51,7 +53,7 @@ export default function FinalPage() {
             {/* Text Message */}
             <View style={styles.textContainer}>
                 <Text style={styles.messageText}>
-                    Next time, bring more{'\n'}heat... or more chocolate
+                    {t('final.message')}
                 </Text>
             </View>
         </View>

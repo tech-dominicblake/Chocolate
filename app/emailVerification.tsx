@@ -4,6 +4,7 @@ import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
 import { Image } from 'expo-image';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   SafeAreaView,
@@ -33,8 +34,8 @@ export default function EmailVerification({
   showSuccessPage = false,
 }: EmailVerificationProps) {
   const [code, setCode] = useState('');
-
   const { isDark } = useThemeToggle();
+  const { t } = useTranslation();
 
   // Theme colors - matching the design
   const backgroundColor = '#F8F9FA'; // Light grey background
@@ -58,7 +59,7 @@ export default function EmailVerification({
 
   const handleConfirm = () => {
     if (code.length !== 6) {
-      Alert.alert('Incomplete Code', 'Please enter all 6 digits');
+      Alert.alert(t('verification.incompleteCode'), t('verification.enterAllDigits'));
       return;
     }
     
@@ -72,7 +73,7 @@ export default function EmailVerification({
     if (onResendCode) {
       onResendCode();
     } else {
-      Alert.alert('Code Resent', 'A new verification code has been sent to your email');
+      Alert.alert(t('verification.codeResent'), t('verification.codeResentMessage'));
     }
   };
 
@@ -80,7 +81,7 @@ export default function EmailVerification({
     if (onChangeEmail) {
       onChangeEmail();
     } else {
-      Alert.alert('Change Email', 'Redirecting to email change page...');
+      Alert.alert(t('verification.changeEmailTitle'), t('verification.redirectingMessage'));
     }
   };
 
@@ -114,10 +115,10 @@ export default function EmailVerification({
 
         {/* Title */}
         <View style={styles.titleContainer}>
-          <Text style={[styles.title, { color: textColor }]}>Verify your email</Text>
+          <Text style={[styles.title, { color: textColor }]}>{t('verification.title')}</Text>
           {/* Instructions */}
           <Text style={[styles.instructions, { color: textColor }]}>
-            Please enter the 6 digit code sent to{' '}
+            {t('verification.instructions')}{' '}
             <Text style={[styles.emailText, { color: textColor }]}>{email}</Text>
           </Text>
         </View>
@@ -140,7 +141,7 @@ export default function EmailVerification({
         {/* Confirm button */}
         <View style={styles.buttonContainer}>
           <ActionButton
-            title="CONFIRM"
+            title={t('verification.confirm')}
             onPress={handleConfirm}
             variant="primary"
             backgroundImage={IMAGES.IMAGES.buttonBg3}
@@ -151,15 +152,15 @@ export default function EmailVerification({
         {/* Footer links */}
         <View style={styles.footer}>
           <Text style={[styles.footerText, { color: textColor }]}>
-            Didn't get a code?
+            {t('verification.didntGetCode')}
           </Text>
           <View style={styles.linkContainer}>
             <TouchableOpacity onPress={handleResendCode}>
-              <Text style={[styles.linkText, { color: linkColor }]}>RESEND CODE</Text>
+              <Text style={[styles.linkText, { color: linkColor }]}>{t('verification.resendCode')}</Text>
             </TouchableOpacity>
             <Text style={[styles.separator, { color: textColor }]}>•</Text>
             <TouchableOpacity onPress={handleChangeEmail}>
-              <Text style={[styles.linkText, { color: linkColor }]}>CHANGE EMAIL</Text>
+              <Text style={[styles.linkText, { color: linkColor }]}>{t('verification.changeEmail')}</Text>
             </TouchableOpacity>
           </View>
         </View>
