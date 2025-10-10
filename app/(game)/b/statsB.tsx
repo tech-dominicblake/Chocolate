@@ -110,8 +110,11 @@ export default function StatsScreen({ route }: StatsScreenProps) {
             // Stop background music immediately when continuing
             setIsPageVisible(false);
 
+            // Randomly choose between final and finalChoco
+            const randomFinalPage = Math.random() < 0.5 ? '/final' : '/finalChoco';
+            
             // Navigate first to show the stats
-            router.push('/startPage');
+            router.push(randomFinalPage);
 
             // Clear ALL global states after navigation (in background)
             setTimeout(() => {
@@ -121,7 +124,8 @@ export default function StatsScreen({ route }: StatsScreenProps) {
         } catch (error) {
             console.error('Error in handleContinue:', error);
             // Fallback: just navigate even if clearing fails
-            router.push('/startPage');
+            const randomFinalPage = Math.random() < 0.5 ? '/final' : '/finalChoco';
+            router.push(randomFinalPage);
         } finally {
             setIsNavigating(false);
         }

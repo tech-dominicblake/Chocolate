@@ -95,6 +95,20 @@ export default function MenuPage() {
         }
     };
 
+    const handleShareFeedback = async () => {
+        const hushhWebsiteUrl = 'https://hushh.asia';
+        try {
+            const supported = await Linking.canOpenURL(hushhWebsiteUrl);
+            if (supported) {
+                await Linking.openURL(hushhWebsiteUrl);
+            } else {
+                Alert.alert(t('menu.errorTitle'), t('menu.errorCannotOpenLink'));
+            }
+        } catch (error) {
+            Alert.alert(t('menu.errorTitle'), t('menu.errorOpenLinkFailed'));
+        }
+    };
+
     const menuButtons = [
         { title: 'GAME RULES', color: '#5556A3' },
         { title: 'REVIEW APP', color: '#5556A3' },
@@ -204,7 +218,7 @@ export default function MenuPage() {
                 />
                 <ActionButton
                     title={t('menu.shareFeedback')}
-                    onPress={() => {}}
+                    onPress={handleShareFeedback}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg2}
                     color='#33358F'

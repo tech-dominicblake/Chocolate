@@ -55,7 +55,7 @@ const { t } = useTranslation();
 
             {/* Central Heart Graphic */}
             <View style={styles.heartContainer}>
-               <Image source={Images.IMAGES.choco6} style={styles.heart} />
+               <Image source={Images.IMAGES.choco7} style={styles.heart} />
             </View>
 
             {/* Text Message */}
@@ -260,8 +260,8 @@ const styles = StyleSheet.create({
     textContainer: {
         position: 'absolute',
         top: '57%',
-        left: '10%',
-        transform: [{ translateX: '0%' }, { translateY: '-50%' }],
+        left: '50%',
+        transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
         alignItems: 'center',
         justifyContent: 'center',
     },

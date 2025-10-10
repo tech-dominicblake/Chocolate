@@ -1,7 +1,10 @@
 import Images from '@/constants/Images';
 import { useThemeContext } from '@/providers/ThemeProvider';
+import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Dimensions,
@@ -15,13 +18,18 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 export default function FinalPage() {
     const { isDark } = useThemeContext();
     const { t } = useTranslation();
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         router.push('/startPage');
-    //     }, 2000);
+    const { clearAllStates } = useGameStore();
+   
+    useEffect(() => {
+        // Clear ALL global states comprehensively
+        clearAllStates();
+        
+        const timer = setTimeout(() => {
+            router.push('/startPage');
+        }, 2000);
 
-    //     return () => clearTimeout(timer);
-    // }, []);
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -252,8 +260,8 @@ const styles = StyleSheet.create({
     textContainer: {
         position: 'absolute',
         top: '57%',
-        left: '10%',
-        transform: [{ translateX: '0%' }, { translateY: '-50%' }],
+        left: '50%',
+        transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
         alignItems: 'center',
         justifyContent: 'center',
     },

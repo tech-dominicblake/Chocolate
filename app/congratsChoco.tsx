@@ -1,6 +1,7 @@
 import Images from '@/constants/Images';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
 import { useThemeContext } from '@/providers/ThemeProvider';
+import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
@@ -16,11 +17,12 @@ export default function CongratsChocoPage() {
     const { isDark } = useThemeContext();
     const textColor = useAppThemeColor('text');
     const { t } = useTranslation();
+    const { mode } = useGameStore();
 
     useEffect(() => {
         // Navigate to congratsChoco page after 2 seconds
         const timer = setTimeout(() => {
-            router.push('/(game)/b/chocoStats');
+            if (mode==="B")router.push('/(game)/b/chocoStats');
         }, 2000);
 
         // Cleanup timer on component unmount

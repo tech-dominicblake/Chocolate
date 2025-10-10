@@ -1,6 +1,7 @@
 import ActionButton from '@/components/prompts/ActionButton';
 import { IMAGES } from '@/constants';
 import { useThemeToggle } from '@/hooks/useAppTheme';
+import { useGameStore, useMessages } from '@/state/useGameStore';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -8,6 +9,8 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 
 export default function ExperienceNoteB() {
     const { isDark } = useThemeToggle();
+    const { queue } = useMessages();
+    const { mode } = useGameStore();
     
     const handleBack = () => {
         router.back();
@@ -15,8 +18,17 @@ export default function ExperienceNoteB() {
 
     const handleGotIt = () => {
         // Navigate to next step or back to game selection
-        router.push('/gameSelection');
+        if (queue.length > 0) {
+            if (mode === 'A') {
+                router.push('/(game)/a/promptA');
+            } else {
+                router.push('/(game)/b/promptB');
+            }
+        } else {
+            router.push('/startPage');
+        }
     };
+
 
     return (
         <View style={[styles.container, { backgroundColor: isDark ? '#27282A' : '#F5F5F5' }]}>
@@ -93,7 +105,7 @@ export default function ExperienceNoteB() {
                 <View style={styles.section}>
                     <Text style={[styles.sectionTitle, { color: isDark ? '#79828F' : '#333' }]}>Rules and Consequences</Text>
                     <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
-                        Refuse the task?
+                        Refuse the task
                     </Text>
                     <Text style={[styles.description, { color: isDark ? '#79828F' : '#191919' }]}>
                         No escape — you get a Fail instead

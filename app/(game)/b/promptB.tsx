@@ -1,3 +1,4 @@
+import CongratsPage from "@/app/congrats";
 import CongratsChocoPage from "@/app/congratsChoco";
 import ButtonContainer from "@/components/prompts/ButtonContainer";
 import MessageItem from "@/components/prompts/MessageItem";
@@ -212,6 +213,7 @@ export default function PromptB() {
     const [playerChoice, setPlayerChoice] = useState<string | undefined>();
     const [showSuccessDelay, setShowSuccessDelay] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false);
+    const [congratsType, setCongratsType] = useState<'normal' | 'choco'>('normal');
     const [isGamePaused, setIsGamePaused] = useState(false);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     const scrollViewRef = useRef<ScrollView>(null);
@@ -440,6 +442,8 @@ export default function PromptB() {
         }
         if (gameState.gameSucceeded) {
             if (gameState.gameNewLevelStarted) {
+                const randomType = Math.random() < 0.5 ? 'normal' : 'choco';
+                setCongratsType(randomType);
                 setShowCongrats(true);
                 setTaskCompleted(currentTurn);
                 setRoundLevel(level);
@@ -452,6 +456,8 @@ export default function PromptB() {
                 }, 2000);
                 return;
             }
+            const randomType = Math.random() < 0.5 ? 'normal' : 'choco';
+            setCongratsType(randomType);
             setShowCongrats(true);
             setTaskCompleted(currentTurn);
             setConsumedChocolatesEachCount();
@@ -581,7 +587,7 @@ export default function PromptB() {
             </View>
             {showCongrats && (
                 <View style={styles.congratsOverlay}>
-                    <CongratsChocoPage />
+                    {congratsType === 'normal' ? <CongratsPage /> : <CongratsChocoPage />}
                 </View>
             )}
         </SafeAreaView>

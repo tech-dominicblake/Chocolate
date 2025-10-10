@@ -1,8 +1,11 @@
 import Images from '@/constants/Images';
 import { useAppThemeColor } from '@/hooks/useAppTheme';
 import { useThemeContext } from '@/providers/ThemeProvider';
+import { useGameStore } from '@/state/useGameStore';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     StyleSheet,
@@ -13,6 +16,17 @@ import {
 export default function CongratsPage() {
     const { isDark } = useThemeContext();
     const { t } = useTranslation();
+    const { mode } = useGameStore();
+
+    useEffect(() => {
+        // Navigate to congratsChoco page after 2 seconds
+        const timer = setTimeout(() => {
+            if (mode === "B") router.push('/(game)/b/chocoStats');
+        }, 2000);
+
+        // Cleanup timer on component unmount
+        return () => clearTimeout(timer);
+    }, []);
 
     if (isDark) {
         return (
