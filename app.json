@@ -10,7 +10,11 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.chocolate"
+      "bundleIdentifier": "com.chocolate",
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "We would like to track your activity to provide personalized content and improve your experience with the app.",
+        "UIBackgroundModes": ["remote-notification"]
+      }
     },
     "android": {
       "package": "com.chocolate",
@@ -18,7 +22,10 @@
         "foregroundImage": "./icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "POST_NOTIFICATIONS"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -44,7 +51,22 @@
           "iosUrlScheme": "com.googleusercontent.apps.479407816447-aa3frtdkhnoqoem3vf9t9eqelpmnvumv"
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "We would like to track your activity to provide personalized content and improve your experience with the app."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./icon.png",
+          "color": "#ffffff",
+          "sounds": [],
+          "mode": "production"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

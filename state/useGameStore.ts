@@ -53,6 +53,7 @@ interface GameState {
   himchoco: number;
   himTimePerLevel: { [level: number]: number }; // Track time per level for him player
   herTimePerLevel: { [level: number]: number }; // Track time per level for her player
+  currentChallengeNumber: number;
 
   // Actions
   setMode: (mode: Mode) => void;
@@ -92,6 +93,7 @@ interface GameState {
   setHimchoco: (value: number) => void;
   setHimTimePerLevel: (level: number, time: number) => void;
   setHerTimePerLevel: (level: number, time: number) => void;
+  setCurrentChallengeNumber: (value: number) => void;
 }
 
 const initialState = {
@@ -124,6 +126,7 @@ const initialState = {
   himchoco: 13,
   himTimePerLevel: {},
   herTimePerLevel: {},
+  currentChallengeNumber: 0,
 };
 
 // Mock messages data structure
@@ -199,6 +202,8 @@ export const useGameStore = create<GameState>((set) => ({
     const newTurn = level % 2 === 1 ? 'her' : 'him' as PlayerId;
     set({ currentTurn: newTurn });
   },
+
+  setCurrentChallengeNumber: (value: number) => set({ currentChallengeNumber: value }),
 
   setRoundLevel: (currentlevel: number) => set((state) => {
     return {

@@ -56,7 +56,7 @@ const chocolateQueue = [
 
 // Header component with chocolate queue
 const GameHeader = ({ onIconClick }: { onIconClick?: () => void } = {}) => {
-    const { round, level, currentTurn, playerNames, selectedChocoIndex, herChoco, himChoco, consumedChocoInB, consumedChocolates, activeTooltip, playerAvatar } = useGameStore();
+    const { round, level, currentTurn, playerNames, selectedChocoIndex, currentChallengeNumber, herChoco, himChoco, consumedChocoInB, consumedChocolates, activeTooltip, playerAvatar } = useGameStore();
     const { isDark } = useThemeToggle();
 
     // Function to check if a chocolate is consumed based on its queue ID
@@ -176,7 +176,7 @@ const GameHeader = ({ onIconClick }: { onIconClick?: () => void } = {}) => {
                     {chocolateQueue.map((choco, index) => (
                         <View key={index} style={styles.chocoItemContainer}>
                             <View
-                                style={styles.chocoItem}
+                                style={[styles.chocoItem,choco.id===currentChallengeNumber && styles.currentChallengeItem]}
                             >
                                 {choco.id === 0 ? (
                                     <Text style={styles.separator}> • </Text>
@@ -221,10 +221,11 @@ export default function PromptB() {
     const [elapsedTime, setElapsedTime] = useState(0);
     const { isDark } = useThemeToggle();
     const { startHeartbeat, stopHeartbeat } = useHeartbeatSound();
-
     const {
         setTaskCompleted,
         setActiveTooltip,
+        setConsumedChocoInB,
+        currentChallengeNumber,
         selectedChocoIndex,
         currentTurn,
         consumeChocolate,
@@ -232,6 +233,7 @@ export default function PromptB() {
         stage,
         setRoundLevel,
         round,
+        language,
         mode,
         level,
         enqueueGameInfoMessages,
@@ -269,10 +271,10 @@ export default function PromptB() {
             setActiveTooltip(true);
 
             // Enqueue messages without waiting
-            enqueueGameInfoMessages();
+            !isProcessing && enqueueGameInfoMessages();
 
             // Shorter delay for better responsiveness
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            // await new Promise(resolve => setTimeout(resolve, 1000));
 
             setActiveTooltip(false);
         };
@@ -329,17 +331,32 @@ export default function PromptB() {
                 meta: { buttonType },
                 durationMs: 2000, // Store the button type in meta for future use
             });
+            const lan = language === 'english' ? 'English' : language === 'russian' ? 'Russian' : 'Indonesian';
             const { data: prompt, error } = await supabase
                 .from('content_items')
                 .select('*')
-                .ilike('category', `${categoryTypes.taskComplete}`);
+                .ilike('category', `${categoryTypes.taskComplete}`)
+                .eq('metadata->>lang', lan);
             // .eq('challenges.name', `${genderTypes[currentTurn as keyof typeof genderTypes]}${Math.round(level / 2)}`);
 
             console.log('task complete prompt:', prompt);
-            if (prompt) {
-                const messages = getPrompt(prompt?.[0], 'prompt');
-                for (const message of messages) {
-                    await enqueue(message as Message);
+            if (prompt && prompt.length > 0) {
+                const randomIndex = Math.floor(Math.random() * prompt.length);
+                const messages = getPrompt(prompt[randomIndex], 'success');
+                if (messages) {
+                    for (const message of messages) {
+                        // Split the message body by #end and filter out empty strings
+                        const sentences = message.body.split('#end').filter(sentence => sentence.trim());
+
+                        // Enqueue each sentence as a separate message
+                        for (const sentence of sentences) {
+                            await enqueue({
+                                ...message,
+                                body: sentence.trim(),
+                                durationMs: 2000,
+                            } as Message);
+                        }
+                    }
                 }
             }
         }
@@ -357,11 +374,13 @@ export default function PromptB() {
                     group: 'game_result' as const,
                     durationMs: 2000,
                 });
+                const lan = language === 'english' ? 'English' : language === 'russian' ? 'Russian' : 'Indonesian';
                 const { data: dareData } = await supabase
                     .from('content_items')
                     .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
                     // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
-                    .ilike('category', `${categoryTypes.fail}`);
+                    .ilike('category', `${categoryTypes.fail}`)
+                    .eq('metadata->>lang', lan);
                 // .eq('metadata->>gameType', `Game ${mode}`)
                 // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)
 
@@ -370,19 +389,19 @@ export default function PromptB() {
                     const messages = getPrompt(dareData[randomIndex], 'dare');
                     if (messages) {
                         for (const message of messages) {
-                          // Split the message body by #end and filter out empty strings
-                          const sentences = message.body.split('#end').filter(sentence => sentence.trim());
-                          
-                          // Enqueue each sentence as a separate message
-                          for (const sentence of sentences) {
-                            await enqueue({
-                              ...message,
-                              body: sentence.trim(),
-                              durationMs: 2000,
-                            } as Message);
-                          }
+                            // Split the message body by #end and filter out empty strings
+                            const sentences = message.body.split('#end').filter(sentence => sentence.trim());
+
+                            // Enqueue each sentence as a separate message
+                            for (const sentence of sentences) {
+                                await enqueue({
+                                    ...message,
+                                    body: sentence.trim(),
+                                    durationMs: 2000,
+                                } as Message);
+                            }
                         }
-                      }
+                    }
                 }
             } else {
                 await enqueue({
@@ -423,6 +442,7 @@ export default function PromptB() {
     }
 
     const handleContinue = (gameState: ProcessingState) => {
+        setConsumedChocoInB(currentChallengeNumber);
 
         // Save time for both players when level completes
         if (startTime) {
@@ -441,6 +461,7 @@ export default function PromptB() {
             return;
         }
         if (gameState.gameSucceeded) {
+
             if (gameState.gameNewLevelStarted) {
                 const randomType = Math.random() < 0.5 ? 'normal' : 'choco';
                 setCongratsType(randomType);
@@ -829,5 +850,10 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         zIndex: 1000,
+    },
+    currentChallengeItem: {
+        borderWidth: 2,
+        borderColor: '#FF6B9D',
+        borderRadius: 16,
     },
 });

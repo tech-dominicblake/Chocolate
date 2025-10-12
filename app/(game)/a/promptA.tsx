@@ -26,11 +26,9 @@ export default function Prompt() {
     const [buttonLoading, setButtonLoading] = useState(false);
     const [startTime, setStartTime] = useState<number | null>(null);
     const [elapsedTime, setElapsedTime] = useState(0);
-
     const { isDark } = useThemeToggle();
     const { startHeartbeat, stopHeartbeat } = useHeartbeatSound();
     const scrollViewRef = useRef<ScrollView>(null);
-
     const hasFailedOnce = useGameStore.getState().hasFailedOnce;
     const showBtns = useGameStore.getState().showBtns;
     const {
@@ -38,6 +36,7 @@ export default function Prompt() {
         round,
         level,
         failsSuffered,
+        language,
         mode,
         setTaskCompleted,
         setRoundLevel,
@@ -76,7 +75,6 @@ export default function Prompt() {
             setButtonLoading(true);
             enqueueGameInfoMessages();
             setActiveTooltip(true);
-
             // Wait for the full duration
             await new Promise(resolve => setTimeout(resolve, 5000));
 
@@ -195,11 +193,12 @@ export default function Prompt() {
                     group: 'game_result' as const,
                     durationMs: 2000,
                 });
-
+                const lan = language === 'english' ? 'English' : language === 'russian' ? 'Russian' : 'Indonesian';
                 const { data: dareData } = await supabase
                     .from('content_items')
                     .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
-                    .ilike('category', `%${categoryTypes.fail}%`);
+                    .ilike('category', `%${categoryTypes.fail}%`)
+                    .eq('metadata->>lang', lan);
                 // .eq('metadata->>round', `Round ${round === 1 ? 'One' : 'Two'}`)
                 // .eq('metadata->>gameType', `Game ${mode}`)
                 // .eq('challenges.name', `${genderTypes[currentTurn]}${Math.round(level / 2)}`)

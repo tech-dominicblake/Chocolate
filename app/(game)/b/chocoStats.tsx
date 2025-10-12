@@ -7,7 +7,7 @@ import { ChevronLeft } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ConsumeTick from '../../../components/ConsumeTick';
-import { useGameStore } from '../../../state/useGameStore';
+import { useGameStore, useMessages } from '../../../state/useGameStore';
 interface ChocoStatsProps {
     route?: {
         params?: {
@@ -18,9 +18,10 @@ interface ChocoStatsProps {
 
 export default function ChocoStats({ route }: ChocoStatsProps) {
     const currentLevel = route?.params?.currentLevel || 1;
-    const { setSelectedChocoIndex, setConsumedChocoInB, consumedChocoInB, consumedChocolates, currentTurn, level, round, playerAvatar, herchoco, himchoco, setHerchoco, setHimchoco } = useGameStore();
+    const { setSelectedChocoIndex, setConsumedChocoInB, setCurrentChallengeNumber, consumedChocoInB, consumedChocolates, currentTurn, level, round, playerAvatar, herchoco, himchoco, setHerchoco, setHimchoco } = useGameStore();
     const [currentPage, setCurrentPage] = useState(round - 1);
     const scrollViewRef = useRef<ScrollView>(null);
+    const {isProcessing} = useMessages();
     const { isDark } = useThemeContext();
     const screenWidth = Dimensions.get('window').width;
 
@@ -112,7 +113,8 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
     ];
     const handleChocolatePress = (challengeNumber: number) => {
         // Save the selected chocolate index to global state
-        setConsumedChocoInB(challengeNumber);
+        // setConsumedChocoInB(challengeNumber);
+        setCurrentChallengeNumber(challengeNumber);
         if (currentTurn === 'her') {
             setHerchoco(challengeNumber);
         } else {
