@@ -8,6 +8,7 @@ import { useRef, useState } from 'react';
 import {
   Animated,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -96,8 +97,12 @@ export default function SignInScreen() {
     router.push('/(auth)/sign-up');
   };
 
-  const handleAccountBenefits = () => {
-    // Handle account benefits logic
+  const handleAccountBenefits = async () => {
+    try {
+      await Linking.openURL('https://hushh.asia/terms-of-service/');
+    } catch (error) {
+      console.error('Error opening terms URL:', error);
+    }
   };
 
   const handleSignIn = async () => {
@@ -226,8 +231,9 @@ export default function SignInScreen() {
   const handleGuestPlay = async () => {
     setIsGuestLoading(true);
     try {
-      // Handle guest play logic and navigate to relationship page
-      router.push('/ageGate');
+      await Linking.openURL('https://hushh.asia/privacy-rights/');
+    } catch (error) {
+      console.error('Error opening privacy URL:', error);
     } finally {
       setIsGuestLoading(false);
     }
@@ -327,6 +333,15 @@ export default function SignInScreen() {
               loading={isGoogleLoading}
               disabled={isAnyButtonLoading}
             /> */}
+            <ActionButton
+              title="Your Privacy at Hushh"
+              color='#5556A3'
+              onPress={handleGuestPlay}
+              variant="primary"
+              backgroundImage={IMAGES.IMAGES.buttonBg1}
+              loading={isGuestLoading}
+              disabled={isAnyButtonLoading}
+            />
             <ActionButton
               title="PLAY AS GUEST"
               color='#5556A3'
