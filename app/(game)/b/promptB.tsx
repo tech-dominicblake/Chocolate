@@ -595,7 +595,9 @@ export default function PromptB() {
                     </ScrollView>
                     {/* Fade effect overlay */}
                     <LinearGradient
-                        colors={[isDark ? '#27282A' : '#EDEFF2', 'transparent']}
+                        colors={isDark ? ['#27282A', 'rgba(39,40,42,0)'] : ['#EDEFF2', 'rgba(237,239,242,0)']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 0, y: 1 }}
                         style={styles.fadeOverlay}
                         pointerEvents="none"
                     />

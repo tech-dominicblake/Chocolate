@@ -19,6 +19,14 @@ export default function Index() {
     try {
       const userData = await getUserData();
       setRedirectTo(userData ? '/ageGate' : '/(auth)/sign-in');
+      
+      // Request permissions only on first launch after splash screen
+      if (userData && !permissionsRequested && !permissionsLoading) {
+        // Small delay to ensure splash screen is dismissed and app is fully loaded
+        setTimeout(async () => {
+          await requestAllPermissions();
+        }, 1000);
+      }
     } catch (error) {
       console.error('Error checking auth state:', error);
       setRedirectTo('/(auth)/sign-in');
@@ -26,25 +34,6 @@ export default function Index() {
       setIsLoading(false);
     }
   };
-
-  // Request permissions on first launch - separate from auth check
-  useEffect(() => {
-    const requestPermissionsOnFirstLaunch = async () => {
-      // Wait for permissions hook to finish loading
-      if (permissionsLoading) return;
-      
-      // Only request if not already requested
-      if (!permissionsRequested) {
-        console.log('🔐 First launch detected - requesting permissions...');
-        // Small delay to ensure app is fully loaded
-        setTimeout(async () => {
-          await requestAllPermissions();
-        }, 1500);
-      }
-    };
-
-    requestPermissionsOnFirstLaunch();
-  }, [permissionsRequested, permissionsLoading, requestAllPermissions]);
 
   if (isLoading) {
     return (

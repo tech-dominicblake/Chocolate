@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 import { useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 
@@ -20,12 +20,14 @@ export const useHeartbeatSound = () => {
 
       isLoadingRef.current = true;
 
-      // Configure audio mode with proper Android settings
+      // Configure audio mode cross-platform
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
         staysActiveInBackground: false,
         playsInSilentModeIOS: true,
+        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
         shouldDuckAndroid: true,
+        interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
         playThroughEarpieceAndroid: false,
         ...(Platform.OS === 'android' && {
           androidAudioFocus: 'gain' as any,
@@ -34,7 +36,7 @@ export const useHeartbeatSound = () => {
 
       // Load and play the heartbeat sound
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/images/audio/heart-beat.mpeg'),
+        require('../assets/images/audio/heart-beat.mp3'),
         { 
           shouldPlay: true, 
           isLooping: true,

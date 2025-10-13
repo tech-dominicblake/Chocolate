@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 import { Platform } from 'react-native';
 
 // Simple global flags
@@ -27,9 +27,22 @@ export const useSoundEffects = () => {
     console.log('Playing cork pop sound');
     
     try {
+      // Ensure iOS can play in silent mode and set proper interruption modes (no change for Android behavior)
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        staysActiveInBackground: false,
+        playsInSilentModeIOS: true,
+        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+        playThroughEarpieceAndroid: false,
+        ...(Platform.OS === 'android' && {
+          androidAudioFocus: 'gain' as any,
+        }),
+      });
       console.log('Creating audio sound for wine cork pop...');
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/images/audio/wine-cork-pop.mpeg'),
+        require('../assets/images/audio/wine-cork-pop.mp3'),
         { 
           shouldPlay: true, 
           isLooping: false,
@@ -65,8 +78,21 @@ export const useSoundEffects = () => {
     isChatMessagePlaying = true;
     
     try {
+      // Ensure iOS can play in silent mode and set proper interruption modes (no change for Android behavior)
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        staysActiveInBackground: false,
+        playsInSilentModeIOS: true,
+        interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+        shouldDuckAndroid: true,
+        interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+        playThroughEarpieceAndroid: false,
+        ...(Platform.OS === 'android' && {
+          androidAudioFocus: 'gain' as any,
+        }),
+      });
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/images/audio/chat-message.mpeg'),
+        require('../assets/images/audio/chat-message.mp3'),
         { 
           shouldPlay: true, 
           isLooping: false,

@@ -100,9 +100,7 @@ export default function SignInScreen() {
   const handleAccountBenefits = async () => {
     try {
       await Linking.openURL('https://hushh.asia/terms-of-service/');
-    } catch (error) {
-      console.error('Error opening terms URL:', error);
-    }
+    } catch {}
   };
 
   const handleSignIn = async () => {
@@ -228,16 +226,18 @@ export default function SignInScreen() {
     }
   };
 
-  const handleGuestPlay = async () => {
+  const handleprivacy = async () => {
     setIsGuestLoading(true);
     try {
       await Linking.openURL('https://hushh.asia/privacy-rights/');
-    } catch (error) {
-      console.error('Error opening privacy URL:', error);
     } finally {
       setIsGuestLoading(false);
     }
   };
+
+  const handleGuest = () => {
+    router.push('/ageGate')
+  }
 
   // Check if any button is loading
   const isAnyButtonLoading = isSignInLoading || isGoogleLoading || isGuestLoading;
@@ -323,20 +323,11 @@ export default function SignInScreen() {
             />
 
             <Auth buttonText="SIGN IN WITH GOOGLE" />
-
-            {/* <ActionButton
-              title="SIGN IN WITH GOOGLE"
-              onPress={handleGoogleSignIn}
-              variant="primary"
-              backgroundImage={IMAGES.IMAGES.buttonBg2}
-              color='#5556A3'
-              loading={isGoogleLoading}
-              disabled={isAnyButtonLoading}
-            /> */}
+            
             <ActionButton
               title="Your Privacy at Hushh"
               color='#5556A3'
-              onPress={handleGuestPlay}
+              onPress={handleprivacy}
               variant="primary"
               backgroundImage={IMAGES.IMAGES.buttonBg1}
               loading={isGuestLoading}
@@ -345,9 +336,9 @@ export default function SignInScreen() {
             <ActionButton
               title="PLAY AS GUEST"
               color='#5556A3'
-              onPress={handleGuestPlay}
+              onPress={handleGuest}
               variant="primary"
-              backgroundImage={IMAGES.IMAGES.buttonBg1}
+              backgroundImage={IMAGES.IMAGES.buttonBg2}
               loading={isGuestLoading}
               disabled={isAnyButtonLoading}
             />

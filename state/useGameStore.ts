@@ -5,7 +5,7 @@ import { getPrompt } from '@/constants/Functions';
 import { categoryTypes, genderTypes } from '@/constants/Prompts';
 import type { Message } from '@/constants/Types';
 import { supabase } from '@/utils/supabase';
-import { Audio } from 'expo-av';
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 import { Platform } from 'react-native';
 import { useSessionStore } from './useSessionStore';
 
@@ -471,8 +471,21 @@ const playChatMessage = async () => {
   isChatMessagePlaying = true;
 
   try {
+    // Ensure iOS can play in silent mode and set proper interruption modes (keeps Android behavior intact)
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      staysActiveInBackground: false,
+      playsInSilentModeIOS: true,
+      interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+      shouldDuckAndroid: true,
+      interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
+      playThroughEarpieceAndroid: false,
+      ...(Platform.OS === 'android' && {
+        androidAudioFocus: 'gain' as any,
+      }),
+    });
     const { sound } = await Audio.Sound.createAsync(
-      require('../assets/images/audio/chat-message.mpeg'),
+      require('../assets/images/audio/chat-message.mp3'),
       {
         shouldPlay: true,
         isLooping: false,

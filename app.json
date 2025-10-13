@@ -12,8 +12,12 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.chocolate",
       "infoPlist": {
-        "NSUserTrackingUsageDescription": "We would like to track your activity to provide personalized content and improve your experience with the app.",
-        "UIBackgroundModes": ["remote-notification"]
+        "NSUsperTrackingUsageDescription": "We would like to track your activity to provide personalized content and improve your experience with the app.",
+        "UIBackgroundModes": [
+          "remote-notification",
+          "remote-notification"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -34,7 +38,6 @@
     },
     "plugins": [
       "expo-router",
-      "expo-dev-client",
       [
         "expo-splash-screen",
         {

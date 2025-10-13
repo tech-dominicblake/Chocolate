@@ -35,7 +35,7 @@ export default function AgeGate() {
 
   const handleDecline = () => {
     // Navigate back or to a different screen
-    router.back();
+    router.push("/(auth)/sign-in")
   };
 
   const handleBack = () => {

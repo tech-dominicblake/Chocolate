@@ -32,7 +32,7 @@ export default function StatsScreen({ route }: StatsScreenProps) {
     const [isPageVisible, setIsPageVisible] = useState(true);
 
     // Background music - using existing music file
-    const backgroundMusic = require('../../../assets/images/audio/background-music.mpeg');
+    const backgroundMusic = require('../../../assets/images/audio/background-music.mp3');
 
     // Use background music hook
     useBackgroundMusic({
