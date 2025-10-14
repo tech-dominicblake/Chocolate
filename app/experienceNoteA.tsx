@@ -6,12 +6,14 @@ import { useGameStore, useMessages } from '@/state/useGameStore';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ExperienceNoteA() {
     const { isDark } = useThemeContext();
     const { queue } = useMessages();
     const { mode } = useGameStore();
+    const { t } = useTranslation();
     
     const handleBack = () => {
         router.back();
@@ -48,12 +50,12 @@ export default function ExperienceNoteA() {
                     <Text style={[
                         styles.gameLabel,
                         { color: isDark ? '#E8EAF6' : '#666' }
-                    ]}>GAME A</Text>
+                    ]}>{t('experienceNoteA.gameLabel')}</Text>
                     <View style={styles.titleRow}>
                         <Text style={[
                             styles.title,
                             { color: isDark ? '#FFFFFF' : '#333' }
-                        ]}>hushh. Experience</Text>
+                        ]}>{t('experienceNoteA.title')}</Text>
                         <Image source={IMAGES.IMAGES.image2} style={styles.chocolateIcon} />
                     </View>
                 </View>
@@ -67,7 +69,7 @@ export default function ExperienceNoteA() {
                         styles.categoryTitle,
                         { color: isDark ? '#79828F' : '#333' }
                     ]}>
-                        In this game, you'll face three spicy categories — depending on relationship stage:
+                        {t('experienceNoteA.intro')}
                     </Text>
                     <View style={styles.categoryList}>
                         <View style={styles.categoryItem}>
@@ -78,7 +80,7 @@ export default function ExperienceNoteA() {
                                 <Text style={[
                                     styles.categoryTitle,
                                     { color: isDark ? '#79828F' : '#333' }
-                                ]}>Recently Met (&lt;3 months) - flirty, fresh, still pretending to be normal</Text>
+                                ]}>{t('experienceNoteA.category1')}</Text>
                             </View>
                         </View>
                         <View style={styles.categoryItem}>
@@ -89,7 +91,7 @@ export default function ExperienceNoteA() {
                                 <Text style={[
                                     styles.categoryTitle,
                                     { color: isDark ? '#79828F' : '#333' }
-                                ]}>Getting Serious (3-12 months) - feelings are real, chaos is rising</Text>
+                                ]}>{t('experienceNoteA.category2')}</Text>
                             </View>
                         </View>
                         <View style={styles.categoryItem}>
@@ -100,13 +102,7 @@ export default function ExperienceNoteA() {
                                 <Text style={[
                                     styles.categoryTitle,
                                     { color: isDark ? '#79828F' : '#333' }
-                                ]}>We Already Hate Each Other  love is strong, patience is not(1+ year) - </Text>
-                                <Text style={[
-                                    styles.categoryDescription,
-                                    { color: isDark ? '#B0B0B0' : '#666' }
-                                ]}>
-
-                                </Text>
+                                ]}>{t('experienceNoteA.category3')}</Text>
                             </View>
                         </View>
                     </View>
@@ -117,30 +113,30 @@ export default function ExperienceNoteA() {
                     <Text style={[
                         styles.sectionTitle,
                         { color: isDark ? '#79828F' : '#333' }
-                    ]}>How to Play</Text>
+                    ]}>{t('experienceNoteA.howToPlayTitle')}</Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        You'll take turns pulling chocolates and completing challenges that test your boldness, chemistry... and maybe your dignity
+                        {t('experienceNoteA.howToPlay1')}
                     </Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        Each category comes with two wild rounds and 12 daring tasks
+                        {t('experienceNoteA.howToPlay2')}
                     </Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        The chocolates are laid out in a set path inside the box — each piece guides you deeper into the game.
+                        {t('experienceNoteA.howToPlay3')}
                     </Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        No skipping. No cheating. One bite at a time.
+                        {t('experienceNoteA.howToPlay4')}
                     </Text>
                 </View>
 
@@ -149,24 +145,24 @@ export default function ExperienceNoteA() {
                     <Text style={[
                         styles.sectionTitle,
                         { color: isDark ? '#79828F' : '#333' }
-                    ]}>Rules and Consequences</Text>
+                    ]}>{t('experienceNoteA.rulesTitle')}</Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        Refuse the task?
+                        {t('experienceNoteA.rules1')}
                     </Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        No escape — you get a Fail instead
+                        {t('experienceNoteA.rules2')}
                     </Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        And trust us, they're not polite either 👀
+                        {t('experienceNoteA.rules3')}
                     </Text>
                 </View>
 
@@ -175,36 +171,36 @@ export default function ExperienceNoteA() {
                     <Text style={[
                         styles.sectionTitle,
                         { color: isDark ? '#79828F' : '#333' }
-                    ]}>The Journey</Text>
+                    ]}>{t('experienceNoteA.journeyTitle')}</Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        Start cute
+                        {t('experienceNoteA.journey1')}
                     </Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        Get chaotic
+                        {t('experienceNoteA.journey2')}
                     </Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        End with no regrets (or clothes) 💚💦
+                        {t('experienceNoteA.journey3')}
                     </Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        Each category cranks up the heat — and just when you think you've survived it all...
+                        {t('experienceNoteA.journey4')}
                     </Text>
                     <Text style={[
                         styles.description,
                         { color: isDark ? '#79828F' : '#191919' }
                     ]}>
-                        The Final Piece shows up to ruin you. Beautifully.
+                        {t('experienceNoteA.journey5')}
                     </Text>
                 </View>
             </ScrollView>
@@ -212,7 +208,7 @@ export default function ExperienceNoteA() {
             {/* Action Button */}
             <View style={styles.actionContainer}>
                 <ActionButton
-                    title="GOT IT"
+                    title={t('experienceNoteA.gotItButton')}
                     onPress={handleGotIt}
                     variant="primary"
                     backgroundImage={IMAGES.IMAGES.buttonBg3}

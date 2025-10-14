@@ -29,7 +29,7 @@ export default function GameRules() {
                 router.push('/(game)/b/promptB');
             }
         } else {
-            router.push('/startPage');
+            router.back();
         }
         // // Navigate to game selection or next step
         // router.push('/aboutPage');
