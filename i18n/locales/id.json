@@ -74,17 +74,29 @@
     "continueButton": "LANJUTKAN BERMAIN"
   },
   "game": {
-    "round": "Putaran",
+    "round": "Round",
     "level": "Level",
-    "truth": "Kebenaran",
-    "dare": "Tantangan",
-    "task": "Tugas",
-    "skip": "Lewati",
-    "complete": "Selesai",
-    "failed": "Gagal",
-    "success": "Berhasil",
-    "yourTurn": "Giliran Anda",
-    "selectChocolate": "Pilih Cokelat"
+    "truth": "Truth",
+    "dare": "Dare",
+    "task": "Task",
+    "skip": "Skip",
+    "complete": "Complete",
+    "failed": "Failed",
+    "success": "Success",
+    "yourTurn": "Your Turn",
+    "selectChocolate": "Select a Chocolate",
+    "category": "Category",
+    "challenge": "Challenge",
+    "for": "for",
+    "gameA": "Game A",
+    "gameB": "Game B",
+    "her": "HER",
+    "him": "HIM",
+    "stages": {
+      "justMet": "Recently Met",
+      "comfortablyDating": "Comfortably Dating",
+      "longTerm": "Long Term"
+    }
   },
   "menu": {
     "title": "Menu",
@@ -217,6 +229,28 @@
     "signInWithGoogle": "Masuk dengan Google",
     "signUpWithGoogle": "Daftar dengan Google",
     "or": "ATAU"
+  },
+  "buttonContainer": {
+    "letsGetMessy": "Ayo berantakan",
+    "nahIBail": "Tidak, saya keluar",
+    "continue": "Lanjutkan",
+    "iCantHang": "Saya tidak bisa bertahan",
+    "endGame": "Akhiri Permainan",
+    "yes": "Ya",
+    "no": "Tidak",
+    "survivedWarmup": "Kamu selamat dari pemanasan, siap untuk ronde 2?",
+    "imInLetsGo": "Saya ikut, mari kita lihat apa kehebohannya...",
+    "roundOneMessed": "Ronde pertama mengacaukan saya sedikit, tapi saya sangat bersemangat untuk lebih.",
+    "readySuperGame": "Siap untuk Super Game?",
+    "finalRound": "Ronde terakhir, potongan terakhir. Kami siap. Biarkan itu menghancurkan kami dengan indah."
+  },
+  "mockMessages": {
+    "dareBody": "Kamu mundur? 😮‍💨 Baiklah. Ini hukumanmu 😈",
+    "successBody": "Tidak ada penolakan. Tidak ada alasan. Hanya kekacauan yang lezat dan murni. Kamu dibuat untuk ini 😮‍💨",
+    "surviveTitle": "Terlalu Panas untuk Ditangani 🔥💋",
+    "surviveBody": "Perlahan dan sensual jilat potongan cokelat... Bisikkan tiga fitur terseksi pasanganmu 😍🔥",
+    "failTitle": "Oof. Kamu menerima Kegagalan seperti juara 😈",
+    "failBody": "Sekarang mari kita lihat apakah pasanganmu punya lebih banyak keberanian dari kamu 💅"
   }
 }
 

@@ -8,6 +8,7 @@ import { categoryTypes } from "@/constants/Prompts";
 import { Message, ProcessingState } from "@/constants/Types";
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useHeartbeatSound } from "@/hooks/useHeartbeatSound";
+import { useI18n } from "@/hooks/useI18n";
 import { useGameStore, useMessages } from "@/state/useGameStore";
 import { supabase } from "@/utils/supabase";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -28,6 +29,7 @@ export default function Prompt() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const { isDark } = useThemeToggle();
   const { startHeartbeat, stopHeartbeat } = useHeartbeatSound();
+  const { t } = useI18n();
   const scrollViewRef = useRef<ScrollView>(null);
   const hasFailedOnce = useGameStore.getState().hasFailedOnce;
   const showBtns = useGameStore.getState().showBtns;
@@ -74,7 +76,7 @@ export default function Prompt() {
     const initializeGame = async () => {
       setDidFinal(false);
       setButtonLoading(true);
-      enqueueGameInfoMessages();
+      enqueueGameInfoMessages(t);
       setActiveTooltip(true);
       await new Promise(resolve => setTimeout(resolve, 5000));
       setActiveTooltip(false);
@@ -144,7 +146,8 @@ export default function Prompt() {
       const { data: prompt } = await supabase
         .from('content_items')
         .select('*')
-        .eq('category', `${categoryTypes.taskComplete}`);
+        .eq('category', `${categoryTypes.taskComplete}`)
+        .eq('metadata->>lang', language === 'english' ? 'English' : language === 'russian' ? 'Russian' : 'Indonesian');
 
       if (prompt && prompt.length > 0) {
         const randomIndex = Math.floor(Math.random() * prompt.length);
@@ -168,12 +171,12 @@ export default function Prompt() {
         setHasFailedOnce(true);
         await enqueue({
           kind: 'userchoice' as const,
-          body: 'Nah, I bail.',
+          body: t('buttonContainer.nahIBail'),
           group: 'game_result' as const,
           durationMs: 2000,
         });
         await enqueue({
-          ...getMockMessageByKind('dare'),
+          ...getMockMessageByKind('dare', t),
           group: 'game_result' as const,
           durationMs: 2000,
         });
@@ -209,7 +212,7 @@ export default function Prompt() {
       } else {
         await enqueue({
           kind: 'userchoice' as const,
-          body: "I can't hang.",
+          body: t('buttonContainer.iCantHang'),
           group: 'game_result' as const,
           durationMs: 2000,
         });
@@ -217,7 +220,8 @@ export default function Prompt() {
         const { data: failData } = await supabase
           .from('content_items')
           .select('id, content, subContent_1, subContent_2, subContent_3, subContent_4, subContent_5, content_1_time, content_2_time, content_3_time, content_4_time, content_5_time, challenges!inner ( id, name )')
-          .ilike('category', `%${categoryTypes.postFail}%`);
+          .ilike('category', `%${categoryTypes.postFail}%`)
+          .eq('metadata->>lang', language === 'english' ? 'English' : language === 'russian' ? 'Russian' : 'Indonesian');
 
         if (failData && failData.length > 0) {
           const randomIndex = Math.floor(Math.random() * failData.length);
@@ -233,7 +237,7 @@ export default function Prompt() {
         setRoundLevel(level);
         const newLevel = level + 1;
         setCurrentTurn(newLevel);
-        enqueueGameInfoMessages();
+        enqueueGameInfoMessages(t);
         setHasFailedOnce(false);
       }
     }
@@ -266,7 +270,7 @@ export default function Prompt() {
         setRoundLevel(level);
         setCurrentTurn(level + 1);
         setConsumedChocolatesEachCount();
-        enqueueGameInfoMessages();
+        enqueueGameInfoMessages(t);
       }, 2000);
     } else if (gameState.gameSurvived) {
       setTaskCompleted(currentTurn);
@@ -274,14 +278,14 @@ export default function Prompt() {
       setCurrentTurn(level + 1);
       setConsumedChocolatesEachCount();
       setHasFailedOnce(false);
-      enqueueGameInfoMessages();
+      enqueueGameInfoMessages(t);
     }
 
     consumeChocolate(currentTurn === 'her' ? Math.ceil(level / 2) : Math.ceil(level / 2) + 6, round);
     if (gameState.gameFailed) {
       setRoundLevel(level);
       setCurrentTurn(level + 1);
-      enqueueGameInfoMessages();
+      enqueueGameInfoMessages(t);
     }
     setButtonLoading(false);
   };

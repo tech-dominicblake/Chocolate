@@ -84,7 +84,19 @@
     "failed": "Failed",
     "success": "Success",
     "yourTurn": "Your Turn",
-    "selectChocolate": "Select a Chocolate"
+    "selectChocolate": "Select a Chocolate",
+    "category": "Category",
+    "challenge": "Challenge",
+    "for": "for",
+    "gameA": "Game A",
+    "gameB": "Game B",
+    "her": "HER",
+    "him": "HIM",
+    "stages": {
+      "justMet": "Recently Met",
+      "comfortablyDating": "Comfortably Dating",
+      "longTerm": "Long Term"
+    }
   },
   "menu": {
     "title": "Menu",
@@ -217,6 +229,28 @@
     "signInWithGoogle": "Sign in with Google",
     "signUpWithGoogle": "Sign up with Google",
     "or": "OR"
+  },
+  "buttonContainer": {
+    "letsGetMessy": "Let's get messy",
+    "nahIBail": "Nah, I bail",
+    "continue": "Continue",
+    "iCantHang": "I can't hang",
+    "endGame": "End Game",
+    "yes": "Yes",
+    "no": "No",
+    "survivedWarmup": "You survived the warm-up, ready for round 2?",
+    "imInLetsGo": "I'm in, let's see what the hype's about...",
+    "roundOneMessed": "Round one messed me up a bit, bit I'm totally pumped for more.",
+    "readySuperGame": "Ready for Super Game?",
+    "finalRound": "Final round, final piece. We're ready. Let it ruin us beautifully."
+  },
+  "mockMessages": {
+    "dareBody": "You backed out? 😮‍💨 Fine. Here's your punishment 😈",
+    "successBody": "No flinching. No excuses. Just pure, delicious chaos. You're built for this 😮‍💨",
+    "surviveTitle": "Too Hot to Handle 🔥💋",
+    "surviveBody": "Slowly and seductively lick the chocolate piece... Whisper your partner's three sexiest features 😍🔥",
+    "failTitle": "Oof. You took  the Fail like a champ 😈",
+    "failBody": "Now let's see if your partner's got more guts than you 💅"
   }
 }
 

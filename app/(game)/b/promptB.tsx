@@ -8,6 +8,7 @@ import { categoryTypes } from "@/constants/Prompts";
 import { Message, ProcessingState } from "@/constants/Types";
 import { useThemeToggle } from "@/hooks/useAppTheme";
 import { useHeartbeatSound } from "@/hooks/useHeartbeatSound";
+import { useI18n } from "@/hooks/useI18n";
 import { useGameStore, useMessages } from "@/state/useGameStore";
 import { supabase } from "@/utils/supabase";
 import { Ionicons } from '@expo/vector-icons';
@@ -221,6 +222,7 @@ export default function PromptB() {
     const [elapsedTime, setElapsedTime] = useState(0);
     const { isDark } = useThemeToggle();
     const { startHeartbeat, stopHeartbeat } = useHeartbeatSound();
+    const { t } = useI18n();
     const {
         setTaskCompleted,
         setActiveTooltip,
@@ -271,7 +273,7 @@ export default function PromptB() {
             setActiveTooltip(true);
 
             // Enqueue messages without waiting
-            !isProcessing && enqueueGameInfoMessages();
+            !isProcessing && enqueueGameInfoMessages(t);
 
             // Shorter delay for better responsiveness
             // await new Promise(resolve => setTimeout(resolve, 1000));
@@ -365,12 +367,12 @@ export default function PromptB() {
                 setHasFailedOnce(true);
                 await enqueue({
                     kind: 'userchoice' as const,
-                    body: 'Nah, I bail.',
+                    body: t('buttonContainer.nahIBail'),
                     group: 'game_result' as const,
                     durationMs: 2000,
                 });
                 enqueue({
-                    ...getMockMessageByKind('dare'),
+                    ...getMockMessageByKind('dare', t),
                     group: 'game_result' as const,
                     durationMs: 2000,
                 });
@@ -397,7 +399,7 @@ export default function PromptB() {
                                 await enqueue({
                                     ...message,
                                     body: sentence.trim(),
-                                    durationMs: 2000,
+                                    durationMs: 1500,
                                 } as Message);
                             }
                         }
@@ -406,7 +408,7 @@ export default function PromptB() {
             } else {
                 await enqueue({
                     kind: 'userchoice' as const,
-                    body: 'I can\'t hang.',
+                    body: t('buttonContainer.iCantHang'),
                     group: 'game_result' as const,
                     durationMs: 2000,
                 });

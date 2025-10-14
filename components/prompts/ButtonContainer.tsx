@@ -2,6 +2,7 @@ import { getPrompt } from '@/constants/Functions';
 import { categoryTypes } from '@/constants/Prompts';
 import { Message, ProcessingState, UserState } from '@/constants/Types';
 import { useThemeToggle } from '@/hooks/useAppTheme';
+import { useI18n } from '@/hooks/useI18n';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { useGameStore, useMessages } from '@/state/useGameStore';
 import { supabase } from '@/utils/supabase';
@@ -23,6 +24,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     const { clear, enqueue, isProcessing } = useMessages();
     const { playCorkPop } = useSoundEffects();
     const { isDark } = useThemeToggle();
+    const { t } = useI18n();
     const [blinkStage, setBlinkStage] = useState(1);
     const [userState, setUserState] = useState<UserState>({
         success: false,
@@ -51,13 +53,13 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
         if (userState.firstFail) {
             setGameState({ ...gameState, gameSurvived: true, gamePaused: true });
             setUserState({ ...userState, survived: true });
-            onPlayerChoice?.('Continue', 'success');
+            onPlayerChoice?.(t('buttonContainer.continue'), 'success');
             setFailSurvivedTask(currentTurn);
             mode === 'A' && level === 12 && setGameState({ ...gameState, gameNewLevelStarted: true, gamePaused: true, gameSurvived: true });
         } else {
             setGameState({ ...gameState, gameSucceeded: true, gamePaused: true });
             setUserState({ ...userState, success: true });
-            onPlayerChoice?.('LET\'S GET MESSY', 'success');
+            onPlayerChoice?.(t('buttonContainer.letsGetMessy').toUpperCase(), 'success');
             mode === 'A' && level === 12 && setGameState({ ...gameState, gameNewLevelStarted: true, gamePaused: true, gameSucceeded: true });
         }
         // setButtonLoading(false);
@@ -92,7 +94,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     enqueue(
                         {
                             kind: 'prompt',
-                            body: 'You survived the warm-up, ready for round 2?',
+                            body: t('buttonContainer.survivedWarmup'),
                         }
                     );
                     setBlinkStage(2);
@@ -100,14 +102,14 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     await enqueue(
                         {
                             kind: 'userchoice',
-                            body: 'Continue',
+                            body: t('buttonContainer.continue'),
                             durationMs: 2000,
                         }
                     );
                     await enqueue(
                         {
                             kind: 'prompt',
-                            body: 'I’m in, let’s see what the hype’s about...',
+                            body: t('buttonContainer.imInLetsGo'),
                             durationMs: 2000,
                         }
                     );
@@ -116,7 +118,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     await enqueue(
                         {
                             kind: 'prompt',
-                            body: 'Round one messed me up a bit, bit I’m totally pumped for more.',
+                            body: t('buttonContainer.roundOneMessed'),
                             group: 'question',
                             durationMs: 2000,
                         }
@@ -131,7 +133,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     enqueue(
                         {
                             kind: 'prompt',
-                            body: 'Ready for Super Game?',
+                            body: t('buttonContainer.readySuperGame'),
                         }
                     );
                     setBlinkStage(2);
@@ -139,14 +141,14 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                     await enqueue(
                         {
                             kind: 'userchoice',
-                            body: 'Yes',
+                            body: t('buttonContainer.yes'),
                             durationMs: 2000,
                         }
                     );
                     await enqueue(
                         {
                             kind: 'success',
-                            body: ' Final round, final piece. We’re ready. Let it ruin us beautifully.',
+                            body: t('buttonContainer.finalRound'),
                             group: 'question',
                             durationMs: 2000,
                         }
@@ -170,7 +172,7 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
 
     const handleNahIBail = async (buttonText: string) => {
         playCorkPop();
-        if (buttonText === 'End Game' || buttonText === 'No') {
+        if (buttonText === t('buttonContainer.endGame') || buttonText === t('buttonContainer.no')) {
             mode === 'A' ? router.push('/(game)/a/statsA') : router.push('/(game)/b/statsB');
             return;
         }
@@ -235,11 +237,11 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
                 mode === 'A' ? router.push('/(game)/a/statsA') : router.push('/(game)/b/statsB');
                 return;
             }
-            onPlayerChoice?.('I can\'t hang', 'fail');
+            onPlayerChoice?.(t('buttonContainer.iCantHang'), 'fail');
             setGameState({ gamePaused: false, gameSucceeded: false, gameFailed: false, gameSurvived: false, gameStarted: false, gameEnded: false, gameNewLevelStarted: false });
             setUserState({ success: false, firstFail: false, secondFail: false, survived: false });
         } else {
-            onPlayerChoice?.('NAH, I BAIL', 'fail');
+            onPlayerChoice?.(t('buttonContainer.nahIBail').toUpperCase(), 'fail');
             setUserState({ ...userState, firstFail: true });
         }
         // setButtonLoading(false);
@@ -248,20 +250,20 @@ export default function ButtonContainer({ onPlayerChoice, onContinue, loading = 
     const handleButtonText = (): string[] => {
         if (gameState.gameNewLevelStarted && gameState.gamePaused) {
             if (round === 1) {
-                return ['Continue', 'End Game'];
+                return [t('buttonContainer.continue'), t('buttonContainer.endGame')];
             } else if (round === 2 && blinkStage > 1) {
-                return ['Yes', 'No'];
+                return [t('buttonContainer.yes'), t('buttonContainer.no')];
             }
         }
 
         if (!userState.firstFail && !userState.success && !userState.secondFail && !userState.survived) {
-            return ['Let\'s get messy', 'Nah, I bail'];
+            return [t('buttonContainer.letsGetMessy'), t('buttonContainer.nahIBail')];
         } else if (userState.firstFail && !userState.secondFail) {
-            return ['Continue', 'I can\'t hang'];
+            return [t('buttonContainer.continue'), t('buttonContainer.iCantHang')];
         } else if (userState.survived || userState.success) {
-            return ['Continue', ''];
+            return [t('buttonContainer.continue'), ''];
         }
-        return ['Let\'s get messy', 'Nah, I bail']; // Default fallback
+        return [t('buttonContainer.letsGetMessy'), t('buttonContainer.nahIBail')]; // Default fallback
     }
     const buttonText = handleButtonText();
 

@@ -121,6 +121,8 @@ export default function ChocoStats({ route }: ChocoStatsProps) {
             setHimchoco(challengeNumber);
         }
 
+        setSelectedChocoIndex(challengeNumber);
+
         // Navigate to promptB
         router.push('/(game)/b/promptB');
     };

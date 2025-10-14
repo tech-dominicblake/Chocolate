@@ -73,8 +73,8 @@ interface GameState {
   resetGame: () => void;
   setTaskCompleted: (player: PlayerId) => void;
   setRound: () => void;
-  enqueueGameInfoMessages: () => Promise<void>;
-  getMockMessageByKind: (kind: 'prompt' | 'success' | 'survive' | 'fail' | 'dare' | 'superGameCF' | 'superGame') => any;
+  enqueueGameInfoMessages: (t: any) => Promise<void>;
+  getMockMessageByKind: (kind: 'prompt' | 'success' | 'survive' | 'fail' | 'dare' | 'superGameCF' | 'superGame', t?: any) => any;
   setHasFailedOnce: (value: boolean) => void;
   setConsumedChocolatesEachCount: () => void;
   setSheFailedTwice: (value: boolean) => void;
@@ -271,7 +271,7 @@ export const useGameStore = create<GameState>((set) => ({
     return state;
   }),
 
-  enqueueGameInfoMessages: async () => {
+  enqueueGameInfoMessages: async (t: any) => {
     try {
       const state = useGameStore.getState();
 
@@ -279,29 +279,29 @@ export const useGameStore = create<GameState>((set) => ({
       const currentMode = state.mode || 'A'; // Default to B for game B
       const currentStage = state.stage || 'just_met';
 
-      // Convert stage to readable category
-      const categoryMap = {
-        'just_met': 'Recently Met',
-        'comfortably_dating': 'Comfortably Dating',
-        'long_term': 'Long Term'
+      // Convert stage to readable category using translations
+      const categoryMap: Record<string, string> = {
+        'just_met': t('game.stages.justMet'),
+        'comfortably_dating': t('game.stages.comfortablyDating'),
+        'long_term': t('game.stages.longTerm')
       };
 
-      // Convert mode to readable game type
-      const gameTypeMap = {
-        'A': 'Game A',
-        'B': 'Game B'
+      // Convert mode to readable game type using translations
+      const gameTypeMap: Record<string, string> = {
+        'A': t('game.gameA'),
+        'B': t('game.gameB')
       };
 
-      // Convert currentTurn to readable format
-      const turnMap = {
-        'her': 'HER',
-        'him': 'HIM'
+      // Convert currentTurn to readable format using translations
+      const turnMap: Record<string, string> = {
+        'her': t('game.her'),
+        'him': t('game.him')
       };
 
       const presetMessages = [
         {
           kind: 'info' as const,
-          body: `Category: ${categoryMap[currentStage]}`,
+          body: `${t('game.category')}: ${categoryMap[currentStage]}`,
           durationMs: 1000,
         },
         {
@@ -311,12 +311,12 @@ export const useGameStore = create<GameState>((set) => ({
         },
         {
           kind: 'info' as const,
-          body: `Round ${state.round}`,
+          body: `${t('game.round')} ${state.round}`,
           durationMs: 1000,
         },
         {
           kind: 'info' as const,
-          body: `Challenge ${Math.round(state.level / 2)} - for ${turnMap[state.currentTurn]}`,
+          body: `${t('game.challenge')} ${Math.round(state.level / 2)} - ${t('game.for')} ${turnMap[state.currentTurn]}`,
           durationMs: 1000,
         }
       ];
@@ -388,11 +388,37 @@ export const useGameStore = create<GameState>((set) => ({
     }
   },
 
-  getMockMessageByKind: (kind: 'prompt' | 'success' | 'survive' | 'fail' | 'dare' | 'superGameCF' | 'superGame') => {
-    if (mockMessagesData[kind as keyof typeof mockMessagesData]) {
-      return mockMessagesData[kind as keyof typeof mockMessagesData][0];
+  getMockMessageByKind: (kind: 'prompt' | 'success' | 'survive' | 'fail' | 'dare' | 'superGameCF' | 'superGame', t?: any) => {
+    if (!mockMessagesData[kind as keyof typeof mockMessagesData]) {
+      return null;
     }
-    return null;
+
+    const message = mockMessagesData[kind as keyof typeof mockMessagesData][0];
+
+    // If translation function provided, return translated message
+    if (t) {
+      const translated = { ...message };
+
+      if (kind === 'dare') {
+        translated.body = t('mockMessages.dareBody');
+      } else if (kind === 'success') {
+        translated.body = t('mockMessages.successBody');
+      } else if (kind === 'survive') {
+        if ('title' in translated) translated.title = t('mockMessages.surviveTitle');
+        translated.body = t('mockMessages.surviveBody');
+      } else if (kind === 'fail') {
+        if ('title' in translated) translated.title = t('mockMessages.failTitle');
+        translated.body = t('mockMessages.failBody');
+      } else if (kind === 'superGameCF') {
+        translated.body = t('buttonContainer.readySuperGame');
+      } else if (kind === 'superGame') {
+        translated.body = t('buttonContainer.finalRound');
+      }
+
+      return translated;
+    }
+
+    return message;
   },
 
   setHasFailedOnce: (value) => set({ hasFailedOnce: value }),
