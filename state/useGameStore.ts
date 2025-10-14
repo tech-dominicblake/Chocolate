@@ -377,7 +377,7 @@ export const useGameStore = create<GameState>((set) => ({
               await enqueue({
                 ...message,
                 body: sentence.trim(),
-                durationMs: 2000,
+                durationMs: 1500,
               } as Message);
             }
           }

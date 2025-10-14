@@ -9,14 +9,13 @@ import { useTranslation } from 'react-i18next';
 import {
   Alert,
   Linking,
-  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   useWindowDimensions,
-  View,
+  View
 } from 'react-native';
 
 export default function MenuPage() {
@@ -48,26 +47,15 @@ export default function MenuPage() {
   const handleHomeBtn = () => router.push('/startPage');
 
   const handleWhatsAppContact = async () => {
-    const whatsappUrl = 'https://wa.me/6282342431740';
     try {
-      const supported = await Linking.canOpenURL(whatsappUrl);
-      if (supported) await Linking.openURL(whatsappUrl);
-      else Alert.alert(t('menu.errorTitle'), t('menu.errorWhatsAppNotInstalled'));
-    } catch (error) {
-      Alert.alert(t('menu.errorTitle'), t('menu.errorWhatsAppFailed'));
-    }
+      await Linking.openURL('mailto:hello@hushh.asia');
+    } catch {}
   };
 
   const handleWhatsAppAffiliate = async () => {
-    const whatsappUrl =
-      'https://wa.me/6282342431740?text=Hi! I want to become an affiliate for Hushh Chocolate.';
     try {
-      const supported = await Linking.canOpenURL(whatsappUrl);
-      if (supported) await Linking.openURL(whatsappUrl);
-      else Alert.alert(t('menu.errorTitle'), t('menu.errorWhatsAppNotInstalled'));
-    } catch (error) {
-      Alert.alert(t('menu.errorTitle'), t('menu.errorWhatsAppFailed'));
-    }
+      await Linking.openURL('https://affilibee.com/hushh/sign-up');
+    } catch {}
   };
 
   const handleWhatsAppBuy = async () => {
