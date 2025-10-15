@@ -476,7 +476,7 @@ export default function PromptB() {
                 setTimeout(() => {
                     setShowCongrats(false);
                     router.push('/(game)/b/chocoStats');
-                }, 2000);
+                }, 5000);
                 return;
             }
             const randomType = Math.random() < 0.5 ? 'normal' : 'choco';

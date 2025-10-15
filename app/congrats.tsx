@@ -22,7 +22,7 @@ export default function CongratsPage() {
         // Navigate to congratsChoco page after 2 seconds
         const timer = setTimeout(() => {
             if (mode === "B") router.push('/(game)/b/chocoStats');
-        }, 2000);
+        }, 5000);
 
         // Cleanup timer on component unmount
         return () => clearTimeout(timer);

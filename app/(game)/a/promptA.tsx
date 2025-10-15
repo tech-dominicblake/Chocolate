@@ -271,7 +271,7 @@ export default function Prompt() {
         setCurrentTurn(level + 1);
         setConsumedChocolatesEachCount();
         enqueueGameInfoMessages(t);
-      }, 2000);
+      }, 5000);
     } else if (gameState.gameSurvived) {
       setTaskCompleted(currentTurn);
       setRoundLevel(level);
